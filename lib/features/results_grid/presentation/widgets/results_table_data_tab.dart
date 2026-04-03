@@ -201,7 +201,9 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
       final newDb = next.database;
       final newTable = next.table;
       // Skip if already showing this exact table with data.
-      if (newDb == _selectedDb && newTable == _selectedTable && _result != null) {
+      if (newDb == _selectedDb &&
+          newTable == _selectedTable &&
+          _result != null) {
         return;
       }
 
