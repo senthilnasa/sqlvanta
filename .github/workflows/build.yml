@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FLUTTER_VERSION: '3.29.3'   # Pin Flutter version for reproducible builds
+  FLUTTER_VERSION: '3.41.5'   # Pin Flutter version for reproducible builds
   JAVA_VERSION: '17'
 
 # ═══════════════════════════════════════════════════════════════════════════════

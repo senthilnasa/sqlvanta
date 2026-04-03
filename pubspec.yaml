@@ -58,14 +58,11 @@ dependencies:
   intl: ^0.20.2
   bot_toast: ^4.1.3
 
-  # Shimmer loading effect (splash screen)
-  shimmer: ^3.0.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^6.0.0
+  flutter_lints: ^5.0.0
 
   # Code Generation
   riverpod_generator: ^2.6.3
