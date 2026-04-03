@@ -46,8 +46,10 @@ class _ConnectionManagerScreenState
 
   Future<void> _selectConnection(ConnectionEntity c) async {
     final storage = ref.read(secureStorageProvider);
-    final password = await storage.read(
-            key: '${DbConstants.secureStorageKeyPrefix}${c.id}') ??
+    final password =
+        await storage.read(
+          key: '${DbConstants.secureStorageKeyPrefix}${c.id}',
+        ) ??
         '';
     if (mounted) {
       setState(() {
@@ -84,8 +86,10 @@ class _ConnectionManagerScreenState
     );
     try {
       final storage = ref.read(secureStorageProvider);
-      final password = await storage.read(
-            key: '${DbConstants.secureStorageKeyPrefix}${entity.id}') ??
+      final password =
+          await storage.read(
+            key: '${DbConstants.secureStorageKeyPrefix}${entity.id}',
+          ) ??
           '';
       await ref
           .read(workspaceProvider.notifier)
@@ -105,24 +109,26 @@ class _ConnectionManagerScreenState
   static void _showErrorToast(String title, String message) {
     BotToast.showCustomNotification(
       duration: const Duration(seconds: 5),
-      toastBuilder: (_) => _AppToast(
-        icon: Icons.error_outline,
-        iconColor: Colors.redAccent,
-        title: title,
-        message: message,
-      ),
+      toastBuilder:
+          (_) => _AppToast(
+            icon: Icons.error_outline,
+            iconColor: Colors.redAccent,
+            title: title,
+            message: message,
+          ),
     );
   }
 
   static void _showSuccessToast(String message) {
     BotToast.showCustomNotification(
       duration: const Duration(seconds: 3),
-      toastBuilder: (_) => _AppToast(
-        icon: Icons.check_circle_outline,
-        iconColor: Colors.green,
-        title: 'Success',
-        message: message,
-      ),
+      toastBuilder:
+          (_) => _AppToast(
+            icon: Icons.check_circle_outline,
+            iconColor: Colors.green,
+            title: 'Success',
+            message: message,
+          ),
     );
   }
 
@@ -132,8 +138,9 @@ class _ConnectionManagerScreenState
       _testSuccess = null;
       _testError = null;
     });
-    final result =
-        await ref.read(connectionListProvider.notifier).test(entity, password);
+    final result = await ref
+        .read(connectionListProvider.notifier)
+        .test(entity, password);
     if (mounted) {
       setState(() {
         _testLoading = false;
@@ -154,17 +161,23 @@ class _ConnectionManagerScreenState
   Future<void> _delete(String id) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete Connection'),
-        content: const Text('This will permanently remove the connection and its saved password.'),
-        actions: [
-          TextButton(onPressed: () => ctx.pop(false), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () => ctx.pop(true),
-            child: const Text('Delete'),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Delete Connection'),
+            content: const Text(
+              'This will permanently remove the connection and its saved password.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => ctx.pop(false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => ctx.pop(true),
+                child: const Text('Delete'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
     if (confirm == true) {
       await ref.read(connectionListProvider.notifier).remove(id);
@@ -193,12 +206,16 @@ class _ConnectionManagerScreenState
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 10),
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   color: theme.colorScheme.surfaceContainerHighest,
                   child: Row(
                     children: [
-                      const Text('Connections',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      const Text(
+                        'Connections',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                       const Spacer(),
                       IconButton(
                         icon: const Icon(Icons.add, size: 20),
@@ -206,7 +223,9 @@ class _ConnectionManagerScreenState
                         onPressed: _newConnection,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(
-                            minWidth: 28, minHeight: 28),
+                          minWidth: 28,
+                          minHeight: 28,
+                        ),
                       ),
                     ],
                   ),
@@ -214,38 +233,42 @@ class _ConnectionManagerScreenState
                 const Divider(height: 1),
                 Expanded(
                   child: listAsync.when(
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                    loading:
+                        () => const Center(child: CircularProgressIndicator()),
                     error: (e, _) => Center(child: Text('Error: $e')),
-                    data: (list) => list.isEmpty
-                        ? EmptyStateWidget(
-                            icon: Icons.storage_outlined,
-                            title: 'No connections',
-                            subtitle: 'Click + to add a new connection',
-                            action: FilledButton.icon(
-                              icon: const Icon(Icons.add, size: 16),
-                              label: const Text('New Connection'),
-                              onPressed: _newConnection,
-                            ),
-                          )
-                        : ListView.builder(
-                            itemCount: list.length,
-                            itemBuilder: (ctx, i) {
-                              final c = list[i];
-                              return ConnectionListTile(
-                                connection: c,
-                                isSelected: selected == c.id,
-                                onTap: () {
-                                  ref
-                                      .read(selectedConnectionIdProvider
-                                          .notifier)
-                                      .select(c.id);
-                                  _selectConnection(c);
-                                },
-                                onDelete: () => _delete(c.id),
-                              );
-                            },
-                          ),
+                    data:
+                        (list) =>
+                            list.isEmpty
+                                ? EmptyStateWidget(
+                                  icon: Icons.storage_outlined,
+                                  title: 'No connections',
+                                  subtitle: 'Click + to add a new connection',
+                                  action: FilledButton.icon(
+                                    icon: const Icon(Icons.add, size: 16),
+                                    label: const Text('New Connection'),
+                                    onPressed: _newConnection,
+                                  ),
+                                )
+                                : ListView.builder(
+                                  itemCount: list.length,
+                                  itemBuilder: (ctx, i) {
+                                    final c = list[i];
+                                    return ConnectionListTile(
+                                      connection: c,
+                                      isSelected: selected == c.id,
+                                      onTap: () {
+                                        ref
+                                            .read(
+                                              selectedConnectionIdProvider
+                                                  .notifier,
+                                            )
+                                            .select(c.id);
+                                        _selectConnection(c);
+                                      },
+                                      onDelete: () => _delete(c.id),
+                                    );
+                                  },
+                                ),
                   ),
                 ),
               ],
@@ -255,72 +278,83 @@ class _ConnectionManagerScreenState
 
           // ── Right panel: form ────────────────────────────────────────────
           Expanded(
-            child: (_editing != null || _isNew)
-                ? Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        width: double.infinity,
-                        child: Row(
-                          children: [
-                            Text(
-                              _isNew
-                                  ? 'New Connection'
-                                  : _editing?.name ?? 'Edit Connection',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            const Spacer(),
-                            if (_editing != null && !_isNew)
-                              FilledButton.icon(
-                                icon: _openingConnection
-                                    ? const SizedBox(
-                                        width: 14,
-                                        height: 14,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white),
-                                      )
-                                    : const Icon(Icons.open_in_new, size: 16),
-                                label: const Text('Open'),
-                                onPressed: _openingConnection
-                                    ? null
-                                    : () => _openConnection(_editing!),
+            child:
+                (_editing != null || _isNew)
+                    ? Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          width: double.infinity,
+                          child: Row(
+                            children: [
+                              Text(
+                                _isNew
+                                    ? 'New Connection'
+                                    : _editing?.name ?? 'Edit Connection',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                          ],
+                              const Spacer(),
+                              if (_editing != null && !_isNew)
+                                FilledButton.icon(
+                                  icon:
+                                      _openingConnection
+                                          ? const SizedBox(
+                                            width: 14,
+                                            height: 14,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                          : const Icon(
+                                            Icons.open_in_new,
+                                            size: 16,
+                                          ),
+                                  label: const Text('Open'),
+                                  onPressed:
+                                      _openingConnection
+                                          ? null
+                                          : () => _openConnection(_editing!),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const Divider(height: 1),
-                      Expanded(
-                        child: ConnectionForm(
-                          key: ValueKey(_isNew ? 'new' : _editing?.id),
-                          initial: _editing,
-                          initialPassword: _editingPassword,
-                          onSave: _save,
-                          onTest: _test,
+                        const Divider(height: 1),
+                        Expanded(
+                          child: ConnectionForm(
+                            key: ValueKey(_isNew ? 'new' : _editing?.id),
+                            initial: _editing,
+                            initialPassword: _editingPassword,
+                            onSave: _save,
+                            onTest: _test,
+                          ),
                         ),
+                        ConnectionTestBanner(
+                          isLoading: _testLoading,
+                          success: _testSuccess,
+                          latency: _testLatency,
+                          errorMessage: _testError,
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    )
+                    : EmptyStateWidget(
+                      icon: Icons.storage_outlined,
+                      title: 'Select or create a connection',
+                      subtitle:
+                          'Choose a connection from the list or add a new one',
+                      action: FilledButton.icon(
+                        icon: const Icon(Icons.add, size: 16),
+                        label: const Text('New Connection'),
+                        onPressed: _newConnection,
                       ),
-                      ConnectionTestBanner(
-                        isLoading: _testLoading,
-                        success: _testSuccess,
-                        latency: _testLatency,
-                        errorMessage: _testError,
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                  )
-                : EmptyStateWidget(
-                    icon: Icons.storage_outlined,
-                    title: 'Select or create a connection',
-                    subtitle: 'Choose a connection from the list or add a new one',
-                    action: FilledButton.icon(
-                      icon: const Icon(Icons.add, size: 16),
-                      label: const Text('New Connection'),
-                      onPressed: _newConnection,
                     ),
-                  ),
           ),
         ],
       ),
@@ -365,9 +399,10 @@ class _ConnectingToast extends StatelessWidget {
             Text(
               name,
               style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: cs.onSurface),
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: cs.onSurface,
+              ),
             ),
           ],
         ),
@@ -418,18 +453,25 @@ class _AppToast extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(title,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: cs.onSurface)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: cs.onSurface,
+                    ),
+                  ),
                   if (message.isNotEmpty) ...[
                     const SizedBox(height: 2),
-                    Text(message,
-                        style: TextStyle(
-                            fontSize: 12, color: cs.onSurfaceVariant),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis),
+                    Text(
+                      message,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: cs.onSurfaceVariant,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ],
               ),

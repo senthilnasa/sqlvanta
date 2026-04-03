@@ -22,12 +22,13 @@ class QueryHistoryDrawer extends ConsumerWidget {
       child: Column(
         children: [
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             width: double.infinity,
-            child: const Text('Query History',
-                style: TextStyle(fontWeight: FontWeight.w600)),
+            child: const Text(
+              'Query History',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
           ),
           const Divider(height: 1),
           Expanded(
@@ -40,14 +41,16 @@ class QueryHistoryDrawer extends ConsumerWidget {
                 final entries = snap.data ?? [];
                 if (entries.isEmpty) {
                   return const Center(
-                    child: Text('No history yet',
-                        style: TextStyle(fontSize: 12)),
+                    child: Text(
+                      'No history yet',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   );
                 }
                 return ListView.separated(
                   itemCount: entries.length,
-                  separatorBuilder: (context, index) =>
-                      const Divider(height: 1),
+                  separatorBuilder:
+                      (context, index) => const Divider(height: 1),
                   itemBuilder: (ctx, i) {
                     final e = entries[i];
                     return ListTile(
@@ -57,16 +60,19 @@ class QueryHistoryDrawer extends ConsumerWidget {
                             ? Icons.error_outline
                             : Icons.check_circle_outline,
                         size: 16,
-                        color: e.hadError
-                            ? Colors.red.shade400
-                            : Colors.green.shade400,
+                        color:
+                            e.hadError
+                                ? Colors.red.shade400
+                                : Colors.green.shade400,
                       ),
                       title: Text(
                         e.sqlText.replaceAll('\n', ' '),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            fontSize: 12, fontFamily: 'monospace'),
+                          fontSize: 12,
+                          fontFamily: 'monospace',
+                        ),
                       ),
                       subtitle: Text(
                         '${e.durationMs}ms · ${_formatDate(e.executedAt)}',

@@ -8,5 +8,6 @@ class SelectedTable {
   const SelectedTable({required this.database, required this.table});
 }
 
-final selectedTableProvider =
-    StateProvider.family<SelectedTable?, String>((ref, sessionId) => null);
+final selectedTableProvider = StateProvider.family<SelectedTable?, String>(
+  (ref, sessionId) => null,
+);

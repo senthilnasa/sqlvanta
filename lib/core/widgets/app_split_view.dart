@@ -22,28 +22,28 @@ class AppSplitView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SplitView(
-      viewMode: axis == Axis.horizontal
-          ? SplitViewMode.Horizontal
-          : SplitViewMode.Vertical,
+      viewMode:
+          axis == Axis.horizontal
+              ? SplitViewMode.Horizontal
+              : SplitViewMode.Vertical,
       indicator: SplitIndicator(
-        viewMode: axis == Axis.horizontal
-            ? SplitViewMode.Horizontal
-            : SplitViewMode.Vertical,
+        viewMode:
+            axis == Axis.horizontal
+                ? SplitViewMode.Horizontal
+                : SplitViewMode.Vertical,
         color: Theme.of(context).dividerColor,
       ),
       activeIndicator: SplitIndicator(
-        viewMode: axis == Axis.horizontal
-            ? SplitViewMode.Horizontal
-            : SplitViewMode.Vertical,
+        viewMode:
+            axis == Axis.horizontal
+                ? SplitViewMode.Horizontal
+                : SplitViewMode.Vertical,
         isActive: true,
         color: Theme.of(context).colorScheme.primary,
       ),
       controller: SplitViewController(
         weights: [initialRatio, 1 - initialRatio],
-        limits: [
-          WeightLimit(min: minRatio, max: maxRatio),
-          null,
-        ],
+        limits: [WeightLimit(min: minRatio, max: maxRatio), null],
       ),
       children: [leading, trailing],
     );

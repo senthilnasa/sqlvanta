@@ -11,6 +11,7 @@ import '../../../workspace/domain/entities/workspace_session.dart';
 class _ErdTable {
   final String db;
   final String name;
+
   /// True when this table was pulled in automatically via a cross-db FK.
   final bool isCrossDb;
   _ErdTable(this.db, this.name, {this.isCrossDb = false});
@@ -33,36 +34,36 @@ class SchemaDesignerPanel extends StatefulWidget {
 }
 
 class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
-  final _fetcher   = const MysqlSchemaFetcher();
+  final _fetcher = const MysqlSchemaFetcher();
   final _repaintKey = GlobalKey();
 
   // ── Picker state ──────────────────────────────────────────────────────────
-  List<String> _databases  = [];
-  String?      _selectedDb;
+  List<String> _databases = [];
+  String? _selectedDb;
 
   // ── Canvas data ───────────────────────────────────────────────────────────
   /// All tables loaded (primary db + any cross-db FK tables).
-  List<_ErdTable>                    _tables      = [];
-  Map<String, List<ColumnInfo>>      _columns     = {};  // key → cols
-  List<ForeignKeyInfo>               _foreignKeys = [];
-  bool                               _loading     = false;
+  List<_ErdTable> _tables = [];
+  Map<String, List<ColumnInfo>> _columns = {}; // key → cols
+  List<ForeignKeyInfo> _foreignKeys = [];
+  bool _loading = false;
 
   /// Which table keys are currently visible on the canvas.
   Set<String> _visibleKeys = {};
 
   // ── Canvas transform ──────────────────────────────────────────────────────
-  double _scale             = 1.0;
-  Offset _offset            = const Offset(24, 24);
-  Offset _lastFocalPoint    = Offset.zero;
-  double _prevScaleGesture  = 1.0;
+  double _scale = 1.0;
+  Offset _offset = const Offset(24, 24);
+  Offset _lastFocalPoint = Offset.zero;
+  double _prevScaleGesture = 1.0;
   final Map<String, Offset> _positions = {};
 
   // ── Layout constants ──────────────────────────────────────────────────────
-  static const double _cardWidth  = 200.0;
+  static const double _cardWidth = 200.0;
   static const double _cardHeaderH = 30.0;
-  static const double _cardRowH    = 20.0;
-  static const double _colGap      = 230.0;
-  static const double _rowGap      = 40.0;
+  static const double _cardRowH = 20.0;
+  static const double _colGap = 230.0;
+  static const double _rowGap = 40.0;
 
   // ── Sidebar toggle ────────────────────────────────────────────────────────
   bool _showSidebar = true;
@@ -77,7 +78,9 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
 
   Future<void> _loadDatabases() async {
     try {
-      final dbs = await _fetcher.fetchAllDatabases(widget.session.mysqlConnection);
+      final dbs = await _fetcher.fetchAllDatabases(
+        widget.session.mysqlConnection,
+      );
       if (!mounted) return;
       setState(() => _databases = dbs.map((d) => d.name).toList());
     } catch (_) {}
@@ -86,7 +89,10 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
   Future<void> _loadSchema(String db) async {
     setState(() => _loading = true);
     try {
-      final tables = await _fetcher.fetchTables(widget.session.mysqlConnection, db);
+      final tables = await _fetcher.fetchTables(
+        widget.session.mysqlConnection,
+        db,
+      );
       final baseTables = tables.where((t) => !t.isView).toList();
 
       // Fetch columns + FK for primary db
@@ -94,21 +100,24 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
       for (final t in baseTables) {
         final key = '$db.${t.name}';
         cols[key] = await _fetcher.fetchColumns(
-            widget.session.mysqlConnection, db, t.name);
+          widget.session.mysqlConnection,
+          db,
+          t.name,
+        );
       }
 
       final fks = await _fetcher.fetchForeignKeys(
-          widget.session.mysqlConnection, db);
+        widget.session.mysqlConnection,
+        db,
+      );
 
       // Build ErdTable list for primary db
-      final erdTables = baseTables
-          .map((t) => _ErdTable(db, t.name))
-          .toList();
+      final erdTables = baseTables.map((t) => _ErdTable(db, t.name)).toList();
 
       // ── Cross-db FK tables ─────────────────────────────────────────────
       // For every FK that points to a different db, auto-load that table too.
       final crossDbKeys = <String>{};
-      final crossDbFks  = fks.where((fk) => fk.refDatabase.isNotEmpty).toList();
+      final crossDbFks = fks.where((fk) => fk.refDatabase.isNotEmpty).toList();
 
       for (final fk in crossDbFks) {
         final crossKey = '${fk.refDatabase}.${fk.refTable}';
@@ -117,9 +126,14 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
 
         try {
           final crossCols = await _fetcher.fetchColumns(
-              widget.session.mysqlConnection, fk.refDatabase, fk.refTable);
+            widget.session.mysqlConnection,
+            fk.refDatabase,
+            fk.refTable,
+          );
           cols[crossKey] = crossCols;
-          erdTables.add(_ErdTable(fk.refDatabase, fk.refTable, isCrossDb: true));
+          erdTables.add(
+            _ErdTable(fk.refDatabase, fk.refTable, isCrossDb: true),
+          );
         } catch (_) {}
       }
 
@@ -135,31 +149,34 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
 
       if (!mounted) return;
       setState(() {
-        _tables      = erdTables;
-        _columns     = cols;
+        _tables = erdTables;
+        _columns = cols;
         _foreignKeys = fks;
         _positions
           ..clear()
           ..addAll(positions);
         // All tables visible by default
         _visibleKeys = erdTables.map((t) => t.key).toSet();
-        _loading     = false;
-        _scale       = 1.0;
-        _offset      = const Offset(24, 24);
+        _loading = false;
+        _scale = 1.0;
+        _offset = const Offset(24, 24);
       });
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
   }
 
-  double _rowForIndex(int i, List<_ErdTable> tables,
-      Map<String, List<ColumnInfo>> cols) {
+  double _rowForIndex(
+    int i,
+    List<_ErdTable> tables,
+    Map<String, List<ColumnInfo>> cols,
+  ) {
     if (i < 4) return 0;
     double y = 0;
     final colIdx = i % 4;
     for (var j = colIdx; j < i; j += 4) {
-      final cardH = _cardHeaderH +
-          (cols[tables[j].key]?.length ?? 5) * _cardRowH + 8;
+      final cardH =
+          _cardHeaderH + (cols[tables[j].key]?.length ?? 5) * _cardRowH + 8;
       y += cardH + _rowGap;
     }
     return y;
@@ -168,7 +185,7 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
   // ── Gesture handlers ──────────────────────────────────────────────────────
 
   void _onScaleStart(ScaleStartDetails d) {
-    _lastFocalPoint  = d.focalPoint;
+    _lastFocalPoint = d.focalPoint;
     _prevScaleGesture = 1.0;
   }
 
@@ -182,7 +199,7 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
       if ((scaleDelta - 1.0).abs() > 0.001) {
         final newScale = (_scale * scaleDelta).clamp(0.15, 4.0);
         final focalInCanvas = (d.focalPoint - _offset) / _scale;
-        _scale  = newScale;
+        _scale = newScale;
         _offset = d.focalPoint - focalInCanvas * _scale;
       }
     });
@@ -202,15 +219,15 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
       );
       final newScale = (_scale * factor).clamp(0.15, 4.0);
       final focalInCanvas = (center - _offset) / _scale;
-      _scale  = newScale;
+      _scale = newScale;
       _offset = center - focalInCanvas * _scale;
     });
   }
 
   void _resetView() => setState(() {
-        _scale  = 1.0;
-        _offset = const Offset(24, 24);
-      });
+    _scale = 1.0;
+    _offset = const Offset(24, 24);
+  });
 
   void _fitAll() {
     final visible = _tables.where((t) => _visibleKeys.contains(t.key)).toList();
@@ -227,9 +244,9 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
       }
       final canvasW = maxX - minX + 80;
       final canvasH = maxY - minY + 80;
-      final viewW   = MediaQuery.sizeOf(context).width * 0.75;
-      final viewH   = MediaQuery.sizeOf(context).height * 0.75;
-      _scale  = (viewW / canvasW).clamp(0.15, 1.5);
+      final viewW = MediaQuery.sizeOf(context).width * 0.75;
+      final viewH = MediaQuery.sizeOf(context).height * 0.75;
+      _scale = (viewW / canvasW).clamp(0.15, 1.5);
       if (viewH / canvasH < _scale) {
         _scale = (viewH / canvasH).clamp(0.15, 1.5);
       }
@@ -239,29 +256,34 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
 
   Future<void> _exportPng() async {
     try {
-      final boundary = _repaintKey.currentContext?.findRenderObject()
-          as RenderRepaintBoundary?;
+      final boundary =
+          _repaintKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
       if (boundary == null) return;
       final image = await boundary.toImage(pixelRatio: 2.0);
-      final byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) return;
       final bytes = byteData.buffer.asUint8List();
       await Clipboard.setData(
-          ClipboardData(text: '[PNG ${bytes.length} bytes]'));
+        ClipboardData(text: '[PNG ${bytes.length} bytes]'),
+      );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('ER Diagram exported (${bytes.length ~/ 1024} KB)'),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('ER Diagram exported (${bytes.length ~/ 1024} KB)'),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Export failed: $e'),
-          behavior: SnackBarBehavior.floating,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Export failed: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     }
   }
@@ -271,7 +293,7 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cs    = theme.colorScheme;
+    final cs = theme.colorScheme;
 
     // Tables actually shown on canvas
     final visibleTables =
@@ -288,8 +310,10 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
             children: [
               const Icon(Icons.schema_outlined, size: 15),
               const SizedBox(width: 6),
-              const Text('Schema Designer',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+              const Text(
+                'Schema Designer',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+              ),
               const SizedBox(width: 12),
               const VerticalDivider(width: 1, indent: 6, endIndent: 6),
               const SizedBox(width: 8),
@@ -300,18 +324,22 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: _selectedDb,
-                    hint: const Text('Select…',
-                        style: TextStyle(fontSize: 11)),
+                    hint: const Text('Select…', style: TextStyle(fontSize: 11)),
                     isDense: true,
                     isExpanded: true,
                     style: const TextStyle(fontSize: 11),
-                    items: _databases
-                        .map((db) => DropdownMenuItem(
-                              value: db,
-                              child: Text(db,
-                                  overflow: TextOverflow.ellipsis),
-                            ))
-                        .toList(),
+                    items:
+                        _databases
+                            .map(
+                              (db) => DropdownMenuItem(
+                                value: db,
+                                child: Text(
+                                  db,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            )
+                            .toList(),
                     onChanged: (v) {
                       if (v == null) return;
                       setState(() => _selectedDb = v);
@@ -323,9 +351,7 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
               const SizedBox(width: 8),
               // Sidebar toggle
               _ToolbarIconBtn(
-                icon: _showSidebar
-                    ? Icons.list_alt_outlined
-                    : Icons.list_alt,
+                icon: _showSidebar ? Icons.list_alt_outlined : Icons.list_alt,
                 tooltip: _showSidebar ? 'Hide table list' : 'Show table list',
                 onTap: () => setState(() => _showSidebar = !_showSidebar),
               ),
@@ -344,10 +370,26 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
                 style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
               ),
               const SizedBox(width: 2),
-              _ToolbarIconBtn(icon: Icons.remove,       tooltip: 'Zoom out',    onTap: () => _zoomBy(0.8)),
-              _ToolbarIconBtn(icon: Icons.add,          tooltip: 'Zoom in',     onTap: () => _zoomBy(1.25)),
-              _ToolbarIconBtn(icon: Icons.fit_screen,   tooltip: 'Reset view',  onTap: _resetView),
-              _ToolbarIconBtn(icon: Icons.zoom_out_map, tooltip: 'Fit all',     onTap: _fitAll),
+              _ToolbarIconBtn(
+                icon: Icons.remove,
+                tooltip: 'Zoom out',
+                onTap: () => _zoomBy(0.8),
+              ),
+              _ToolbarIconBtn(
+                icon: Icons.add,
+                tooltip: 'Zoom in',
+                onTap: () => _zoomBy(1.25),
+              ),
+              _ToolbarIconBtn(
+                icon: Icons.fit_screen,
+                tooltip: 'Reset view',
+                onTap: _resetView,
+              ),
+              _ToolbarIconBtn(
+                icon: Icons.zoom_out_map,
+                tooltip: 'Fit all',
+                onTap: _fitAll,
+              ),
               const VerticalDivider(width: 1, indent: 6, endIndent: 6),
               const SizedBox(width: 4),
               _ToolbarIconBtn(
@@ -364,59 +406,64 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
 
         // ── Body: optional sidebar + canvas ──────────────────────────────────
         Expanded(
-          child: _loading
-              ? const Center(child: CircularProgressIndicator())
-              : _selectedDb == null
+          child:
+              _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _selectedDb == null
                   ? _EmptyHint(cs: cs)
                   : _tables.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No tables found in `$_selectedDb`',
-                            style: TextStyle(
-                                color: cs.onSurface.withAlpha(120),
-                                fontSize: 13),
-                          ),
-                        )
-                      : Row(
-                          children: [
-                            // ── Table visibility sidebar ─────────────────────
-                            if (_showSidebar)
-                              _TableSidebar(
-                                tables: _tables,
-                                visibleKeys: _visibleKeys,
-                                onToggle: (key) => setState(() =>
+                  ? Center(
+                    child: Text(
+                      'No tables found in `$_selectedDb`',
+                      style: TextStyle(
+                        color: cs.onSurface.withAlpha(120),
+                        fontSize: 13,
+                      ),
+                    ),
+                  )
+                  : Row(
+                    children: [
+                      // ── Table visibility sidebar ─────────────────────
+                      if (_showSidebar)
+                        _TableSidebar(
+                          tables: _tables,
+                          visibleKeys: _visibleKeys,
+                          onToggle:
+                              (key) => setState(
+                                () =>
                                     _visibleKeys.contains(key)
                                         ? _visibleKeys.remove(key)
-                                        : _visibleKeys.add(key)),
-                                onShowAll: () => setState(
-                                    () => _visibleKeys = _tables
-                                        .map((t) => t.key)
-                                        .toSet()),
-                                onHideAll: () => setState(
-                                    () => _visibleKeys.clear()),
+                                        : _visibleKeys.add(key),
                               ),
-                            if (_showSidebar)
-                              const VerticalDivider(width: 1),
-                            // ── ERD canvas ───────────────────────────────────
-                            Expanded(
-                              child: _ErdCanvas(
-                                repaintKey: _repaintKey,
-                                scale: _scale,
-                                offset: _offset,
-                                tables: visibleTables,
-                                columns: _columns,
-                                foreignKeys: _foreignKeys,
-                                positions: _positions,
-                                onScaleStart: _onScaleStart,
-                                onScaleUpdate: _onScaleUpdate,
-                                onCardDrag: _moveCard,
-                                cardWidth: _cardWidth,
-                                cardHeaderH: _cardHeaderH,
-                                cardRowH: _cardRowH,
+                          onShowAll:
+                              () => setState(
+                                () =>
+                                    _visibleKeys =
+                                        _tables.map((t) => t.key).toSet(),
                               ),
-                            ),
-                          ],
+                          onHideAll: () => setState(() => _visibleKeys.clear()),
                         ),
+                      if (_showSidebar) const VerticalDivider(width: 1),
+                      // ── ERD canvas ───────────────────────────────────
+                      Expanded(
+                        child: _ErdCanvas(
+                          repaintKey: _repaintKey,
+                          scale: _scale,
+                          offset: _offset,
+                          tables: visibleTables,
+                          columns: _columns,
+                          foreignKeys: _foreignKeys,
+                          positions: _positions,
+                          onScaleStart: _onScaleStart,
+                          onScaleUpdate: _onScaleUpdate,
+                          onCardDrag: _moveCard,
+                          cardWidth: _cardWidth,
+                          cardHeaderH: _cardHeaderH,
+                          cardRowH: _cardRowH,
+                        ),
+                      ),
+                    ],
+                  ),
         ),
       ],
     );
@@ -426,11 +473,11 @@ class _SchemaDesignerPanelState extends State<SchemaDesignerPanel> {
 // ── Table visibility sidebar ──────────────────────────────────────────────────
 
 class _TableSidebar extends StatelessWidget {
-  final List<_ErdTable>  tables;
-  final Set<String>      visibleKeys;
+  final List<_ErdTable> tables;
+  final Set<String> visibleKeys;
   final void Function(String key) onToggle;
-  final VoidCallback     onShowAll;
-  final VoidCallback     onHideAll;
+  final VoidCallback onShowAll;
+  final VoidCallback onHideAll;
 
   const _TableSidebar({
     required this.tables,
@@ -446,7 +493,7 @@ class _TableSidebar extends StatelessWidget {
 
     // Group by db for display
     final primaryTables = tables.where((t) => !t.isCrossDb).toList();
-    final crossTables   = tables.where((t) => t.isCrossDb).toList();
+    final crossTables = tables.where((t) => t.isCrossDb).toList();
 
     return SizedBox(
       width: 190,
@@ -463,27 +510,33 @@ class _TableSidebar extends StatelessWidget {
                 const Icon(Icons.table_rows_outlined, size: 13),
                 const SizedBox(width: 5),
                 const Expanded(
-                  child: Text('Tables',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 11)),
+                  child: Text(
+                    'Tables',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                  ),
                 ),
                 InkWell(
                   onTap: onShowAll,
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Text('All',
-                        style: TextStyle(fontSize: 10, color: Colors.blueAccent)),
+                    child: Text(
+                      'All',
+                      style: TextStyle(fontSize: 10, color: Colors.blueAccent),
+                    ),
                   ),
                 ),
-                const Text('·',
-                    style: TextStyle(
-                        fontSize: 10, color: Colors.grey)),
+                const Text(
+                  '·',
+                  style: TextStyle(fontSize: 10, color: Colors.grey),
+                ),
                 InkWell(
                   onTap: onHideAll,
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Text('None',
-                        style: TextStyle(fontSize: 10, color: Colors.blueAccent)),
+                    child: Text(
+                      'None',
+                      style: TextStyle(fontSize: 10, color: Colors.blueAccent),
+                    ),
                   ),
                 ),
               ],
@@ -507,7 +560,9 @@ class _TableSidebar extends StatelessWidget {
                   const Divider(height: 8, indent: 8, endIndent: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     child: Text(
                       'Cross-DB References',
                       style: TextStyle(
@@ -537,12 +592,12 @@ class _TableSidebar extends StatelessWidget {
 }
 
 class _SidebarSection extends StatelessWidget {
-  final String          label;
+  final String label;
   final List<_ErdTable> tables;
-  final Set<String>     visibleKeys;
+  final Set<String> visibleKeys;
   final void Function(String) onToggle;
-  final ColorScheme     cs;
-  final bool            isCrossDb;
+  final ColorScheme cs;
+  final bool isCrossDb;
 
   const _SidebarSection({
     required this.label,
@@ -560,8 +615,7 @@ class _SidebarSection extends StatelessWidget {
       children: [
         if (label.isNotEmpty)
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             child: Text(
               label,
               style: TextStyle(
@@ -577,8 +631,7 @@ class _SidebarSection extends StatelessWidget {
           return InkWell(
             onTap: () => onToggle(t.key),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Row(
                 children: [
                   Icon(
@@ -595,12 +648,11 @@ class _SidebarSection extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontFamily: 'monospace',
-                        color: isCrossDb
-                            ? Colors.teal.shade600
-                            : cs.onSurface,
-                        decoration: visible
-                            ? TextDecoration.none
-                            : TextDecoration.lineThrough,
+                        color: isCrossDb ? Colors.teal.shade600 : cs.onSurface,
+                        decoration:
+                            visible
+                                ? TextDecoration.none
+                                : TextDecoration.lineThrough,
                         decorationColor: cs.onSurface.withAlpha(80),
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -619,19 +671,19 @@ class _SidebarSection extends StatelessWidget {
 // ── ERD Canvas ────────────────────────────────────────────────────────────────
 
 class _ErdCanvas extends StatelessWidget {
-  final GlobalKey                         repaintKey;
-  final double                            scale;
-  final Offset                            offset;
-  final List<_ErdTable>                   tables;
-  final Map<String, List<ColumnInfo>>     columns;
-  final List<ForeignKeyInfo>              foreignKeys;
-  final Map<String, Offset>               positions;
-  final void Function(ScaleStartDetails)  onScaleStart;
+  final GlobalKey repaintKey;
+  final double scale;
+  final Offset offset;
+  final List<_ErdTable> tables;
+  final Map<String, List<ColumnInfo>> columns;
+  final List<ForeignKeyInfo> foreignKeys;
+  final Map<String, Offset> positions;
+  final void Function(ScaleStartDetails) onScaleStart;
   final void Function(ScaleUpdateDetails) onScaleUpdate;
-  final void Function(String, Offset)     onCardDrag;
-  final double                            cardWidth;
-  final double                            cardHeaderH;
-  final double                            cardRowH;
+  final void Function(String, Offset) onCardDrag;
+  final double cardWidth;
+  final double cardHeaderH;
+  final double cardRowH;
 
   const _ErdCanvas({
     required this.repaintKey,
@@ -651,18 +703,20 @@ class _ErdCanvas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs     = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Only draw FK lines between tables that are both visible
     final visibleKeys = tables.map((t) => t.key).toSet();
-    final visibleFks = foreignKeys.where((fk) {
-      final srcKey = '${_selectedDb(fk, tables)}.${fk.table}';
-      final tgtKey = fk.refDatabase.isNotEmpty
-          ? '${fk.refDatabase}.${fk.refTable}'
-          : '${_primaryDb(tables)}.${fk.refTable}';
-      return visibleKeys.contains(srcKey) && visibleKeys.contains(tgtKey);
-    }).toList();
+    final visibleFks =
+        foreignKeys.where((fk) {
+          final srcKey = '${_selectedDb(fk, tables)}.${fk.table}';
+          final tgtKey =
+              fk.refDatabase.isNotEmpty
+                  ? '${fk.refDatabase}.${fk.refTable}'
+                  : '${_primaryDb(tables)}.${fk.refTable}';
+          return visibleKeys.contains(srcKey) && visibleKeys.contains(tgtKey);
+        }).toList();
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -698,18 +752,18 @@ class _ErdCanvas extends StatelessWidget {
                       for (final table in tables)
                         Positioned(
                           left: positions[table.key]?.dx ?? 0,
-                          top:  positions[table.key]?.dy ?? 0,
+                          top: positions[table.key]?.dy ?? 0,
                           child: GestureDetector(
                             behavior: HitTestBehavior.opaque,
-                            onPanUpdate: (d) =>
-                                onCardDrag(table.key, d.delta),
+                            onPanUpdate: (d) => onCardDrag(table.key, d.delta),
                             child: _TableCard(
                               table: table,
                               columns: columns[table.key] ?? [],
-                              fkColumns: foreignKeys
-                                  .where((fk) => fk.table == table.name)
-                                  .map((fk) => fk.column)
-                                  .toSet(),
+                              fkColumns:
+                                  foreignKeys
+                                      .where((fk) => fk.table == table.name)
+                                      .map((fk) => fk.column)
+                                      .toSet(),
                               cardWidth: cardWidth,
                               cardHeaderH: cardHeaderH,
                               cardRowH: cardRowH,
@@ -734,21 +788,24 @@ class _ErdCanvas extends StatelessWidget {
       tables.where((t) => !t.isCrossDb).map((t) => t.db).firstOrNull ?? '';
 
   String _selectedDb(ForeignKeyInfo fk, List<_ErdTable> tables) =>
-      tables.where((t) => t.name == fk.table && !t.isCrossDb).map((t) => t.db).firstOrNull ??
+      tables
+          .where((t) => t.name == fk.table && !t.isCrossDb)
+          .map((t) => t.db)
+          .firstOrNull ??
       _primaryDb(tables);
 }
 
 // ── Table card ────────────────────────────────────────────────────────────────
 
 class _TableCard extends StatelessWidget {
-  final _ErdTable         table;
-  final List<ColumnInfo>  columns;
-  final Set<String>       fkColumns;  // column names that are FK cols in this table
-  final double            cardWidth;
-  final double            cardHeaderH;
-  final double            cardRowH;
-  final ColorScheme       cs;
-  final bool              isDark;
+  final _ErdTable table;
+  final List<ColumnInfo> columns;
+  final Set<String> fkColumns; // column names that are FK cols in this table
+  final double cardWidth;
+  final double cardHeaderH;
+  final double cardRowH;
+  final ColorScheme cs;
+  final bool isDark;
 
   const _TableCard({
     required this.table,
@@ -791,8 +848,9 @@ class _TableCard extends StatelessWidget {
               gradient: LinearGradient(
                 colors: [headerColor, headerColor.withAlpha(200)],
               ),
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(7)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(7),
+              ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
@@ -833,16 +891,26 @@ class _TableCard extends StatelessWidget {
                     // Key icon
                     SizedBox(
                       width: 12,
-                      child: col.isPrimaryKey
-                          ? Icon(Icons.vpn_key, size: 9,
-                              color: Colors.amber.shade600)
-                          : isFk
+                      child:
+                          col.isPrimaryKey
+                              ? Icon(
+                                Icons.vpn_key,
+                                size: 9,
+                                color: Colors.amber.shade600,
+                              )
+                              : isFk
                               ? Icon(Icons.link, size: 9, color: cs.tertiary)
                               : col.isUniqueKey
-                                  ? Icon(Icons.fingerprint, size: 9,
-                                      color: cs.secondary)
-                                  : Icon(Icons.horizontal_rule, size: 9,
-                                      color: cs.onSurface.withAlpha(40)),
+                              ? Icon(
+                                Icons.fingerprint,
+                                size: 9,
+                                color: cs.secondary,
+                              )
+                              : Icon(
+                                Icons.horizontal_rule,
+                                size: 9,
+                                color: cs.onSurface.withAlpha(40),
+                              ),
                     ),
                     const SizedBox(width: 3),
                     // Column name
@@ -852,14 +920,16 @@ class _TableCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontFamily: 'monospace',
-                          color: col.isPrimaryKey
-                              ? Colors.amber.shade700
-                              : isFk
+                          color:
+                              col.isPrimaryKey
+                                  ? Colors.amber.shade700
+                                  : isFk
                                   ? cs.tertiary
                                   : cs.onSurface,
-                          fontWeight: col.isPrimaryKey || isFk
-                              ? FontWeight.w600
-                              : FontWeight.normal,
+                          fontWeight:
+                              col.isPrimaryKey || isFk
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
                         ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
@@ -883,8 +953,11 @@ class _TableCard extends StatelessWidget {
                     if (!col.isNullable)
                       Padding(
                         padding: const EdgeInsets.only(left: 2),
-                        child: Icon(Icons.block, size: 7,
-                            color: cs.error.withAlpha(110)),
+                        child: Icon(
+                          Icons.block,
+                          size: 7,
+                          color: cs.error.withAlpha(110),
+                        ),
                       ),
                   ],
                 ),
@@ -901,16 +974,16 @@ class _TableCard extends StatelessWidget {
 // ── FK line painter ───────────────────────────────────────────────────────────
 
 class _FkLinePainter extends CustomPainter {
-  final List<_ErdTable>               tables;
-  final List<ForeignKeyInfo>          foreignKeys;
-  final Map<String, Offset>           positions;
+  final List<_ErdTable> tables;
+  final List<ForeignKeyInfo> foreignKeys;
+  final Map<String, Offset> positions;
   final Map<String, List<ColumnInfo>> columns;
-  final double                        scale;
-  final Offset                        offset;
-  final double                        cardWidth;
-  final double                        cardHeaderH;
-  final double                        cardRowH;
-  final Color                         lineColor;
+  final double scale;
+  final Offset offset;
+  final double cardWidth;
+  final double cardHeaderH;
+  final double cardRowH;
+  final Color lineColor;
 
   const _FkLinePainter({
     required this.tables,
@@ -931,11 +1004,11 @@ class _FkLinePainter extends CustomPainter {
       tables.where((t) => !t.isCrossDb).map((t) => t.db).firstOrNull ?? '';
 
   Offset _columnAnchor(String tableKey, String colName, bool rightSide) {
-    final pos  = positions[tableKey] ?? Offset.zero;
+    final pos = positions[tableKey] ?? Offset.zero;
     final cols = columns[tableKey] ?? [];
-    final idx  = cols.indexWhere((c) => c.name == colName);
-    final y    = cardHeaderH + (idx >= 0 ? idx : 0) * cardRowH + cardRowH / 2;
-    final x    = rightSide ? cardWidth : 0.0;
+    final idx = cols.indexWhere((c) => c.name == colName);
+    final y = cardHeaderH + (idx >= 0 ? idx : 0) * cardRowH + cardRowH / 2;
+    final x = rightSide ? cardWidth : 0.0;
     return Offset(
       pos.dx * scale + offset.dx + x * scale,
       pos.dy * scale + offset.dy + y * scale,
@@ -944,51 +1017,69 @@ class _FkLinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color      = lineColor
-      ..strokeWidth = 1.5
-      ..style      = PaintingStyle.stroke;
+    final paint =
+        Paint()
+          ..color = lineColor
+          ..strokeWidth = 1.5
+          ..style = PaintingStyle.stroke;
 
     for (final fk in foreignKeys) {
       final primary = _primaryDb();
       final srcKey = _keyFor(primary, fk.table);
-      final tgtKey = fk.refDatabase.isNotEmpty
-          ? _keyFor(fk.refDatabase, fk.refTable)
-          : _keyFor(primary, fk.refTable);
+      final tgtKey =
+          fk.refDatabase.isNotEmpty
+              ? _keyFor(fk.refDatabase, fk.refTable)
+              : _keyFor(primary, fk.refTable);
 
       final srcPos = positions[srcKey];
       final tgtPos = positions[tgtKey];
       if (srcPos == null || tgtPos == null) continue;
 
-      final srcRight = (srcPos.dx + cardWidth / 2) < (tgtPos.dx + cardWidth / 2);
+      final srcRight =
+          (srcPos.dx + cardWidth / 2) < (tgtPos.dx + cardWidth / 2);
       final src = _columnAnchor(srcKey, fk.column, srcRight);
       final tgt = _columnAnchor(tgtKey, fk.refColumn, !srcRight);
 
-      final dx   = (tgt.dx - src.dx).abs() * 0.5;
-      final path = Path()
-        ..moveTo(src.dx, src.dy)
-        ..cubicTo(
-          src.dx + (srcRight ? dx : -dx), src.dy,
-          tgt.dx + (srcRight ? -dx : dx), tgt.dy,
-          tgt.dx, tgt.dy,
-        );
+      final dx = (tgt.dx - src.dx).abs() * 0.5;
+      final path =
+          Path()
+            ..moveTo(src.dx, src.dy)
+            ..cubicTo(
+              src.dx + (srcRight ? dx : -dx),
+              src.dy,
+              tgt.dx + (srcRight ? -dx : dx),
+              tgt.dy,
+              tgt.dx,
+              tgt.dy,
+            );
       canvas.drawPath(path, paint);
-      _drawArrow(canvas, paint, tgt,
-          srcRight ? const Offset(-1, 0) : const Offset(1, 0));
+      _drawArrow(
+        canvas,
+        paint,
+        tgt,
+        srcRight ? const Offset(-1, 0) : const Offset(1, 0),
+      );
     }
   }
 
   void _drawArrow(Canvas canvas, Paint paint, Offset tip, Offset dir) {
-    final ap   = Paint()..color = paint.color..style = PaintingStyle.fill;
-    final s    = 6.0 * scale.clamp(0.5, 2.0);
+    final ap =
+        Paint()
+          ..color = paint.color
+          ..style = PaintingStyle.fill;
+    final s = 6.0 * scale.clamp(0.5, 2.0);
     final perp = Offset(-dir.dy, dir.dx);
     canvas.drawPath(
       Path()
         ..moveTo(tip.dx, tip.dy)
-        ..lineTo(tip.dx + dir.dx * s + perp.dx * s / 2,
-            tip.dy + dir.dy * s + perp.dy * s / 2)
-        ..lineTo(tip.dx + dir.dx * s - perp.dx * s / 2,
-            tip.dy + dir.dy * s - perp.dy * s / 2)
+        ..lineTo(
+          tip.dx + dir.dx * s + perp.dx * s / 2,
+          tip.dy + dir.dy * s + perp.dy * s / 2,
+        )
+        ..lineTo(
+          tip.dx + dir.dx * s - perp.dx * s / 2,
+          tip.dy + dir.dy * s - perp.dy * s / 2,
+        )
         ..close(),
       ap,
     );
@@ -1005,11 +1096,14 @@ class _FkLinePainter extends CustomPainter {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 class _ToolbarIconBtn extends StatelessWidget {
-  final IconData      icon;
-  final String        tooltip;
+  final IconData icon;
+  final String tooltip;
   final VoidCallback? onTap;
-  const _ToolbarIconBtn(
-      {required this.icon, required this.tooltip, this.onTap});
+  const _ToolbarIconBtn({
+    required this.icon,
+    required this.tooltip,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1020,10 +1114,14 @@ class _ToolbarIconBtn extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          child: Icon(icon, size: 15,
-              color: onTap == null
-                  ? Theme.of(context).colorScheme.onSurface.withAlpha(60)
-                  : null),
+          child: Icon(
+            icon,
+            size: 15,
+            color:
+                onTap == null
+                    ? Theme.of(context).colorScheme.onSurface.withAlpha(60)
+                    : null,
+          ),
         ),
       ),
     );
@@ -1040,16 +1138,21 @@ class _EmptyHint extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.schema_outlined, size: 48,
-              color: cs.primary.withAlpha(80)),
+          Icon(
+            Icons.schema_outlined,
+            size: 48,
+            color: cs.primary.withAlpha(80),
+          ),
           const SizedBox(height: 12),
-          Text('Select a database to view its schema',
-              style: TextStyle(
-                  fontSize: 13, color: cs.onSurface.withAlpha(120))),
+          Text(
+            'Select a database to view its schema',
+            style: TextStyle(fontSize: 13, color: cs.onSurface.withAlpha(120)),
+          ),
           const SizedBox(height: 4),
-          Text('Use the Database dropdown above',
-              style: TextStyle(
-                  fontSize: 11, color: cs.onSurface.withAlpha(80))),
+          Text(
+            'Use the Database dropdown above',
+            style: TextStyle(fontSize: 11, color: cs.onSurface.withAlpha(80)),
+          ),
         ],
       ),
     );

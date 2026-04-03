@@ -31,13 +31,13 @@ FlutterSecureStorage secureStorage(SecureStorageRef ref) =>
 
 @riverpod
 ConnectionLocalDatasource connectionLocalDatasource(
-        ConnectionLocalDatasourceRef ref) =>
-    ConnectionLocalDatasource(ref.watch(appDatabaseProvider).connectionsDao);
+  ConnectionLocalDatasourceRef ref,
+) => ConnectionLocalDatasource(ref.watch(appDatabaseProvider).connectionsDao);
 
 @riverpod
 ConnectionSecureStorage connectionSecureStorage(
-        ConnectionSecureStorageRef ref) =>
-    ConnectionSecureStorage(ref.watch(secureStorageProvider));
+  ConnectionSecureStorageRef ref,
+) => ConnectionSecureStorage(ref.watch(secureStorageProvider));
 
 @riverpod
 MysqlClientFactory mysqlClientFactory(MysqlClientFactoryRef ref) =>
@@ -87,8 +87,9 @@ class ConnectionList extends _$ConnectionList {
   }
 
   Future<void> save(ConnectionEntity entity, String password) async {
-    final result =
-        await ref.read(saveConnectionProvider).call(entity, password);
+    final result = await ref
+        .read(saveConnectionProvider)
+        .call(entity, password);
     result.fold(
       onSuccess: (_) => ref.invalidateSelf(),
       onFailure: (f) => throw Exception(f.message),
@@ -104,8 +105,9 @@ class ConnectionList extends _$ConnectionList {
   }
 
   Future<Result<Duration, Failure>> test(
-      ConnectionEntity entity, String password) =>
-      ref.read(testConnectionProvider).call(entity, password);
+    ConnectionEntity entity,
+    String password,
+  ) => ref.read(testConnectionProvider).call(entity, password);
 }
 
 // ── Selected connection ───────────────────────────────────────────────────────

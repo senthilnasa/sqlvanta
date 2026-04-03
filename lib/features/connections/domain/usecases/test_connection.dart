@@ -10,6 +10,5 @@ class TestConnection {
   Future<Result<Duration, Failure>> call(
     ConnectionEntity entity,
     String password,
-  ) =>
-      _repository.testConnection(entity, password);
+  ) => _repository.testConnection(entity, password);
 }

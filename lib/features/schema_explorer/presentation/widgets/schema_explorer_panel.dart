@@ -63,8 +63,9 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
 
   Future<void> _loadDatabases() async {
     try {
-      final dbs =
-          await _fetcher.fetchAllDatabases(widget.session.mysqlConnection);
+      final dbs = await _fetcher.fetchAllDatabases(
+        widget.session.mysqlConnection,
+      );
       if (!mounted) return;
       setState(() {
         _databases = dbs.map((d) => d.name).toList();
@@ -82,8 +83,10 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
       _selectedDetail = null;
     });
     try {
-      final tables =
-          await _fetcher.fetchTables(widget.session.mysqlConnection, db);
+      final tables = await _fetcher.fetchTables(
+        widget.session.mysqlConnection,
+        db,
+      );
       if (!mounted) return;
       setState(() {
         _tables = tables;
@@ -115,8 +118,7 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
       if (!mounted) return;
 
       final allFks = results[2] as List<ForeignKeyInfo>;
-      final tableFks =
-          allFks.where((fk) => fk.table == tableName).toList();
+      final tableFks = allFks.where((fk) => fk.table == tableName).toList();
 
       setState(() {
         _selectedDetail = TableDetail(
@@ -174,16 +176,11 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
             children: [
               // Left sidebar
               if (!_sidebarCollapsed) ...[
-                SizedBox(
-                  width: 280,
-                  child: _buildSidebar(theme, cs, isDark),
-                ),
+                SizedBox(width: 280, child: _buildSidebar(theme, cs, isDark)),
                 _buildSidebarDivider(cs),
               ],
               // Main panel
-              Expanded(
-                child: _buildMainPanel(theme, cs, isDark),
-              ),
+              Expanded(child: _buildMainPanel(theme, cs, isDark)),
             ],
           ),
         ),
@@ -222,37 +219,37 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
           const SizedBox(width: 6),
           _loadingDbs
               ? const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(strokeWidth: 1.5))
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(strokeWidth: 1.5),
+              )
               : DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _selectedDb,
-                    hint: const Text('Select…',
-                        style: TextStyle(fontSize: 11)),
-                    isDense: true,
-                    style: TextStyle(fontSize: 11, color: cs.onSurface),
-                    items: _databases
-                        .map((db) => DropdownMenuItem(
-                              value: db,
-                              child: Text(db),
-                            ))
-                        .toList(),
-                    onChanged: (v) {
-                      if (v != null) _selectDatabase(v);
-                    },
-                  ),
+                child: DropdownButton<String>(
+                  value: _selectedDb,
+                  hint: const Text('Select…', style: TextStyle(fontSize: 11)),
+                  isDense: true,
+                  style: TextStyle(fontSize: 11, color: cs.onSurface),
+                  items:
+                      _databases
+                          .map(
+                            (db) =>
+                                DropdownMenuItem(value: db, child: Text(db)),
+                          )
+                          .toList(),
+                  onChanged: (v) {
+                    if (v != null) _selectDatabase(v);
+                  },
                 ),
+              ),
           const Spacer(),
           // Sidebar toggle
           _ToolbarBtn(
-            icon: _sidebarCollapsed
-                ? Icons.menu_open
-                : Icons.view_sidebar_outlined,
-            tooltip:
-                _sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar',
-            onTap: () =>
-                setState(() => _sidebarCollapsed = !_sidebarCollapsed),
+            icon:
+                _sidebarCollapsed
+                    ? Icons.menu_open
+                    : Icons.view_sidebar_outlined,
+            tooltip: _sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar',
+            onTap: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
           ),
           const SizedBox(width: 4),
           // Export
@@ -265,8 +262,7 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
             const VerticalDivider(width: 1, indent: 8, endIndent: 8),
             const SizedBox(width: 8),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
                 color: cs.primaryContainer.withAlpha(120),
                 borderRadius: BorderRadius.circular(10),
@@ -290,18 +286,13 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
   Widget _buildSidebarDivider(ColorScheme cs) {
     return MouseRegion(
       cursor: SystemMouseCursors.resizeColumn,
-      child: Container(
-        width: 1,
-        color: cs.outlineVariant.withAlpha(80),
-      ),
+      child: Container(width: 1, color: cs.outlineVariant.withAlpha(80)),
     );
   }
 
   Widget _buildSidebar(ThemeData theme, ColorScheme cs, bool isDark) {
     return Container(
-      color: isDark
-          ? cs.surface.withAlpha(200)
-          : cs.surfaceContainerLow,
+      color: isDark ? cs.surface.withAlpha(200) : cs.surfaceContainerLow,
       child: Column(
         children: [
           // Search
@@ -311,29 +302,35 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search tables & columns…',
-                hintStyle: TextStyle(fontSize: 11, color: cs.onSurface.withAlpha(120)),
-                prefixIcon:
-                    Icon(Icons.search, size: 16, color: cs.primary),
+                hintStyle: TextStyle(
+                  fontSize: 11,
+                  color: cs.onSurface.withAlpha(120),
+                ),
+                prefixIcon: Icon(Icons.search, size: 16, color: cs.primary),
                 isDense: true,
                 filled: true,
-                fillColor: isDark
-                    ? cs.surface
-                    : cs.surfaceContainerHighest.withAlpha(180),
+                fillColor:
+                    isDark
+                        ? cs.surface
+                        : cs.surfaceContainerHighest.withAlpha(180),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
                 ),
                 contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8, horizontal: 10),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, size: 14),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() => _searchQuery = '');
-                        },
-                      )
-                    : null,
+                  vertical: 8,
+                  horizontal: 10,
+                ),
+                suffixIcon:
+                    _searchQuery.isNotEmpty
+                        ? IconButton(
+                          icon: const Icon(Icons.clear, size: 14),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _searchQuery = '');
+                          },
+                        )
+                        : null,
               ),
               style: const TextStyle(fontSize: 12),
               onChanged: (v) => setState(() => _searchQuery = v),
@@ -347,22 +344,24 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
               icon: Icons.star,
               iconColor: Colors.amber.shade600,
               child: Column(
-                children: _favorites.map((key) {
-                  final parts = key.split('.');
-                  if (parts.length < 2) return const SizedBox.shrink();
-                  final db = parts[0];
-                  final table = parts.sublist(1).join('.');
-                  final isSelected = _selectedDetail?.database == db &&
-                      _selectedDetail?.tableName == table;
-                  return _TableListTile(
-                    tableName: table,
-                    dbName: db,
-                    isSelected: isSelected,
-                    isFavorite: true,
-                    onTap: () => _selectTable(db, table),
-                    onFavorite: () => _toggleFavorite(db, table),
-                  );
-                }).toList(),
+                children:
+                    _favorites.map((key) {
+                      final parts = key.split('.');
+                      if (parts.length < 2) return const SizedBox.shrink();
+                      final db = parts[0];
+                      final table = parts.sublist(1).join('.');
+                      final isSelected =
+                          _selectedDetail?.database == db &&
+                          _selectedDetail?.tableName == table;
+                      return _TableListTile(
+                        tableName: table,
+                        dbName: db,
+                        isSelected: isSelected,
+                        isFavorite: true,
+                        onTap: () => _selectTable(db, table),
+                        onFavorite: () => _toggleFavorite(db, table),
+                      );
+                    }).toList(),
               ),
             ),
           ],
@@ -374,46 +373,53 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
               icon: Icons.history,
               iconColor: cs.tertiary,
               child: Column(
-                children: _recents.take(5).map((entry) {
-                  final isSelected =
-                      _selectedDetail?.database == entry.db &&
+                children:
+                    _recents.take(5).map((entry) {
+                      final isSelected =
+                          _selectedDetail?.database == entry.db &&
                           _selectedDetail?.tableName == entry.table;
-                  return _TableListTile(
-                    tableName: entry.table,
-                    dbName: entry.db,
-                    isSelected: isSelected,
-                    isFavorite: _isFavorite(entry.db, entry.table),
-                    onTap: () => _selectTable(entry.db, entry.table),
-                    onFavorite: () =>
-                        _toggleFavorite(entry.db, entry.table),
-                  );
-                }).toList(),
+                      return _TableListTile(
+                        tableName: entry.table,
+                        dbName: entry.db,
+                        isSelected: isSelected,
+                        isFavorite: _isFavorite(entry.db, entry.table),
+                        onTap: () => _selectTable(entry.db, entry.table),
+                        onFavorite:
+                            () => _toggleFavorite(entry.db, entry.table),
+                      );
+                    }).toList(),
               ),
             ),
           ],
 
           // Tables list
           Expanded(
-            child: _loadingTables
-                ? const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2))
-                : _selectedDb == null
+            child:
+                _loadingTables
+                    ? const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : _selectedDb == null
                     ? Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.storage_outlined,
-                                size: 32,
-                                color: cs.primary.withAlpha(80)),
-                            const SizedBox(height: 8),
-                            Text('Select a database',
-                                style: TextStyle(
-                                    fontSize: 11,
-                                    color:
-                                        cs.onSurface.withAlpha(120))),
-                          ],
-                        ),
-                      )
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.storage_outlined,
+                            size: 32,
+                            color: cs.primary.withAlpha(80),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Select a database',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: cs.onSurface.withAlpha(120),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                     : _buildTablesList(theme, cs, isDark),
           ),
         ],
@@ -434,20 +440,20 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
           icon: Icons.table_rows_outlined,
           iconColor: cs.secondary,
           child: Column(
-            children: tables.map((t) {
-              final isSelected =
-                  _selectedDetail?.tableName == t.name &&
+            children:
+                tables.map((t) {
+                  final isSelected =
+                      _selectedDetail?.tableName == t.name &&
                       _selectedDetail?.database == _selectedDb;
-              return _TableListTile(
-                tableName: t.name,
-                estimatedRows: t.estimatedRows,
-                isSelected: isSelected,
-                isFavorite: _isFavorite(_selectedDb!, t.name),
-                onTap: () => _selectTable(_selectedDb!, t.name),
-                onFavorite: () =>
-                    _toggleFavorite(_selectedDb!, t.name),
-              );
-            }).toList(),
+                  return _TableListTile(
+                    tableName: t.name,
+                    estimatedRows: t.estimatedRows,
+                    isSelected: isSelected,
+                    isFavorite: _isFavorite(_selectedDb!, t.name),
+                    onTap: () => _selectTable(_selectedDb!, t.name),
+                    onFavorite: () => _toggleFavorite(_selectedDb!, t.name),
+                  );
+                }).toList(),
           ),
         ),
         // Views
@@ -457,20 +463,20 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
             icon: Icons.remove_red_eye_outlined,
             iconColor: cs.tertiary,
             child: Column(
-              children: views.map((v) {
-                final isSelected =
-                    _selectedDetail?.tableName == v.name &&
+              children:
+                  views.map((v) {
+                    final isSelected =
+                        _selectedDetail?.tableName == v.name &&
                         _selectedDetail?.database == _selectedDb;
-                return _TableListTile(
-                  tableName: v.name,
-                  isView: true,
-                  isSelected: isSelected,
-                  isFavorite: _isFavorite(_selectedDb!, v.name),
-                  onTap: () => _selectTable(_selectedDb!, v.name),
-                  onFavorite: () =>
-                      _toggleFavorite(_selectedDb!, v.name),
-                );
-              }).toList(),
+                    return _TableListTile(
+                      tableName: v.name,
+                      isView: true,
+                      isSelected: isSelected,
+                      isFavorite: _isFavorite(_selectedDb!, v.name),
+                      onTap: () => _selectTable(_selectedDb!, v.name),
+                      onFavorite: () => _toggleFavorite(_selectedDb!, v.name),
+                    );
+                  }).toList(),
             ),
           ),
       ],
@@ -491,13 +497,18 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
               width: 32,
               height: 32,
               child: CircularProgressIndicator(
-                  strokeWidth: 2.5, color: cs.primary),
+                strokeWidth: 2.5,
+                color: cs.primary,
+              ),
             ),
             const SizedBox(height: 12),
-            Text('Loading table details…',
-                style: TextStyle(
-                    fontSize: 12,
-                    color: cs.onSurface.withAlpha(120))),
+            Text(
+              'Loading table details…',
+              style: TextStyle(
+                fontSize: 12,
+                color: cs.onSurface.withAlpha(120),
+              ),
+            ),
           ],
         ),
       );
@@ -521,49 +532,55 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
             isScrollable: true,
             tabAlignment: TabAlignment.start,
             labelStyle: const TextStyle(
-                fontSize: 11, fontWeight: FontWeight.w600),
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
             unselectedLabelStyle: const TextStyle(fontSize: 11),
             indicatorSize: TabBarIndicatorSize.tab,
             tabs: const [
               Tab(
                 height: 32,
                 child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.view_column_outlined, size: 14),
-                      SizedBox(width: 4),
-                      Text('Columns'),
-                    ]),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.view_column_outlined, size: 14),
+                    SizedBox(width: 4),
+                    Text('Columns'),
+                  ],
+                ),
               ),
               Tab(
                 height: 32,
                 child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.link, size: 14),
-                      SizedBox(width: 4),
-                      Text('Relationships'),
-                    ]),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.link, size: 14),
+                    SizedBox(width: 4),
+                    Text('Relationships'),
+                  ],
+                ),
               ),
               Tab(
                 height: 32,
                 child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.code, size: 14),
-                      SizedBox(width: 4),
-                      Text('SQL Preview'),
-                    ]),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.code, size: 14),
+                    SizedBox(width: 4),
+                    Text('SQL Preview'),
+                  ],
+                ),
               ),
               Tab(
                 height: 32,
                 child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.security_outlined, size: 14),
-                      SizedBox(width: 4),
-                      Text('Constraints'),
-                    ]),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.security_outlined, size: 14),
+                    SizedBox(width: 4),
+                    Text('Constraints'),
+                  ],
+                ),
               ),
             ],
           ),
@@ -573,10 +590,18 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
           child: TabBarView(
             controller: _detailTabController,
             children: [
-              _ColumnsTab(detail: detail, cs: cs, isDark: isDark,
-                  onNavigateToTable: _navigateToFkTable),
-              _RelationshipsTab(detail: detail, cs: cs, isDark: isDark,
-                  onNavigateToTable: _navigateToFkTable),
+              _ColumnsTab(
+                detail: detail,
+                cs: cs,
+                isDark: isDark,
+                onNavigateToTable: _navigateToFkTable,
+              ),
+              _RelationshipsTab(
+                detail: detail,
+                cs: cs,
+                isDark: isDark,
+                onNavigateToTable: _navigateToFkTable,
+              ),
               _SqlPreviewTab(detail: detail, cs: cs, isDark: isDark),
               _ConstraintsTab(detail: detail, cs: cs, isDark: isDark),
             ],
@@ -586,15 +611,15 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
     );
   }
 
-  Widget _buildTableHeader(
-      TableDetail detail, ColorScheme cs, bool isDark) {
+  Widget _buildTableHeader(TableDetail detail, ColorScheme cs, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: isDark
-              ? [cs.primary.withAlpha(30), cs.surface]
-              : [cs.primary.withAlpha(15), cs.surface],
+          colors:
+              isDark
+                  ? [cs.primary.withAlpha(30), cs.surface]
+                  : [cs.primary.withAlpha(15), cs.surface],
         ),
         border: Border(
           bottom: BorderSide(color: cs.outlineVariant.withAlpha(60)),
@@ -608,8 +633,7 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
               color: cs.primaryContainer.withAlpha(150),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(Icons.table_rows_outlined,
-                size: 20, color: cs.primary),
+            child: Icon(Icons.table_rows_outlined, size: 20, color: cs.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -630,7 +654,9 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: cs.secondaryContainer,
                         borderRadius: BorderRadius.circular(4),
@@ -669,8 +695,7 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
                     const SizedBox(width: 8),
                     _StatChip(
                       icon: Icons.call_made,
-                      label:
-                          '${detail.referencedBy.length} refs',
+                      label: '${detail.referencedBy.length} refs',
                       color: Colors.green.shade600,
                     ),
                   ],
@@ -684,21 +709,24 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
               _isFavorite(detail.database, detail.tableName)
                   ? Icons.star
                   : Icons.star_border,
-              color: _isFavorite(detail.database, detail.tableName)
-                  ? Colors.amber.shade600
-                  : cs.onSurface.withAlpha(100),
+              color:
+                  _isFavorite(detail.database, detail.tableName)
+                      ? Colors.amber.shade600
+                      : cs.onSurface.withAlpha(100),
               size: 20,
             ),
             tooltip: 'Toggle favorite',
-            onPressed: () =>
-                _toggleFavorite(detail.database, detail.tableName),
+            onPressed: () => _toggleFavorite(detail.database, detail.tableName),
           ),
           IconButton(
-            icon:
-                Icon(Icons.copy, size: 16, color: cs.onSurface.withAlpha(120)),
+            icon: Icon(
+              Icons.copy,
+              size: 16,
+              color: cs.onSurface.withAlpha(120),
+            ),
             tooltip: 'Copy table name',
-            onPressed: () =>
-                Clipboard.setData(ClipboardData(text: detail.tableName)),
+            onPressed:
+                () => Clipboard.setData(ClipboardData(text: detail.tableName)),
           ),
         ],
       ),
@@ -731,36 +759,42 @@ class _SchemaExplorerPanelState extends State<SchemaExplorerPanel>
         'name': t.name,
         'type': t.type,
         'estimatedRows': t.estimatedRows,
-        'columns': cols
-            .map((c) => {
-                  'name': c.name,
-                  'dataType': c.dataType,
-                  'columnType': c.columnType,
-                  'isNullable': c.isNullable,
-                  'default': c.columnDefault,
-                  'extra': c.extra,
-                  'key': c.columnKey,
-                })
-            .toList(),
-        'foreignKeys': tableFks
-            .map((fk) => {
-                  'column': fk.column,
-                  'refTable': fk.refTable,
-                  'refColumn': fk.refColumn,
-                })
-            .toList(),
+        'columns':
+            cols
+                .map(
+                  (c) => {
+                    'name': c.name,
+                    'dataType': c.dataType,
+                    'columnType': c.columnType,
+                    'isNullable': c.isNullable,
+                    'default': c.columnDefault,
+                    'extra': c.extra,
+                    'key': c.columnKey,
+                  },
+                )
+                .toList(),
+        'foreignKeys':
+            tableFks
+                .map(
+                  (fk) => {
+                    'column': fk.column,
+                    'refTable': fk.refTable,
+                    'refColumn': fk.refColumn,
+                  },
+                )
+                .toList(),
       });
     }
 
-    final jsonStr =
-        const JsonEncoder.withIndent('  ').convert(schema);
+    final jsonStr = const JsonEncoder.withIndent('  ').convert(schema);
     await Clipboard.setData(ClipboardData(text: jsonStr));
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              'Schema JSON copied to clipboard (${tables.length} tables)'),
+            'Schema JSON copied to clipboard (${tables.length} tables)',
+          ),
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
         ),
@@ -795,27 +829,29 @@ class _ColumnsTab extends StatelessWidget {
       itemBuilder: (ctx, i) {
         final col = detail.columns[i];
         // Find FK info for this column
-        final fkInfo = detail.foreignKeys
-            .where((fk) => fk.column == col.name)
-            .firstOrNull;
+        final fkInfo =
+            detail.foreignKeys.where((fk) => fk.column == col.name).firstOrNull;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 2),
           decoration: BoxDecoration(
-            color: i.isEven
-                ? (isDark
-                    ? cs.surface.withAlpha(180)
-                    : cs.surfaceContainerLowest)
-                : Colors.transparent,
+            color:
+                i.isEven
+                    ? (isDark
+                        ? cs.surface.withAlpha(180)
+                        : cs.surfaceContainerLowest)
+                    : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
-            border: col.isPrimaryKey
-                ? Border.all(
-                    color: Colors.amber.shade600.withAlpha(50), width: 1)
-                : null,
+            border:
+                col.isPrimaryKey
+                    ? Border.all(
+                      color: Colors.amber.shade600.withAlpha(50),
+                      width: 1,
+                    )
+                    : null,
           ),
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
               children: [
                 // Index
@@ -831,10 +867,7 @@ class _ColumnsTab extends StatelessWidget {
                   ),
                 ),
                 // Key icon
-                SizedBox(
-                  width: 24,
-                  child: _buildKeyIcon(col),
-                ),
+                SizedBox(width: 24, child: _buildKeyIcon(col)),
                 // Column name
                 Expanded(
                   flex: 3,
@@ -844,13 +877,15 @@ class _ColumnsTab extends StatelessWidget {
                         col.name,
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: col.isPrimaryKey
-                              ? FontWeight.w700
-                              : FontWeight.w500,
+                          fontWeight:
+                              col.isPrimaryKey
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
                           fontFamily: 'monospace',
-                          color: col.isPrimaryKey
-                              ? Colors.amber.shade700
-                              : cs.onSurface,
+                          color:
+                              col.isPrimaryKey
+                                  ? Colors.amber.shade700
+                                  : cs.onSurface,
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -874,31 +909,34 @@ class _ColumnsTab extends StatelessWidget {
                 // Nullable
                 SizedBox(
                   width: 60,
-                  child: col.isNullable
-                      ? Text(
-                          'NULL',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: cs.onSurface.withAlpha(100),
-                          ),
-                        )
-                      : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.block,
+                  child:
+                      col.isNullable
+                          ? Text(
+                            'NULL',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: cs.onSurface.withAlpha(100),
+                            ),
+                          )
+                          : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.block,
                                 size: 10,
-                                color: cs.error.withAlpha(180)),
-                            const SizedBox(width: 2),
-                            Text(
-                              'NOT NULL',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
                                 color: cs.error.withAlpha(180),
                               ),
-                            ),
-                          ],
-                        ),
+                              const SizedBox(width: 2),
+                              Text(
+                                'NOT NULL',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: cs.error.withAlpha(180),
+                                ),
+                              ),
+                            ],
+                          ),
                 ),
                 // Default
                 SizedBox(
@@ -920,7 +958,9 @@ class _ColumnsTab extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: cs.tertiaryContainer.withAlpha(100),
                         borderRadius: BorderRadius.circular(4),
@@ -928,8 +968,11 @@ class _ColumnsTab extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.arrow_forward,
-                              size: 10, color: cs.tertiary),
+                          Icon(
+                            Icons.arrow_forward,
+                            size: 10,
+                            color: cs.tertiary,
+                          ),
                           const SizedBox(width: 3),
                           Text(
                             '${fkInfo.refTable}.${fkInfo.refColumn}',
@@ -962,24 +1005,42 @@ class _ColumnsTab extends StatelessWidget {
     if (col.isUniqueKey) {
       return Icon(Icons.fingerprint, size: 13, color: cs.secondary);
     }
-    return Icon(Icons.horizontal_rule,
-        size: 13, color: cs.onSurface.withAlpha(40));
+    return Icon(
+      Icons.horizontal_rule,
+      size: 13,
+      color: cs.onSurface.withAlpha(40),
+    );
   }
 
   List<Widget> _buildBadges(ColumnInfo col) {
     final badges = <Widget>[];
     if (col.isPrimaryKey) {
-      badges.add(_Badge(
-          label: 'PK', color: Colors.amber.shade700, bgColor: Colors.amber.shade100));
+      badges.add(
+        _Badge(
+          label: 'PK',
+          color: Colors.amber.shade700,
+          bgColor: Colors.amber.shade100,
+        ),
+      );
     }
     if (col.isForeignKey) {
-      badges.add(_Badge(label: 'FK', color: cs.tertiary, bgColor: cs.tertiaryContainer));
+      badges.add(
+        _Badge(label: 'FK', color: cs.tertiary, bgColor: cs.tertiaryContainer),
+      );
     }
     if (col.isUniqueKey) {
-      badges.add(_Badge(label: 'UQ', color: cs.secondary, bgColor: cs.secondaryContainer));
+      badges.add(
+        _Badge(
+          label: 'UQ',
+          color: cs.secondary,
+          bgColor: cs.secondaryContainer,
+        ),
+      );
     }
     if (col.extra?.contains('auto_increment') ?? false) {
-      badges.add(_Badge(label: 'AI', color: cs.primary, bgColor: cs.primaryContainer));
+      badges.add(
+        _Badge(label: 'AI', color: cs.primary, bgColor: cs.primaryContainer),
+      );
     }
     return badges;
   }
@@ -1008,9 +1069,13 @@ class _RelationshipsTab extends StatelessWidget {
           children: [
             Icon(Icons.link_off, size: 40, color: cs.onSurface.withAlpha(60)),
             const SizedBox(height: 8),
-            Text('No relationships found',
-                style: TextStyle(
-                    fontSize: 12, color: cs.onSurface.withAlpha(100))),
+            Text(
+              'No relationships found',
+              style: TextStyle(
+                fontSize: 12,
+                color: cs.onSurface.withAlpha(100),
+              ),
+            ),
           ],
         ),
       );
@@ -1028,13 +1093,15 @@ class _RelationshipsTab extends StatelessWidget {
             color: cs.tertiary,
           ),
           const SizedBox(height: 8),
-          ...detail.foreignKeys.map((fk) => _RelationshipCard(
-                fk: fk,
-                isOutgoing: true,
-                cs: cs,
-                isDark: isDark,
-                onNavigate: () => onNavigateToTable(fk.refTable),
-              )),
+          ...detail.foreignKeys.map(
+            (fk) => _RelationshipCard(
+              fk: fk,
+              isOutgoing: true,
+              cs: cs,
+              isDark: isDark,
+              onNavigate: () => onNavigateToTable(fk.refTable),
+            ),
+          ),
           const SizedBox(height: 20),
         ],
         // Referenced By (incoming)
@@ -1046,13 +1113,15 @@ class _RelationshipsTab extends StatelessWidget {
             color: Colors.green.shade600,
           ),
           const SizedBox(height: 8),
-          ...detail.referencedBy.map((fk) => _RelationshipCard(
-                fk: fk,
-                isOutgoing: false,
-                cs: cs,
-                isDark: isDark,
-                onNavigate: () => onNavigateToTable(fk.table),
-              )),
+          ...detail.referencedBy.map(
+            (fk) => _RelationshipCard(
+              fk: fk,
+              isOutgoing: false,
+              cs: cs,
+              isDark: isDark,
+              onNavigate: () => onNavigateToTable(fk.table),
+            ),
+          ),
         ],
       ],
     );
@@ -1086,21 +1155,22 @@ class _SqlPreviewTab extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(Icons.code,
-                  size: 14, color: cs.onSurface.withAlpha(120)),
+              Icon(Icons.code, size: 14, color: cs.onSurface.withAlpha(120)),
               const SizedBox(width: 6),
-              Text('CREATE TABLE — ${detail.tableName}',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: cs.onSurface.withAlpha(160))),
+              Text(
+                'CREATE TABLE — ${detail.tableName}',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: cs.onSurface.withAlpha(160),
+                ),
+              ),
               const Spacer(),
               TextButton.icon(
                 icon: const Icon(Icons.copy, size: 14),
                 label: const Text('Copy DDL', style: TextStyle(fontSize: 11)),
                 onPressed: () {
-                  Clipboard.setData(
-                      ClipboardData(text: detail.createTableDdl));
+                  Clipboard.setData(ClipboardData(text: detail.createTableDdl));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('DDL copied to clipboard'),
@@ -1117,9 +1187,7 @@ class _SqlPreviewTab extends StatelessWidget {
         Expanded(
           child: Container(
             width: double.infinity,
-            color: isDark
-                ? const Color(0xFF1E1E2E)
-                : const Color(0xFFFAFAFC),
+            color: isDark ? const Color(0xFF1E1E2E) : const Color(0xFFFAFAFC),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: SelectableText(
@@ -1128,9 +1196,10 @@ class _SqlPreviewTab extends StatelessWidget {
                   fontSize: 12,
                   fontFamily: 'monospace',
                   height: 1.6,
-                  color: isDark
-                      ? const Color(0xFFCDD6F4)
-                      : const Color(0xFF1E1E2E),
+                  color:
+                      isDark
+                          ? const Color(0xFFCDD6F4)
+                          : const Color(0xFF1E1E2E),
                 ),
               ),
             ),
@@ -1160,12 +1229,19 @@ class _ConstraintsTab extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.security_outlined,
-                size: 40, color: cs.onSurface.withAlpha(60)),
+            Icon(
+              Icons.security_outlined,
+              size: 40,
+              color: cs.onSurface.withAlpha(60),
+            ),
             const SizedBox(height: 8),
-            Text('No constraints found',
-                style: TextStyle(
-                    fontSize: 12, color: cs.onSurface.withAlpha(100))),
+            Text(
+              'No constraints found',
+              style: TextStyle(
+                fontSize: 12,
+                color: cs.onSurface.withAlpha(100),
+              ),
+            ),
           ],
         ),
       );
@@ -1179,9 +1255,8 @@ class _ConstraintsTab extends StatelessWidget {
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
-            color: isDark
-                ? cs.surface.withAlpha(200)
-                : cs.surfaceContainerLowest,
+            color:
+                isDark ? cs.surface.withAlpha(200) : cs.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: _constraintColor(c.constraintType).withAlpha(60),
@@ -1194,8 +1269,7 @@ class _ConstraintsTab extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: _constraintColor(c.constraintType)
-                        .withAlpha(30),
+                    color: _constraintColor(c.constraintType).withAlpha(30),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Icon(
@@ -1223,11 +1297,13 @@ class _ConstraintsTab extends StatelessWidget {
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 1),
+                              horizontal: 6,
+                              vertical: 1,
+                            ),
                             decoration: BoxDecoration(
-                              color:
-                                  _constraintColor(c.constraintType)
-                                      .withAlpha(25),
+                              color: _constraintColor(
+                                c.constraintType,
+                              ).withAlpha(25),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -1235,8 +1311,7 @@ class _ConstraintsTab extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.w700,
-                                color: _constraintColor(
-                                    c.constraintType),
+                                color: _constraintColor(c.constraintType),
                               ),
                             ),
                           ),
@@ -1274,18 +1349,18 @@ class _ConstraintsTab extends StatelessWidget {
   }
 
   Color _constraintColor(String type) => switch (type) {
-        'PRIMARY KEY' => Colors.amber.shade700,
-        'FOREIGN KEY' => Colors.teal.shade500,
-        'UNIQUE' => Colors.blue.shade500,
-        _ => Colors.grey,
-      };
+    'PRIMARY KEY' => Colors.amber.shade700,
+    'FOREIGN KEY' => Colors.teal.shade500,
+    'UNIQUE' => Colors.blue.shade500,
+    _ => Colors.grey,
+  };
 
   IconData _constraintIcon(String type) => switch (type) {
-        'PRIMARY KEY' => Icons.vpn_key,
-        'FOREIGN KEY' => Icons.link,
-        'UNIQUE' => Icons.fingerprint,
-        _ => Icons.security,
-      };
+    'PRIMARY KEY' => Icons.vpn_key,
+    'FOREIGN KEY' => Icons.link,
+    'UNIQUE' => Icons.fingerprint,
+    _ => Icons.security,
+  };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1307,11 +1382,14 @@ class _ToolbarBtn extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          child: Icon(icon,
-              size: 15,
-              color: onTap == null
-                  ? Theme.of(context).colorScheme.onSurface.withAlpha(60)
-                  : null),
+          child: Icon(
+            icon,
+            size: 15,
+            color:
+                onTap == null
+                    ? Theme.of(context).colorScheme.onSurface.withAlpha(60)
+                    : null,
+          ),
         ),
       ),
     );
@@ -1322,8 +1400,11 @@ class _Badge extends StatelessWidget {
   final String label;
   final Color color;
   final Color bgColor;
-  const _Badge(
-      {required this.label, required this.color, required this.bgColor});
+  const _Badge({
+    required this.label,
+    required this.color,
+    required this.bgColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1352,8 +1433,11 @@ class _StatChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
-  const _StatChip(
-      {required this.icon, required this.label, required this.color});
+  const _StatChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1362,11 +1446,14 @@ class _StatChip extends StatelessWidget {
       children: [
         Icon(icon, size: 11, color: color.withAlpha(180)),
         const SizedBox(width: 3),
-        Text(label,
-            style: TextStyle(
-                fontSize: 10,
-                color: color.withAlpha(180),
-                fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            color: color.withAlpha(180),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
@@ -1454,22 +1541,23 @@ class _TableListTileState extends State<_TableListTile> {
         duration: const Duration(milliseconds: 150),
         margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
         decoration: BoxDecoration(
-          color: widget.isSelected
-              ? cs.primaryContainer.withAlpha(150)
-              : _hovered
+          color:
+              widget.isSelected
+                  ? cs.primaryContainer.withAlpha(150)
+                  : _hovered
                   ? cs.primary.withAlpha(20)
                   : Colors.transparent,
           borderRadius: BorderRadius.circular(6),
-          border: widget.isSelected
-              ? Border.all(color: cs.primary.withAlpha(100), width: 1)
-              : null,
+          border:
+              widget.isSelected
+                  ? Border.all(color: cs.primary.withAlpha(100), width: 1)
+                  : null,
         ),
         child: InkWell(
           onTap: widget.onTap,
           borderRadius: BorderRadius.circular(6),
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
             child: Row(
               children: [
                 Icon(
@@ -1477,9 +1565,10 @@ class _TableListTileState extends State<_TableListTile> {
                       ? Icons.remove_red_eye_outlined
                       : Icons.table_rows_outlined,
                   size: 13,
-                  color: widget.isSelected
-                      ? cs.primary
-                      : cs.onSurface.withAlpha(140),
+                  color:
+                      widget.isSelected
+                          ? cs.primary
+                          : cs.onSurface.withAlpha(140),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -1490,9 +1579,10 @@ class _TableListTileState extends State<_TableListTile> {
                         widget.tableName,
                         style: TextStyle(
                           fontSize: 11,
-                          fontWeight: widget.isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w400,
+                          fontWeight:
+                              widget.isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
                           color: cs.onSurface,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -1523,13 +1613,12 @@ class _TableListTileState extends State<_TableListTile> {
                       onTap: widget.onFavorite,
                       borderRadius: BorderRadius.circular(4),
                       child: Icon(
-                        widget.isFavorite
-                            ? Icons.star
-                            : Icons.star_border,
+                        widget.isFavorite ? Icons.star : Icons.star_border,
                         size: 13,
-                        color: widget.isFavorite
-                            ? Colors.amber.shade600
-                            : cs.onSurface.withAlpha(80),
+                        color:
+                            widget.isFavorite
+                                ? Colors.amber.shade600
+                                : cs.onSurface.withAlpha(80),
                       ),
                     ),
                   ),
@@ -1577,18 +1666,21 @@ class _SectionHeader extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurface)),
-            Text(subtitle,
-                style: TextStyle(
-                    fontSize: 10,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withAlpha(100))),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
+              ),
+            ),
           ],
         ),
       ],
@@ -1675,8 +1767,11 @@ class _RelationshipCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right,
-                  size: 16, color: cs.onSurface.withAlpha(60)),
+              Icon(
+                Icons.chevron_right,
+                size: 16,
+                color: cs.onSurface.withAlpha(60),
+              ),
             ],
           ),
         ),
@@ -1702,8 +1797,11 @@ class _EmptyMainPanel extends StatelessWidget {
               color: cs.primaryContainer.withAlpha(50),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.explore_outlined,
-                size: 48, color: cs.primary.withAlpha(100)),
+            child: Icon(
+              Icons.explore_outlined,
+              size: 48,
+              color: cs.primary.withAlpha(100),
+            ),
           ),
           const SizedBox(height: 16),
           Text(
@@ -1717,17 +1815,16 @@ class _EmptyMainPanel extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'Choose a database and click on a table in the sidebar',
-            style: TextStyle(
-              fontSize: 12,
-              color: cs.onSurface.withAlpha(100),
-            ),
+            style: TextStyle(fontSize: 12, color: cs.onSurface.withAlpha(100)),
           ),
           const SizedBox(height: 20),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               _FeatureChip(
-                  icon: Icons.view_column_outlined, label: 'Column Details'),
+                icon: Icons.view_column_outlined,
+                label: 'Column Details',
+              ),
               const SizedBox(width: 8),
               _FeatureChip(icon: Icons.link, label: 'Relationships'),
               const SizedBox(width: 8),
@@ -1760,11 +1857,14 @@ class _FeatureChip extends StatelessWidget {
         children: [
           Icon(icon, size: 13, color: cs.primary),
           const SizedBox(width: 4),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                  color: cs.onSurface.withAlpha(160))),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              color: cs.onSurface.withAlpha(160),
+            ),
+          ),
         ],
       ),
     );

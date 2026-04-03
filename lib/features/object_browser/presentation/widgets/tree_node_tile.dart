@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 
-enum TreeNodeType { database, category, table, view, storedProc, function, trigger, event }
+enum TreeNodeType {
+  database,
+  category,
+  table,
+  view,
+  storedProc,
+  function,
+  trigger,
+  event,
+}
 
 class TreeNodeTile extends StatelessWidget {
   final String label;
@@ -28,27 +37,27 @@ class TreeNodeTile extends StatelessWidget {
       type == TreeNodeType.database || type == TreeNodeType.category;
 
   IconData get _icon => switch (type) {
-        TreeNodeType.database   => Icons.storage_outlined,
-        TreeNodeType.category   => Icons.folder_outlined,
-        TreeNodeType.table      => Icons.table_rows_outlined,
-        TreeNodeType.view       => Icons.remove_red_eye_outlined,
-        TreeNodeType.storedProc => Icons.settings_suggest_outlined,
-        TreeNodeType.function   => Icons.functions,
-        TreeNodeType.trigger    => Icons.bolt_outlined,
-        TreeNodeType.event      => Icons.event_outlined,
-      };
+    TreeNodeType.database => Icons.storage_outlined,
+    TreeNodeType.category => Icons.folder_outlined,
+    TreeNodeType.table => Icons.table_rows_outlined,
+    TreeNodeType.view => Icons.remove_red_eye_outlined,
+    TreeNodeType.storedProc => Icons.settings_suggest_outlined,
+    TreeNodeType.function => Icons.functions,
+    TreeNodeType.trigger => Icons.bolt_outlined,
+    TreeNodeType.event => Icons.event_outlined,
+  };
 
   Color _iconColor(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return switch (type) {
-      TreeNodeType.database   => cs.primary,
-      TreeNodeType.category   => cs.onSurface.withValues(alpha: 0.5),
-      TreeNodeType.table      => cs.secondary,
-      TreeNodeType.view       => cs.tertiary,
+      TreeNodeType.database => cs.primary,
+      TreeNodeType.category => cs.onSurface.withValues(alpha: 0.5),
+      TreeNodeType.table => cs.secondary,
+      TreeNodeType.view => cs.tertiary,
       TreeNodeType.storedProc => Colors.purple.shade400,
-      TreeNodeType.function   => Colors.orange.shade600,
-      TreeNodeType.trigger    => Colors.amber.shade700,
-      TreeNodeType.event      => Colors.teal.shade400,
+      TreeNodeType.function => Colors.orange.shade600,
+      TreeNodeType.trigger => Colors.amber.shade700,
+      TreeNodeType.event => Colors.teal.shade400,
     };
   }
 
@@ -65,10 +74,9 @@ class TreeNodeTile extends StatelessWidget {
               Icon(
                 isExpanded ? Icons.expand_more : Icons.chevron_right,
                 size: 16,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.4),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.4),
               )
             else
               const SizedBox(width: 16),
@@ -79,9 +87,10 @@ class TreeNodeTile extends StatelessWidget {
               child: Text(
                 label,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontWeight: type == TreeNodeType.database
-                      ? FontWeight.w600
-                      : FontWeight.normal,
+                  fontWeight:
+                      type == TreeNodeType.database
+                          ? FontWeight.w600
+                          : FontWeight.normal,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -90,12 +99,11 @@ class TreeNodeTile extends StatelessWidget {
               Text(
                 subtitle!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withValues(alpha: 0.4),
-                      fontSize: 10,
-                    ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.4),
+                  fontSize: 10,
+                ),
               ),
           ],
         ),

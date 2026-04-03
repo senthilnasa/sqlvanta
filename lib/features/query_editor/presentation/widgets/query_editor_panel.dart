@@ -14,11 +14,7 @@ class QueryEditorPanel extends ConsumerWidget {
   final QueryTab tab;
   final WorkspaceSession session;
 
-  const QueryEditorPanel({
-    super.key,
-    required this.tab,
-    required this.session,
-  });
+  const QueryEditorPanel({super.key, required this.tab, required this.session});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,62 +25,76 @@ class QueryEditorPanel extends ConsumerWidget {
       bindings: {
         // ── Execute ───────────────────────────────────────────────────────
         // F5 / F9 / Ctrl+Enter  Execute full query
-        const SingleActivator(LogicalKeyboardKey.f5): () =>
-            _runQuery(ref, tab),
-        const SingleActivator(LogicalKeyboardKey.f9): () =>
-            _runQuery(ref, tab),
-        const SingleActivator(LogicalKeyboardKey.enter,
-            control: true): () => _runQuery(ref, tab),
+        const SingleActivator(LogicalKeyboardKey.f5): () => _runQuery(ref, tab),
+        const SingleActivator(LogicalKeyboardKey.f9): () => _runQuery(ref, tab),
+        const SingleActivator(LogicalKeyboardKey.enter, control: true):
+            () => _runQuery(ref, tab),
 
         // ── Format ────────────────────────────────────────────────────────
         // F12 / Ctrl+F12  Format SQL
-        const SingleActivator(LogicalKeyboardKey.f12): () =>
-            _formatSql(ref, tab.id),
-        const SingleActivator(LogicalKeyboardKey.f12,
-            control: true): () => _formatSql(ref, tab.id),
+        const SingleActivator(LogicalKeyboardKey.f12):
+            () => _formatSql(ref, tab.id),
+        const SingleActivator(LogicalKeyboardKey.f12, control: true):
+            () => _formatSql(ref, tab.id),
 
         // ── Case conversion ───────────────────────────────────────────────
         // Ctrl+Shift+U  Uppercase selection
-        const SingleActivator(LogicalKeyboardKey.keyU,
-            control: true, shift: true): () =>
-            _transformCase(ref, tab.id, upper: true),
+        const SingleActivator(
+              LogicalKeyboardKey.keyU,
+              control: true,
+              shift: true,
+            ):
+            () => _transformCase(ref, tab.id, upper: true),
         // Ctrl+Shift+L  Lowercase selection
-        const SingleActivator(LogicalKeyboardKey.keyL,
-            control: true, shift: true): () =>
-            _transformCase(ref, tab.id, upper: false),
+        const SingleActivator(
+              LogicalKeyboardKey.keyL,
+              control: true,
+              shift: true,
+            ):
+            () => _transformCase(ref, tab.id, upper: false),
 
         // ── Comment / uncomment ───────────────────────────────────────────
         // Ctrl+Shift+C  Comment selection
-        const SingleActivator(LogicalKeyboardKey.keyC,
-            control: true, shift: true): () =>
-            _toggleComment(ref, tab.id, add: true),
+        const SingleActivator(
+              LogicalKeyboardKey.keyC,
+              control: true,
+              shift: true,
+            ):
+            () => _toggleComment(ref, tab.id, add: true),
         // Ctrl+Shift+R  Remove comment
-        const SingleActivator(LogicalKeyboardKey.keyR,
-            control: true, shift: true): () =>
-            _toggleComment(ref, tab.id, add: false),
+        const SingleActivator(
+              LogicalKeyboardKey.keyR,
+              control: true,
+              shift: true,
+            ):
+            () => _toggleComment(ref, tab.id, add: false),
       },
       child: Focus(
         autofocus: true,
         child: Scaffold(
           endDrawer: QueryHistoryDrawer(
             connectionId: session.connection.id,
-            onSelectQuery: (sql) =>
-                ref.read(editorContentProvider(tab.id).notifier).update(sql),
+            onSelectQuery:
+                (sql) => ref
+                    .read(editorContentProvider(tab.id).notifier)
+                    .update(sql),
           ),
           body: Column(
             children: [
               Builder(
-                builder: (ctx) => EditorToolbar(
-                  isExecuting: isExecuting,
-                  activeDatabase: tab.activeDatabase,
-                  onRun: () => _runQuery(ref, tab),
-                  onStop: () {},
-                  onFormat: () => _formatSql(ref, tab.id),
-                  onHistory: () => Scaffold.of(ctx).openEndDrawer(),
-                  onDatabaseChanged: (db) => ref
-                      .read(workspaceProvider.notifier)
-                      .updateTabDatabase(session.sessionId, tab.id, db),
-                ),
+                builder:
+                    (ctx) => EditorToolbar(
+                      isExecuting: isExecuting,
+                      activeDatabase: tab.activeDatabase,
+                      onRun: () => _runQuery(ref, tab),
+                      onStop: () {},
+                      onFormat: () => _formatSql(ref, tab.id),
+                      onHistory: () => Scaffold.of(ctx).openEndDrawer(),
+                      onDatabaseChanged:
+                          (db) => ref
+                              .read(workspaceProvider.notifier)
+                              .updateTabDatabase(session.sessionId, tab.id, db),
+                    ),
               ),
               // SQLyog-style autocomplete hint bar
               _HintBar(),
@@ -104,7 +114,9 @@ class QueryEditorPanel extends ConsumerWidget {
   void _runQuery(WidgetRef ref, QueryTab tab) {
     final sql = ref.read(editorContentProvider(tab.id));
     if (sql.trim().isEmpty) return;
-    ref.read(queryExecutionProvider(tab.id).notifier).execute(
+    ref
+        .read(queryExecutionProvider(tab.id).notifier)
+        .execute(
           sql: sql,
           sessionId: session.sessionId,
           database: tab.activeDatabase,
@@ -114,12 +126,46 @@ class QueryEditorPanel extends ConsumerWidget {
   void _formatSql(WidgetRef ref, String tabId) {
     final sql = ref.read(editorContentProvider(tabId));
     const keywords = [
-      'SELECT', 'FROM', 'WHERE', 'JOIN', 'LEFT', 'RIGHT', 'INNER',
-      'OUTER', 'ON', 'AND', 'OR', 'NOT', 'IN', 'IS', 'NULL',
-      'ORDER', 'BY', 'GROUP', 'HAVING', 'LIMIT', 'OFFSET',
-      'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE',
-      'CREATE', 'ALTER', 'DROP', 'TABLE', 'INDEX', 'VIEW',
-      'AS', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
+      'SELECT',
+      'FROM',
+      'WHERE',
+      'JOIN',
+      'LEFT',
+      'RIGHT',
+      'INNER',
+      'OUTER',
+      'ON',
+      'AND',
+      'OR',
+      'NOT',
+      'IN',
+      'IS',
+      'NULL',
+      'ORDER',
+      'BY',
+      'GROUP',
+      'HAVING',
+      'LIMIT',
+      'OFFSET',
+      'INSERT',
+      'INTO',
+      'VALUES',
+      'UPDATE',
+      'SET',
+      'DELETE',
+      'CREATE',
+      'ALTER',
+      'DROP',
+      'TABLE',
+      'INDEX',
+      'VIEW',
+      'AS',
+      'DISTINCT',
+      'COUNT',
+      'SUM',
+      'AVG',
+      'MIN',
+      'MAX',
     ];
     var formatted = sql;
     for (final kw in keywords) {
@@ -133,19 +179,22 @@ class QueryEditorPanel extends ConsumerWidget {
 
   void _transformCase(WidgetRef ref, String tabId, {required bool upper}) {
     final sql = ref.read(editorContentProvider(tabId));
-    ref.read(editorContentProvider(tabId).notifier)
+    ref
+        .read(editorContentProvider(tabId).notifier)
         .update(upper ? sql.toUpperCase() : sql.toLowerCase());
   }
 
   void _toggleComment(WidgetRef ref, String tabId, {required bool add}) {
     final sql = ref.read(editorContentProvider(tabId));
     final lines = sql.split('\n');
-    final result = lines.map((line) {
-      if (add) return '-- $line';
-      if (line.startsWith('-- ')) return line.substring(3);
-      if (line.startsWith('--')) return line.substring(2);
-      return line;
-    }).join('\n');
+    final result = lines
+        .map((line) {
+          if (add) return '-- $line';
+          if (line.startsWith('-- ')) return line.substring(3);
+          if (line.startsWith('--')) return line.substring(2);
+          return line;
+        })
+        .join('\n');
     ref.read(editorContentProvider(tabId).notifier).update(result);
   }
 }
@@ -181,9 +230,9 @@ class _HintBar extends StatelessWidget {
   }
 
   Widget _sep() => const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 6),
-        child: Text('·', style: TextStyle(fontSize: 10, color: Colors.grey)),
-      );
+    padding: EdgeInsets.symmetric(horizontal: 6),
+    child: Text('·', style: TextStyle(fontSize: 10, color: Colors.grey)),
+  );
 }
 
 class _Hint extends StatelessWidget {
@@ -204,16 +253,20 @@ class _Hint extends StatelessWidget {
             borderRadius: BorderRadius.circular(3),
             border: Border.all(color: cs.outlineVariant),
           ),
-          child: Text(key_,
-              style: TextStyle(
-                  fontSize: 9,
-                  fontFamily: 'monospace',
-                  color: cs.onSurface.withAlpha(180))),
+          child: Text(
+            key_,
+            style: TextStyle(
+              fontSize: 9,
+              fontFamily: 'monospace',
+              color: cs.onSurface.withAlpha(180),
+            ),
+          ),
         ),
         const SizedBox(width: 3),
-        Text(label,
-            style:
-                TextStyle(fontSize: 10, color: cs.onSurface.withAlpha(140))),
+        Text(
+          label,
+          style: TextStyle(fontSize: 10, color: cs.onSurface.withAlpha(140)),
+        ),
       ],
     );
   }

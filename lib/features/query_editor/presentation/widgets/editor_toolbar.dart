@@ -38,7 +38,10 @@ class EditorToolbar extends StatelessWidget {
         children: [
           // Run / Stop
           _ToolbarButton(
-            icon: isExecuting ? Icons.stop_circle_outlined : Icons.play_circle_filled,
+            icon:
+                isExecuting
+                    ? Icons.stop_circle_outlined
+                    : Icons.play_circle_filled,
             label: isExecuting ? 'Stop' : 'Run',
             color: isExecuting ? Colors.red.shade400 : Colors.green.shade600,
             tooltip: isExecuting ? 'Stop (Esc)' : 'Execute (F5)',
@@ -65,18 +68,26 @@ class EditorToolbar extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 180),
               child: DropdownButton<String>(
                 value: activeDatabase,
-                hint: Text('Database',
-                    style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+                hint: Text(
+                  'Database',
+                  style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+                ),
                 isDense: true,
                 underline: const SizedBox.shrink(),
                 style: theme.textTheme.bodySmall,
                 borderRadius: BorderRadius.circular(6),
-                items: databases
-                    .map((db) => DropdownMenuItem(
-                          value: db,
-                          child: Text(db, style: const TextStyle(fontSize: 12)),
-                        ))
-                    .toList(),
+                items:
+                    databases
+                        .map(
+                          (db) => DropdownMenuItem(
+                            value: db,
+                            child: Text(
+                              db,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        )
+                        .toList(),
                 onChanged: (db) {
                   if (db != null) onDatabaseChanged?.call(db);
                 },
@@ -177,10 +188,7 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 4),
-      child: SizedBox(
-        height: 20,
-        child: VerticalDivider(width: 1),
-      ),
+      child: SizedBox(height: 20, child: VerticalDivider(width: 1)),
     );
   }
 }

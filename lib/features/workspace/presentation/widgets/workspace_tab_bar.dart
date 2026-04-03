@@ -5,11 +5,11 @@ import '../../../query_editor/domain/entities/query_tab.dart';
 import '../providers/workspace_provider.dart';
 
 IconData _tabIcon(TabType type) => switch (type) {
-      TabType.query          => Icons.code,
-      TabType.schemaDesigner => Icons.schema_outlined,
-      TabType.queryBuilder   => Icons.build_outlined,
-      TabType.schemaExplorer => Icons.explore_outlined,
-    };
+  TabType.query => Icons.code,
+  TabType.schemaDesigner => Icons.schema_outlined,
+  TabType.queryBuilder => Icons.build_outlined,
+  TabType.schemaExplorer => Icons.explore_outlined,
+};
 
 class WorkspaceTabBar extends ConsumerWidget {
   final String sessionId;
@@ -42,12 +42,14 @@ class WorkspaceTabBar extends ConsumerWidget {
                 return _TabChip(
                   tab: tab,
                   isActive: isActive,
-                  onTap: () => ref
-                      .read(workspaceProvider.notifier)
-                      .setActiveTab(sessionId, tab.id),
-                  onClose: () => ref
-                      .read(workspaceProvider.notifier)
-                      .closeTab(sessionId, tab.id),
+                  onTap:
+                      () => ref
+                          .read(workspaceProvider.notifier)
+                          .setActiveTab(sessionId, tab.id),
+                  onClose:
+                      () => ref
+                          .read(workspaceProvider.notifier)
+                          .closeTab(sessionId, tab.id),
                 );
               },
             ),
@@ -55,8 +57,8 @@ class WorkspaceTabBar extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.add, size: 16),
             tooltip: 'New tab (Ctrl+T)',
-            onPressed: () =>
-                ref.read(workspaceProvider.notifier).addTab(sessionId),
+            onPressed:
+                () => ref.read(workspaceProvider.notifier).addTab(sessionId),
             padding: const EdgeInsets.symmetric(horizontal: 8),
             constraints: const BoxConstraints(minWidth: 32, minHeight: 36),
           ),
@@ -88,14 +90,10 @@ class _TabChip extends StatelessWidget {
         constraints: const BoxConstraints(minWidth: 100, maxWidth: 180),
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          color: isActive
-              ? theme.colorScheme.surface
-              : Colors.transparent,
+          color: isActive ? theme.colorScheme.surface : Colors.transparent,
           border: Border(
             bottom: BorderSide(
-              color: isActive
-                  ? theme.colorScheme.primary
-                  : Colors.transparent,
+              color: isActive ? theme.colorScheme.primary : Colors.transparent,
               width: 2,
             ),
           ),
@@ -109,8 +107,7 @@ class _TabChip extends StatelessWidget {
               child: Text(
                 tab.title,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight:
-                      isActive ? FontWeight.w600 : FontWeight.normal,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),

@@ -63,8 +63,9 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
 
   Future<void> _loadDatabases() async {
     try {
-      final dbs =
-          await _fetcher.fetchAllDatabases(widget.session.mysqlConnection);
+      final dbs = await _fetcher.fetchAllDatabases(
+        widget.session.mysqlConnection,
+      );
       if (!mounted) return;
       setState(() => _databases = dbs.map((d) => d.name).toList());
     } catch (_) {}
@@ -81,8 +82,10 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
       _generatedSql = '';
     });
     try {
-      final tables =
-          await _fetcher.fetchTables(widget.session.mysqlConnection, db);
+      final tables = await _fetcher.fetchTables(
+        widget.session.mysqlConnection,
+        db,
+      );
       if (!mounted) return;
       setState(() => _tables = tables.map((t) => t.name).toList());
     } catch (_) {}
@@ -98,7 +101,10 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
     });
     try {
       final cols = await _fetcher.fetchColumns(
-          widget.session.mysqlConnection, db, table);
+        widget.session.mysqlConnection,
+        db,
+        table,
+      );
       if (!mounted) return;
       setState(() {
         _columns = cols;
@@ -115,16 +121,18 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
     final table = _selectedTable!;
 
     // SELECT clause
-    final cols = _selectAll
-        ? '*'
-        : _selectedCols.isEmpty
+    final cols =
+        _selectAll
+            ? '*'
+            : _selectedCols.isEmpty
             ? '*'
             : _selectedCols.map((c) => '`$c`').join(', ');
 
     // WHERE clause
-    final whereRows = _where
-        .where((r) => r.column.isNotEmpty && r.value.text.isNotEmpty)
-        .toList();
+    final whereRows =
+        _where
+            .where((r) => r.column.isNotEmpty && r.value.text.isNotEmpty)
+            .toList();
     final whereLines = whereRows
         .asMap()
         .entries
@@ -136,9 +144,10 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
     final whereClause = whereRows.isEmpty ? '' : '\nWHERE $whereLines';
 
     // ORDER BY
-    final orderClause = _orderByCol == null
-        ? ''
-        : '\nORDER BY `$_orderByCol` ${_orderAsc ? 'ASC' : 'DESC'}';
+    final orderClause =
+        _orderByCol == null
+            ? ''
+            : '\nORDER BY `$_orderByCol` ${_orderAsc ? 'ASC' : 'DESC'}';
 
     // LIMIT
     final limit = int.tryParse(_limitCtrl.text) ?? 1000;
@@ -156,14 +165,14 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
     final session = ref.read(workspaceProvider)[widget.session.sessionId];
     if (session == null) return;
     // Use the first query-type tab, or the active tab
-    final queryTab = session.tabs
-        .where((t) => t.type.name == 'query')
-        .firstOrNull;
+    final queryTab =
+        session.tabs.where((t) => t.type.name == 'query').firstOrNull;
     final targetTabId = queryTab?.id ?? session.activeTabId;
     if (targetTabId == null) return;
     ref.read(editorContentProvider(targetTabId).notifier).update(_generatedSql);
     // Also switch to that tab
-    ref.read(workspaceProvider.notifier)
+    ref
+        .read(workspaceProvider.notifier)
         .setActiveTab(widget.session.sessionId, targetTabId);
   }
 
@@ -213,81 +222,101 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
                 ),
               ),
               const Divider(height: 1),
-              _SectionBar(label: 'Columns (SELECT)', icon: Icons.view_column_outlined),
+              _SectionBar(
+                label: 'Columns (SELECT)',
+                icon: Icons.view_column_outlined,
+              ),
               Expanded(
-                child: _columns.isEmpty
-                    ? Center(
-                        child: Text('Select a table',
+                child:
+                    _columns.isEmpty
+                        ? Center(
+                          child: Text(
+                            'Select a table',
                             style: TextStyle(
-                                fontSize: 11,
-                                color: cs.onSurface.withAlpha(100))),
-                      )
-                    : ListView(
-                        children: [
-                          CheckboxListTile(
-                            dense: true,
-                            value: _selectAll,
-                            title: const Text('* (all columns)',
-                                style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600)),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            onChanged: (v) {
-                              setState(() {
-                                _selectAll = v ?? true;
-                                if (_selectAll) {
-                                  _selectedCols.addAll(
-                                      _columns.map((c) => c.name));
-                                } else {
-                                  _selectedCols.clear();
-                                }
-                              });
-                              _rebuild();
-                            },
+                              fontSize: 11,
+                              color: cs.onSurface.withAlpha(100),
+                            ),
                           ),
-                          ..._columns.map((col) {
-                            final isPk = col.extra
-                                    ?.toLowerCase()
-                                    .contains('auto_increment') ??
-                                false;
-                            return CheckboxListTile(
+                        )
+                        : ListView(
+                          children: [
+                            CheckboxListTile(
                               dense: true,
-                              value: _selectedCols.contains(col.name),
-                              title: Row(
-                                children: [
-                                  if (isPk)
-                                    Icon(Icons.vpn_key,
-                                        size: 11,
-                                        color: Colors.amber.shade600),
-                                  if (isPk) const SizedBox(width: 4),
-                                  Text(col.name,
-                                      style: const TextStyle(
-                                          fontSize: 11,
-                                          fontFamily: 'monospace')),
-                                  const SizedBox(width: 6),
-                                  Text(col.dataType,
-                                      style: TextStyle(
-                                          fontSize: 9,
-                                          color:
-                                              cs.onSurface.withAlpha(100))),
-                                ],
+                              value: _selectAll,
+                              title: const Text(
+                                '* (all columns)',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               controlAffinity: ListTileControlAffinity.leading,
                               onChanged: (v) {
                                 setState(() {
-                                  if (v == true) {
-                                    _selectedCols.add(col.name);
+                                  _selectAll = v ?? true;
+                                  if (_selectAll) {
+                                    _selectedCols.addAll(
+                                      _columns.map((c) => c.name),
+                                    );
                                   } else {
-                                    _selectedCols.remove(col.name);
-                                    _selectAll = false;
+                                    _selectedCols.clear();
                                   }
                                 });
                                 _rebuild();
                               },
-                            );
-                          }),
-                        ],
-                      ),
+                            ),
+                            ..._columns.map((col) {
+                              final isPk =
+                                  col.extra?.toLowerCase().contains(
+                                    'auto_increment',
+                                  ) ??
+                                  false;
+                              return CheckboxListTile(
+                                dense: true,
+                                value: _selectedCols.contains(col.name),
+                                title: Row(
+                                  children: [
+                                    if (isPk)
+                                      Icon(
+                                        Icons.vpn_key,
+                                        size: 11,
+                                        color: Colors.amber.shade600,
+                                      ),
+                                    if (isPk) const SizedBox(width: 4),
+                                    Text(
+                                      col.name,
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        fontFamily: 'monospace',
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      col.dataType,
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        color: cs.onSurface.withAlpha(100),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                                onChanged: (v) {
+                                  setState(() {
+                                    if (v == true) {
+                                      _selectedCols.add(col.name);
+                                    } else {
+                                      _selectedCols.remove(col.name);
+                                      _selectAll = false;
+                                    }
+                                  });
+                                  _rebuild();
+                                },
+                              );
+                            }),
+                          ],
+                        ),
               ),
             ],
           ),
@@ -304,28 +333,37 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
               _SectionBar(
                 label: 'WHERE Conditions',
                 icon: Icons.filter_alt_outlined,
-                trailing: _columns.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.add, size: 16),
-                        tooltip: 'Add condition',
-                        onPressed: () {
-                          setState(() => _where.add(_WhereRow(
-                              column: _columns.first.name)));
-                          _rebuild();
-                        },
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(
-                            minWidth: 28, minHeight: 28),
-                      ),
+                trailing:
+                    _columns.isEmpty
+                        ? null
+                        : IconButton(
+                          icon: const Icon(Icons.add, size: 16),
+                          tooltip: 'Add condition',
+                          onPressed: () {
+                            setState(
+                              () => _where.add(
+                                _WhereRow(column: _columns.first.name),
+                              ),
+                            );
+                            _rebuild();
+                          },
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(
+                            minWidth: 28,
+                            minHeight: 28,
+                          ),
+                        ),
               ),
               if (_where.isEmpty)
                 Padding(
                   padding: const EdgeInsets.all(8),
-                  child: Text('No conditions — returns all rows',
-                      style: TextStyle(
-                          fontSize: 11,
-                          color: cs.onSurface.withAlpha(100))),
+                  child: Text(
+                    'No conditions — returns all rows',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: cs.onSurface.withAlpha(100),
+                    ),
+                  ),
                 )
               else
                 ..._where.asMap().entries.map((entry) {
@@ -346,15 +384,12 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
               const Divider(height: 1),
 
               // ORDER BY + LIMIT
-              _SectionBar(
-                  label: 'Sort & Limit', icon: Icons.sort_outlined),
+              _SectionBar(label: 'Sort & Limit', icon: Icons.sort_outlined),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 child: Row(
                   children: [
-                    const Text('ORDER BY',
-                        style: TextStyle(fontSize: 11)),
+                    const Text('ORDER BY', style: TextStyle(fontSize: 11)),
                     const SizedBox(width: 8),
                     Expanded(
                       child: _SmallDropdown(
@@ -364,7 +399,8 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
                         icon: Icons.swap_vert,
                         onChanged: (v) {
                           setState(
-                              () => _orderByCol = v?.isEmpty == true ? null : v);
+                            () => _orderByCol = v?.isEmpty == true ? null : v,
+                          );
                           _rebuild();
                         },
                       ),
@@ -373,13 +409,13 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
                     SegmentedButton<bool>(
                       segments: const [
                         ButtonSegment(
-                            value: true,
-                            label: Text('ASC',
-                                style: TextStyle(fontSize: 10))),
+                          value: true,
+                          label: Text('ASC', style: TextStyle(fontSize: 10)),
+                        ),
                         ButtonSegment(
-                            value: false,
-                            label: Text('DESC',
-                                style: TextStyle(fontSize: 10))),
+                          value: false,
+                          label: Text('DESC', style: TextStyle(fontSize: 10)),
+                        ),
                       ],
                       selected: {_orderAsc},
                       onSelectionChanged: (v) {
@@ -392,8 +428,7 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    const Text('LIMIT',
-                        style: TextStyle(fontSize: 11)),
+                    const Text('LIMIT', style: TextStyle(fontSize: 11)),
                     const SizedBox(width: 6),
                     SizedBox(
                       width: 70,
@@ -404,7 +439,9 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
                           isDense: true,
                           border: OutlineInputBorder(),
                           contentPadding: EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 4),
+                            horizontal: 6,
+                            vertical: 4,
+                          ),
                         ),
                         keyboardType: TextInputType.number,
                         onChanged: (_) => _rebuild(),
@@ -425,12 +462,16 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
                   children: [
                     TextButton.icon(
                       icon: const Icon(Icons.send_outlined, size: 14),
-                      label: const Text('Send to Editor',
-                          style: TextStyle(fontSize: 11)),
+                      label: const Text(
+                        'Send to Editor',
+                        style: TextStyle(fontSize: 11),
+                      ),
                       onPressed: _generatedSql.isEmpty ? null : _sendToEditor,
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
@@ -443,9 +484,10 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
                   margin: const EdgeInsets.all(8),
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: theme.brightness == Brightness.dark
-                        ? const Color(0xFF1E1E1E)
-                        : const Color(0xFFFCFCFC),
+                    color:
+                        theme.brightness == Brightness.dark
+                            ? const Color(0xFF1E1E1E)
+                            : const Color(0xFFFCFCFC),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: cs.outlineVariant),
                   ),
@@ -457,9 +499,10 @@ class _QueryBuilderPanelState extends ConsumerState<QueryBuilderPanel> {
                       fontFamily: 'monospace',
                       fontSize: 12,
                       height: 1.6,
-                      color: _generatedSql.isEmpty
-                          ? cs.onSurface.withAlpha(80)
-                          : cs.onSurface,
+                      color:
+                          _generatedSql.isEmpty
+                              ? cs.onSurface.withAlpha(80)
+                              : cs.onSurface,
                     ),
                   ),
                 ),
@@ -494,8 +537,18 @@ class _WhereRowWidget extends StatelessWidget {
   final VoidCallback onChanged;
   final VoidCallback onRemove;
 
-  static const _ops = ['=', '!=', '<', '>', '<=', '>=', 'LIKE', 'NOT LIKE',
-      'IS NULL', 'IS NOT NULL'];
+  static const _ops = [
+    '=',
+    '!=',
+    '<',
+    '>',
+    '<=',
+    '>=',
+    'LIKE',
+    'NOT LIKE',
+    'IS NULL',
+    'IS NOT NULL',
+  ];
 
   const _WhereRowWidget({
     required this.row,
@@ -520,9 +573,12 @@ class _WhereRowWidget extends StatelessWidget {
                   value: row.logic,
                   isDense: true,
                   style: const TextStyle(fontSize: 11),
-                  items: ['AND', 'OR']
-                      .map((l) => DropdownMenuItem(value: l, child: Text(l)))
-                      .toList(),
+                  items:
+                      ['AND', 'OR']
+                          .map(
+                            (l) => DropdownMenuItem(value: l, child: Text(l)),
+                          )
+                          .toList(),
                   onChanged: (v) {
                     row.logic = v ?? 'AND';
                     onChanged();
@@ -543,9 +599,10 @@ class _WhereRowWidget extends StatelessWidget {
                 isExpanded: true,
                 style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
                 hint: const Text('Column', style: TextStyle(fontSize: 11)),
-                items: columns
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                    .toList(),
+                items:
+                    columns
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .toList(),
                 onChanged: (v) {
                   row.column = v ?? '';
                   onChanged();
@@ -562,9 +619,10 @@ class _WhereRowWidget extends StatelessWidget {
                 value: row.op,
                 isDense: true,
                 style: const TextStyle(fontSize: 11),
-                items: _ops
-                    .map((o) => DropdownMenuItem(value: o, child: Text(o)))
-                    .toList(),
+                items:
+                    _ops
+                        .map((o) => DropdownMenuItem(value: o, child: Text(o)))
+                        .toList(),
                 onChanged: (v) {
                   row.op = v ?? '=';
                   onChanged();
@@ -583,8 +641,10 @@ class _WhereRowWidget extends StatelessWidget {
                 isDense: true,
                 hintText: 'value',
                 border: OutlineInputBorder(),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 4,
+                ),
               ),
               onChanged: (_) => onChanged(),
             ),
@@ -594,8 +654,7 @@ class _WhereRowWidget extends StatelessWidget {
             icon: const Icon(Icons.close, size: 14),
             onPressed: onRemove,
             padding: EdgeInsets.zero,
-            constraints:
-                const BoxConstraints(minWidth: 24, minHeight: 24),
+            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
           ),
         ],
       ),
@@ -610,8 +669,7 @@ class _SectionBar extends StatelessWidget {
   final IconData icon;
   final Widget? trailing;
 
-  const _SectionBar(
-      {required this.label, required this.icon, this.trailing});
+  const _SectionBar({required this.label, required this.icon, this.trailing});
 
   @override
   Widget build(BuildContext context) {
@@ -624,11 +682,14 @@ class _SectionBar extends StatelessWidget {
         children: [
           Icon(icon, size: 13, color: cs.primary),
           const SizedBox(width: 6),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: cs.onSurface)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: cs.onSurface,
+            ),
+          ),
           const Spacer(),
           if (trailing != null) trailing!,
         ],
@@ -662,19 +723,25 @@ class _SmallDropdown extends StatelessWidget {
           children: [
             Icon(icon, size: 12, color: cs.onSurfaceVariant),
             const SizedBox(width: 4),
-            Text(hint,
-                style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant)),
+            Text(
+              hint,
+              style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+            ),
           ],
         ),
         isDense: true,
         isExpanded: true,
         style: const TextStyle(fontSize: 11),
         borderRadius: BorderRadius.circular(6),
-        items: items
-            .map((s) => DropdownMenuItem(
-                value: s,
-                child: Text(s, overflow: TextOverflow.ellipsis)))
-            .toList(),
+        items:
+            items
+                .map(
+                  (s) => DropdownMenuItem(
+                    value: s,
+                    child: Text(s, overflow: TextOverflow.ellipsis),
+                  ),
+                )
+                .toList(),
         onChanged: onChanged,
       ),
     );

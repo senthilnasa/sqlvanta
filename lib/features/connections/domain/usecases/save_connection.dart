@@ -10,6 +10,5 @@ class SaveConnection {
   Future<Result<void, Failure>> call(
     ConnectionEntity entity,
     String password,
-  ) =>
-      _repository.saveConnection(entity, password);
+  ) => _repository.saveConnection(entity, password);
 }

@@ -31,8 +31,7 @@ class ConnectionLocalDatasource {
 
   Future<void> deleteConnection(String id) => _dao.deleteConnection(id);
 
-  Future<void> updateLastConnected(String id) =>
-      _dao.updateLastConnected(id);
+  Future<void> updateLastConnected(String id) => _dao.updateLastConnected(id);
 
   Future<int> getMaxSortOrder() => _dao.getMaxSortOrder();
 }

@@ -13,7 +13,7 @@ import '../../../workspace/presentation/providers/workspace_provider.dart';
 
 class ResultsDataGrid extends ConsumerStatefulWidget {
   final QueryResult result;
-  final String? tabId;     // to read the source SQL for table name extraction
+  final String? tabId; // to read the source SQL for table name extraction
   final String? sessionId; // to execute UPDATE statements
 
   const ResultsDataGrid({
@@ -50,35 +50,41 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
   }
 
   void _buildGrid() {
-    _originalData = widget.result.rows.map((row) {
-      final m = <String, String>{};
-      for (var i = 0; i < widget.result.columns.length; i++) {
-        m[widget.result.columns[i]] = row.length > i ? (row[i]?.toString() ?? '') : '';
-      }
-      return m;
-    }).toList();
+    _originalData =
+        widget.result.rows.map((row) {
+          final m = <String, String>{};
+          for (var i = 0; i < widget.result.columns.length; i++) {
+            m[widget.result.columns[i]] =
+                row.length > i ? (row[i]?.toString() ?? '') : '';
+          }
+          return m;
+        }).toList();
 
-    _columns = widget.result.columns
-        .map((col) => PlutoColumn(
-              title: col,
-              field: col,
-              type: PlutoColumnType.text(),
-              readOnly: true,
-              enableSorting: true,
-              enableContextMenu: false,
-              width: 120,
-            ))
-        .toList();
+    _columns =
+        widget.result.columns
+            .map(
+              (col) => PlutoColumn(
+                title: col,
+                field: col,
+                type: PlutoColumnType.text(),
+                readOnly: true,
+                enableSorting: true,
+                enableContextMenu: false,
+                width: 120,
+              ),
+            )
+            .toList();
 
-    _rows = widget.result.rows.map((row) {
-      final cells = <String, PlutoCell>{};
-      for (var i = 0; i < widget.result.columns.length; i++) {
-        final col = widget.result.columns[i];
-        final val = row.length > i ? row[i] : null;
-        cells[col] = PlutoCell(value: val?.toString() ?? '');
-      }
-      return PlutoRow(cells: cells);
-    }).toList();
+    _rows =
+        widget.result.rows.map((row) {
+          final cells = <String, PlutoCell>{};
+          for (var i = 0; i < widget.result.columns.length; i++) {
+            final col = widget.result.columns[i];
+            final val = row.length > i ? row[i] : null;
+            cells[col] = PlutoCell(value: val?.toString() ?? '');
+          }
+          return PlutoRow(cells: cells);
+        }).toList();
   }
 
   // ── Edit mode ────────────────────────────────────────────────────────────
@@ -89,8 +95,9 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
       _editMode = entering;
       if (!entering) _changes.clear();
     });
-    _stateManager?.refColumns.originalList
-        .forEach((col) => col.readOnly = !entering);
+    _stateManager?.refColumns.originalList.forEach(
+      (col) => col.readOnly = !entering,
+    );
     _stateManager?.notifyListeners();
   }
 
@@ -100,8 +107,9 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
       _editMode = false;
       _buildGrid(); // rebuild to restore original values
     });
-    _stateManager?.refColumns.originalList
-        .forEach((col) => col.readOnly = true);
+    _stateManager?.refColumns.originalList.forEach(
+      (col) => col.readOnly = true,
+    );
     _stateManager?.notifyListeners();
   }
 
@@ -122,7 +130,9 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
   // ── SQL helpers ───────────────────────────────────────────────────────────
 
   String? get _sourceSql =>
-      widget.tabId != null ? ref.read(editorContentProvider(widget.tabId!)) : null;
+      widget.tabId != null
+          ? ref.read(editorContentProvider(widget.tabId!))
+          : null;
 
   /// Extracts database name from `SELECT … FROM \`db\`.\`table\``.
   String? get _sourceDatabase {
@@ -157,9 +167,10 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
       );
       return;
     }
-    final session = widget.sessionId != null
-        ? ref.read(workspaceProvider)[widget.sessionId!]
-        : null;
+    final session =
+        widget.sessionId != null
+            ? ref.read(workspaceProvider)[widget.sessionId!]
+            : null;
     if (session == null) {
       BotToast.showSimpleNotification(title: 'No connection');
       return;
@@ -167,8 +178,7 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
 
     setState(() => _saving = true);
 
-    final dbPrefix =
-        _sourceDatabase != null ? '`$_sourceDatabase`.' : '';
+    final dbPrefix = _sourceDatabase != null ? '`$_sourceDatabase`.' : '';
     final pkField =
         widget.result.columns.isNotEmpty ? widget.result.columns.first : null;
 
@@ -186,11 +196,14 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
         continue;
       }
 
-      final setClauses = changedCols.entries.map((e) {
-        final v = e.value;
-        if (v.isEmpty || v.toUpperCase() == 'NULL') return '`${e.key}` = NULL';
-        return '`${e.key}` = \'${v.replaceAll("'", "''")}\'';
-      }).join(', ');
+      final setClauses = changedCols.entries
+          .map((e) {
+            final v = e.value;
+            if (v.isEmpty || v.toUpperCase() == 'NULL')
+              return '`${e.key}` = NULL';
+            return '`${e.key}` = \'${v.replaceAll("'", "''")}\'';
+          })
+          .join(', ');
 
       final whereVal = pkVal.replaceAll("'", "''");
       final sql =
@@ -209,8 +222,9 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
       _changes.clear();
       _editMode = false;
     });
-    _stateManager?.refColumns.originalList
-        .forEach((col) => col.readOnly = true);
+    _stateManager?.refColumns.originalList.forEach(
+      (col) => col.readOnly = true,
+    );
     _stateManager?.notifyListeners();
 
     BotToast.showSimpleNotification(
@@ -223,22 +237,22 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
 
   Future<void> _exportCsv() async {
     try {
-      final dir = await getDownloadsDirectory() ?? await getTemporaryDirectory();
+      final dir =
+          await getDownloadsDirectory() ?? await getTemporaryDirectory();
       final ts = DateTime.now().millisecondsSinceEpoch;
       final file = File('${dir.path}/sqlvanta_$ts.csv');
 
       final buf = StringBuffer();
       buf.writeln(widget.result.columns.map((c) => '"$c"').join(','));
       for (final row in widget.result.rows) {
-        buf.writeln(row
-            .map((v) => '"${(v?.toString() ?? '').replaceAll('"', '""')}"')
-            .join(','));
+        buf.writeln(
+          row
+              .map((v) => '"${(v?.toString() ?? '').replaceAll('"', '""')}"')
+              .join(','),
+        );
       }
       await file.writeAsString(buf.toString());
-      BotToast.showSimpleNotification(
-        title: 'Exported',
-        subTitle: file.path,
-      );
+      BotToast.showSimpleNotification(title: 'Exported', subTitle: file.path);
     } catch (e) {
       BotToast.showSimpleNotification(
         title: 'Export failed',
@@ -256,11 +270,19 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
     showMenu<String>(
       context: context,
       position: RelativeRect.fromLTRB(
-          offset.dx, offset.dy, offset.dx + 1, offset.dy + 1),
+        offset.dx,
+        offset.dy,
+        offset.dx + 1,
+        offset.dy + 1,
+      ),
       items: [
         _menuItem('copy_insert', Icons.content_copy, 'Copy row as INSERT'),
         _menuItem('copy_update', Icons.edit_outlined, 'Copy row as UPDATE'),
-        _menuItem('copy_values', Icons.format_list_bulleted, 'Copy cell values'),
+        _menuItem(
+          'copy_values',
+          Icons.format_list_bulleted,
+          'Copy cell values',
+        ),
       ],
     ).then((action) {
       if (action == null) return;
@@ -279,26 +301,30 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
       PopupMenuItem(
         value: value,
         height: 36,
-        child: Row(children: [
-          Icon(icon, size: 14),
-          const SizedBox(width: 8),
-          Text(label, style: const TextStyle(fontSize: 12)),
-        ]),
+        child: Row(
+          children: [
+            Icon(icon, size: 14),
+            const SizedBox(width: 8),
+            Text(label, style: const TextStyle(fontSize: 12)),
+          ],
+        ),
       );
 
   void _copyAsInsert(int rowIdx) {
     final table = _sourceTable ?? 'table_name';
     final dbPrefix = _sourceDatabase != null ? '`$_sourceDatabase`.' : '';
-    final cols =
-        widget.result.columns.map((c) => '`$c`').join(', ');
-    final vals = _originalData[rowIdx].values.map((v) {
-      if (v.isEmpty) return 'NULL';
-      return "'${v.replaceAll("'", "''")}'";
-    }).join(', ');
-    Clipboard.setData(ClipboardData(
-      text:
-          'INSERT INTO $dbPrefix`$table` ($cols) VALUES ($vals);',
-    ));
+    final cols = widget.result.columns.map((c) => '`$c`').join(', ');
+    final vals = _originalData[rowIdx].values
+        .map((v) {
+          if (v.isEmpty) return 'NULL';
+          return "'${v.replaceAll("'", "''")}'";
+        })
+        .join(', ');
+    Clipboard.setData(
+      ClipboardData(
+        text: 'INSERT INTO $dbPrefix`$table` ($cols) VALUES ($vals);',
+      ),
+    );
     BotToast.showSimpleNotification(title: 'Copied as INSERT');
   }
 
@@ -306,26 +332,25 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
     final table = _sourceTable ?? 'table_name';
     final dbPrefix = _sourceDatabase != null ? '`$_sourceDatabase`.' : '';
     final data = _originalData[rowIdx];
-    final pkField = widget.result.columns.isNotEmpty
-        ? widget.result.columns.first
-        : null;
+    final pkField =
+        widget.result.columns.isNotEmpty ? widget.result.columns.first : null;
     if (pkField == null) return;
 
     final setClauses = data.entries
         .where((e) => e.key != pkField)
         .map((e) {
-          final v = e.value.isEmpty
-              ? 'NULL'
-              : "'${e.value.replaceAll("'", "''")}'";
+          final v =
+              e.value.isEmpty ? 'NULL' : "'${e.value.replaceAll("'", "''")}'";
           return '`${e.key}` = $v';
         })
         .join(', ');
-    final pkVal =
-        "'${(data[pkField] ?? '').replaceAll("'", "''")}'";
-    Clipboard.setData(ClipboardData(
-      text:
-          'UPDATE $dbPrefix`$table` SET $setClauses WHERE `$pkField` = $pkVal LIMIT 1;',
-    ));
+    final pkVal = "'${(data[pkField] ?? '').replaceAll("'", "''")}'";
+    Clipboard.setData(
+      ClipboardData(
+        text:
+            'UPDATE $dbPrefix`$table` SET $setClauses WHERE `$pkField` = $pkVal LIMIT 1;',
+      ),
+    );
     BotToast.showSimpleNotification(title: 'Copied as UPDATE');
   }
 
@@ -362,9 +387,10 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
           onSave: _saveChanges,
           onDiscard: _discardChanges,
           onExport: _exportCsv,
-          onToggleFilter: () =>
-              _stateManager?.setShowColumnFilter(
-                  !(_stateManager?.showColumnFilter ?? false)),
+          onToggleFilter:
+              () => _stateManager?.setShowColumnFilter(
+                !(_stateManager?.showColumnFilter ?? false),
+              ),
         ),
 
         // ── PlutoGrid ──────────────────────────────────────────────────────
@@ -377,20 +403,19 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
               event.stateManager.setShowColumnFilter(false);
             },
             onChanged: _onCellChanged,
-            onRowSecondaryTap: (event) =>
-                _showRowMenu(event.row, event.offset),
+            onRowSecondaryTap: (event) => _showRowMenu(event.row, event.offset),
             configuration: PlutoGridConfiguration(
-              style: isDark
-                  ? const PlutoGridStyleConfig.dark()
-                  : PlutoGridStyleConfig(
-                      gridBorderColor: cs.outlineVariant,
-                      gridBorderRadius: BorderRadius.zero,
-                      activatedColor: cs.primaryContainer.withAlpha(80),
-                      activatedBorderColor: cs.primary,
-                      cellColorInEditState:
-                          cs.primaryContainer.withAlpha(50),
-                      oddRowColor: cs.surfaceContainerLowest,
-                    ),
+              style:
+                  isDark
+                      ? const PlutoGridStyleConfig.dark()
+                      : PlutoGridStyleConfig(
+                        gridBorderColor: cs.outlineVariant,
+                        gridBorderRadius: BorderRadius.zero,
+                        activatedColor: cs.primaryContainer.withAlpha(80),
+                        activatedBorderColor: cs.primary,
+                        cellColorInEditState: cs.primaryContainer.withAlpha(50),
+                        oddRowColor: cs.surfaceContainerLowest,
+                      ),
               columnFilter: const PlutoGridColumnFilterConfig(
                 filters: [...FilterHelper.defaultFilters],
               ),
@@ -445,9 +470,7 @@ class _GridToolbar extends StatelessWidget {
         children: [
           // Edit toggle (only if we know the table)
           _Btn(
-            icon: editMode
-                ? Icons.edit_off_outlined
-                : Icons.edit_outlined,
+            icon: editMode ? Icons.edit_off_outlined : Icons.edit_outlined,
             label: editMode ? 'Exit Edit' : 'Edit',
             color: editMode ? cs.error : cs.primary,
             onPressed: onToggleEdit,
@@ -456,16 +479,9 @@ class _GridToolbar extends StatelessWidget {
           // Save / Discard (visible only when there are changes)
           if (editMode && changeCount > 0) ...[
             const SizedBox(width: 4),
-            _SaveButton(
-                saving: saving,
-                count: changeCount,
-                onPressed: onSave),
+            _SaveButton(saving: saving, count: changeCount, onPressed: onSave),
             const SizedBox(width: 4),
-            _Btn(
-              icon: Icons.undo,
-              label: 'Discard',
-              onPressed: onDiscard,
-            ),
+            _Btn(icon: Icons.undo, label: 'Discard', onPressed: onDiscard),
           ],
 
           // Table name pill
@@ -480,8 +496,11 @@ class _GridToolbar extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.table_rows_outlined,
-                      size: 11, color: cs.onSecondaryContainer),
+                  Icon(
+                    Icons.table_rows_outlined,
+                    size: 11,
+                    color: cs.onSecondaryContainer,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     tableName!,
@@ -530,20 +549,26 @@ class _SaveButton extends StatelessWidget {
   final bool saving;
   final int count;
   final VoidCallback onPressed;
-  const _SaveButton(
-      {required this.saving, required this.count, required this.onPressed});
+  const _SaveButton({
+    required this.saving,
+    required this.count,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
     return FilledButton.icon(
-      icon: saving
-          ? const SizedBox(
-              width: 11,
-              height: 11,
-              child: CircularProgressIndicator(
-                  strokeWidth: 2, color: Colors.white),
-            )
-          : const Icon(Icons.save_outlined, size: 13),
+      icon:
+          saving
+              ? const SizedBox(
+                width: 11,
+                height: 11,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+              : const Icon(Icons.save_outlined, size: 13),
       label: Text(
         'Save $count change${count > 1 ? 's' : ''}',
         style: const TextStyle(fontSize: 11),

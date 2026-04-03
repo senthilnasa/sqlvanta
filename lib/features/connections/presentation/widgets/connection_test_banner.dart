@@ -37,9 +37,10 @@ class ConnectionTestBanner extends StatelessWidget {
 
     final color = success! ? Colors.green.shade600 : Colors.red.shade600;
     final icon = success! ? Icons.check_circle_outline : Icons.error_outline;
-    final message = success!
-        ? 'Connection successful — ${latency!.inMilliseconds}ms'
-        : errorMessage ?? 'Connection failed';
+    final message =
+        success!
+            ? 'Connection successful — ${latency!.inMilliseconds}ms'
+            : errorMessage ?? 'Connection failed';
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -48,10 +49,7 @@ class ConnectionTestBanner extends StatelessWidget {
           Icon(icon, size: 18, color: color),
           const SizedBox(width: 6),
           Expanded(
-            child: Text(
-              message,
-              style: TextStyle(color: color, fontSize: 13),
-            ),
+            child: Text(message, style: TextStyle(color: color, fontSize: 13)),
           ),
         ],
       ),

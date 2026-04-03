@@ -40,7 +40,8 @@ class _ConnectionFormState extends State<ConnectionForm> {
     _name = TextEditingController(text: c?.name ?? '');
     _host = TextEditingController(text: c?.host ?? '127.0.0.1');
     _port = TextEditingController(
-        text: (c?.port ?? DbConstants.defaultPort).toString());
+      text: (c?.port ?? DbConstants.defaultPort).toString(),
+    );
     _user = TextEditingController(text: c?.username ?? 'root');
     _password = TextEditingController(text: widget.initialPassword ?? '');
     _database = TextEditingController(text: c?.defaultDatabase ?? '');
@@ -79,8 +80,9 @@ class _ConnectionFormState extends State<ConnectionForm> {
             controller: _name,
             label: 'Connection Name',
             hint: 'e.g. Production DB',
-            validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+            validator:
+                (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Name is required' : null,
           ),
           const SizedBox(height: 12),
           Row(
@@ -92,9 +94,11 @@ class _ConnectionFormState extends State<ConnectionForm> {
                   controller: _host,
                   label: 'Host',
                   hint: '127.0.0.1',
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Host is required'
-                      : null,
+                  validator:
+                      (v) =>
+                          (v == null || v.trim().isEmpty)
+                              ? 'Host is required'
+                              : null,
                 ),
               ),
               const SizedBox(width: 12),
@@ -122,8 +126,11 @@ class _ConnectionFormState extends State<ConnectionForm> {
             controller: _user,
             label: 'Username',
             hint: 'root',
-            validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Username is required' : null,
+            validator:
+                (v) =>
+                    (v == null || v.trim().isEmpty)
+                        ? 'Username is required'
+                        : null,
           ),
           const SizedBox(height: 12),
           TextFormField(
@@ -138,8 +145,8 @@ class _ConnectionFormState extends State<ConnectionForm> {
                   _obscurePassword ? Icons.visibility_off : Icons.visibility,
                   size: 20,
                 ),
-                onPressed: () =>
-                    setState(() => _obscurePassword = !_obscurePassword),
+                onPressed:
+                    () => setState(() => _obscurePassword = !_obscurePassword),
               ),
             ),
           ),

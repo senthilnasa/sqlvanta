@@ -10,12 +10,11 @@ abstract final class AppTextStyles {
     double fontSize = 14,
     Color? color,
     FontWeight weight = FontWeight.normal,
-  }) =>
-      GoogleFonts.jetBrainsMono(
-        fontSize: fontSize,
-        color: color,
-        fontWeight: weight,
-      );
+  }) => GoogleFonts.jetBrainsMono(
+    fontSize: fontSize,
+    color: color,
+    fontWeight: weight,
+  );
 
   // UI font — clean sans-serif
   static TextStyle uiLabel({double fontSize = 13, Color? color}) =>

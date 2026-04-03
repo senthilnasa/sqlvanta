@@ -68,7 +68,8 @@ class Workspace extends _$Workspace {
   void addTab(String sessionId) {
     final session = state[sessionId];
     if (session == null) return;
-    final queryCount = session.tabs.where((t) => t.type == TabType.query).length + 1;
+    final queryCount =
+        session.tabs.where((t) => t.type == TabType.query).length + 1;
     final tab = QueryTab(
       id: const Uuid().v4(),
       title: 'Query $queryCount',
@@ -149,9 +150,8 @@ class Workspace extends _$Workspace {
       closeSession(sessionId);
       return;
     }
-    final newActive = session.activeTabId == tabId
-        ? remaining.last.id
-        : session.activeTabId;
+    final newActive =
+        session.activeTabId == tabId ? remaining.last.id : session.activeTabId;
     state = {
       ...state,
       sessionId: session.copyWith(tabs: remaining, activeTabId: newActive),
@@ -161,21 +161,16 @@ class Workspace extends _$Workspace {
   void setActiveTab(String sessionId, String tabId) {
     final session = state[sessionId];
     if (session == null) return;
-    state = {
-      ...state,
-      sessionId: session.copyWith(activeTabId: tabId),
-    };
+    state = {...state, sessionId: session.copyWith(activeTabId: tabId)};
   }
 
   void updateTabDatabase(String sessionId, String tabId, String database) {
     final session = state[sessionId];
     if (session == null) return;
-    final updatedTabs = session.tabs.map((t) {
-      return t.id == tabId ? t.copyWith(activeDatabase: database) : t;
-    }).toList();
-    state = {
-      ...state,
-      sessionId: session.copyWith(tabs: updatedTabs),
-    };
+    final updatedTabs =
+        session.tabs.map((t) {
+          return t.id == tabId ? t.copyWith(activeDatabase: database) : t;
+        }).toList();
+    state = {...state, sessionId: session.copyWith(tabs: updatedTabs)};
   }
 }

@@ -19,13 +19,15 @@ class _SQLvantaAppState extends ConsumerState<SQLvantaApp> {
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(preferencesProvider).whenData((p) {
-      return switch (p.themeMode) {
-        'light' => ThemeMode.light,
-        'dark'  => ThemeMode.dark,
-        _       => ThemeMode.system,
-      };
-    }).valueOrNull ?? ThemeMode.system;
+    final themeMode =
+        ref.watch(preferencesProvider).whenData((p) {
+          return switch (p.themeMode) {
+            'light' => ThemeMode.light,
+            'dark' => ThemeMode.dark,
+            _ => ThemeMode.system,
+          };
+        }).valueOrNull ??
+        ThemeMode.system;
 
     if (!_splashDone) {
       return MaterialApp(

@@ -13,17 +13,20 @@ class ResultsMessagesView extends StatelessWidget {
 
     if (result == null) {
       return const Center(
-        child: Text('Run a query to see messages.',
-            style: TextStyle(fontSize: 12)),
+        child: Text(
+          'Run a query to see messages.',
+          style: TextStyle(fontSize: 12),
+        ),
       );
     }
 
     final r = result!;
     final color = r.isError ? Colors.red.shade400 : Colors.green.shade400;
     final icon = r.isError ? Icons.error_outline : Icons.check_circle_outline;
-    final message = r.isError
-        ? r.errorMessage ?? 'Unknown error'
-        : r.hasData
+    final message =
+        r.isError
+            ? r.errorMessage ?? 'Unknown error'
+            : r.hasData
             ? '${r.rowCount} row(s) returned in ${r.duration.inMilliseconds}ms'
             : '${r.affectedRows ?? 0} row(s) affected in ${r.duration.inMilliseconds}ms';
 

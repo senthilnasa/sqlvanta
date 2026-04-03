@@ -62,7 +62,14 @@ class _ConnectionDialogState extends ConsumerState<ConnectionDialog> {
 
   @override
   void dispose() {
-    for (final c in [_nameCtrl, _hostCtrl, _portCtrl, _userCtrl, _passCtrl, _dbCtrl]) {
+    for (final c in [
+      _nameCtrl,
+      _hostCtrl,
+      _portCtrl,
+      _userCtrl,
+      _passCtrl,
+      _dbCtrl,
+    ]) {
       c.dispose();
     }
     super.dispose();
@@ -85,26 +92,31 @@ class _ConnectionDialogState extends ConsumerState<ConnectionDialog> {
   }
 
   ConnectionEntity _buildEntity() => ConnectionEntity(
-        id: _selected?.id ?? const Uuid().v4(),
-        name: _nameCtrl.text.trim(),
-        host: _hostCtrl.text.trim(),
-        port: int.tryParse(_portCtrl.text) ?? DbConstants.defaultPort,
-        username: _userCtrl.text.trim(),
-        defaultDatabase: _dbCtrl.text.trim().isEmpty ? null : _dbCtrl.text.trim(),
-        sortOrder: _selected?.sortOrder ?? 0,
-      );
+    id: _selected?.id ?? const Uuid().v4(),
+    name: _nameCtrl.text.trim(),
+    host: _hostCtrl.text.trim(),
+    port: int.tryParse(_portCtrl.text) ?? DbConstants.defaultPort,
+    username: _userCtrl.text.trim(),
+    defaultDatabase: _dbCtrl.text.trim().isEmpty ? null : _dbCtrl.text.trim(),
+    sortOrder: _selected?.sortOrder ?? 0,
+  );
 
   Future<void> _onSelectSaved(ConnectionEntity c) async {
     final storage = ref.read(secureStorageProvider);
     final pass =
-        await storage.read(key: '${DbConstants.secureStorageKeyPrefix}${c.id}') ?? '';
+        await storage.read(
+          key: '${DbConstants.secureStorageKeyPrefix}${c.id}',
+        ) ??
+        '';
     if (mounted) _resetForm(c, password: pass);
   }
 
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final entity = _buildEntity();
-    await ref.read(connectionListProvider.notifier).save(entity, _passCtrl.text);
+    await ref
+        .read(connectionListProvider.notifier)
+        .save(entity, _passCtrl.text);
     if (mounted) {
       setState(() {
         _selected = entity;
@@ -153,9 +165,13 @@ class _ConnectionDialogState extends ConsumerState<ConnectionDialog> {
     try {
       // Auto-save if new so it appears in the list next time
       if (_isNew || _selected == null) {
-        await ref.read(connectionListProvider.notifier).save(entity, _passCtrl.text);
+        await ref
+            .read(connectionListProvider.notifier)
+            .save(entity, _passCtrl.text);
       }
-      await ref.read(workspaceProvider.notifier).openConnection(entity, _passCtrl.text);
+      await ref
+          .read(workspaceProvider.notifier)
+          .openConnection(entity, _passCtrl.text);
       ref.read(activeSessionIdProvider.notifier).select(entity.id);
       cancelLoading();
       if (mounted) {
@@ -181,17 +197,22 @@ class _ConnectionDialogState extends ConsumerState<ConnectionDialog> {
     if (_selected == null) return;
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete Connection'),
-        content: Text('Remove "${_selected!.name}"?'),
-        actions: [
-          TextButton(onPressed: () => ctx.pop(false), child: const Text('Cancel')),
-          FilledButton(
-              onPressed: () => ctx.pop(true),
-              style: FilledButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text('Delete')),
-        ],
-      ),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Delete Connection'),
+            content: Text('Remove "${_selected!.name}"?'),
+            actions: [
+              TextButton(
+                onPressed: () => ctx.pop(false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => ctx.pop(true),
+                style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
     );
     if (confirm == true && mounted) {
       await ref.read(connectionListProvider.notifier).remove(_selected!.id);
@@ -234,15 +255,17 @@ class _ConnectionDialogState extends ConsumerState<ConnectionDialog> {
                     child: Form(
                       key: _formKey,
                       child: ListView(
-                        padding:
-                            const EdgeInsets.fromLTRB(24, 16, 24, 12),
+                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
                         children: [
                           _FormField(
                             controller: _nameCtrl,
                             label: 'Connection Name',
                             hint: 'e.g. Production DB',
-                            validator: (v) =>
-                                (v?.trim().isEmpty ?? true) ? 'Required' : null,
+                            validator:
+                                (v) =>
+                                    (v?.trim().isEmpty ?? true)
+                                        ? 'Required'
+                                        : null,
                           ),
                           const SizedBox(height: 10),
                           Row(
@@ -254,9 +277,11 @@ class _ConnectionDialogState extends ConsumerState<ConnectionDialog> {
                                   controller: _hostCtrl,
                                   label: 'MySQL Host',
                                   hint: '127.0.0.1',
-                                  validator: (v) => (v?.trim().isEmpty ?? true)
-                                      ? 'Required'
-                                      : null,
+                                  validator:
+                                      (v) =>
+                                          (v?.trim().isEmpty ?? true)
+                                              ? 'Required'
+                                              : null,
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -267,7 +292,7 @@ class _ConnectionDialogState extends ConsumerState<ConnectionDialog> {
                                   label: 'Port',
                                   keyboardType: TextInputType.number,
                                   inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
+                                    FilteringTextInputFormatter.digitsOnly,
                                   ],
                                   validator: (v) {
                                     final p = int.tryParse(v ?? '');
@@ -284,15 +309,20 @@ class _ConnectionDialogState extends ConsumerState<ConnectionDialog> {
                             controller: _userCtrl,
                             label: 'Username',
                             hint: 'root',
-                            validator: (v) =>
-                                (v?.trim().isEmpty ?? true) ? 'Required' : null,
+                            validator:
+                                (v) =>
+                                    (v?.trim().isEmpty ?? true)
+                                        ? 'Required'
+                                        : null,
                           ),
                           const SizedBox(height: 10),
                           _PasswordField(
                             controller: _passCtrl,
                             obscure: _obscurePass,
-                            onToggle: () =>
-                                setState(() => _obscurePass = !_obscurePass),
+                            onToggle:
+                                () => setState(
+                                  () => _obscurePass = !_obscurePass,
+                                ),
                           ),
                           const SizedBox(height: 10),
                           _FormField(
@@ -404,7 +434,10 @@ class _SavedConnectionsSidebar extends StatelessWidget {
             onTap: onNew,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              color: isNew ? cs.primaryContainer.withAlpha(100) : Colors.transparent,
+              color:
+                  isNew
+                      ? cs.primaryContainer.withAlpha(100)
+                      : Colors.transparent,
               child: Row(
                 children: [
                   Icon(Icons.add_circle_outline, size: 15, color: cs.primary),
@@ -424,70 +457,79 @@ class _SavedConnectionsSidebar extends StatelessWidget {
           Divider(height: 1, color: cs.outlineVariant),
           // Saved list
           Expanded(
-            child: connections.isEmpty
-                ? Center(
-                    child: Text(
-                      'No saved connections',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: cs.onSurface.withAlpha(100),
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.only(top: 4),
-                    itemCount: connections.length,
-                    itemBuilder: (_, i) {
-                      final c = connections[i];
-                      final isSelected = selectedId == c.id;
-                      return InkWell(
-                        onTap: () => onSelect(c),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 8),
-                          color: isSelected
-                              ? cs.primaryContainer.withAlpha(100)
-                              : Colors.transparent,
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.storage_outlined,
-                                size: 14,
-                                color:
-                                    isSelected ? cs.primary : cs.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      c.name,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        fontWeight: isSelected
-                                            ? FontWeight.w600
-                                            : FontWeight.normal,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      '${c.username}@${c.host}',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: cs.onSurface.withAlpha(110),
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+            child:
+                connections.isEmpty
+                    ? Center(
+                      child: Text(
+                        'No saved connections',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: cs.onSurface.withAlpha(100),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    )
+                    : ListView.builder(
+                      padding: const EdgeInsets.only(top: 4),
+                      itemCount: connections.length,
+                      itemBuilder: (_, i) {
+                        final c = connections[i];
+                        final isSelected = selectedId == c.id;
+                        return InkWell(
+                          onTap: () => onSelect(c),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            color:
+                                isSelected
+                                    ? cs.primaryContainer.withAlpha(100)
+                                    : Colors.transparent,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.storage_outlined,
+                                  size: 14,
+                                  color:
+                                      isSelected
+                                          ? cs.primary
+                                          : cs.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        c.name,
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              fontWeight:
+                                                  isSelected
+                                                      ? FontWeight.w600
+                                                      : FontWeight.normal,
+                                            ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        '${c.username}@${c.host}',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: cs.onSurface.withAlpha(110),
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
           ),
         ],
       ),
@@ -522,8 +564,10 @@ class _FormField extends StatelessWidget {
         hintText: hint,
         isDense: true,
         border: const OutlineInputBorder(),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 10,
+        ),
       ),
       validator: validator,
       keyboardType: keyboardType,
@@ -553,9 +597,15 @@ class _PasswordField extends StatelessWidget {
         labelText: 'Password',
         isDense: true,
         border: const OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 10,
+        ),
         suffixIcon: IconButton(
-          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, size: 18),
+          icon: Icon(
+            obscure ? Icons.visibility_off : Icons.visibility,
+            size: 18,
+          ),
           onPressed: onToggle,
           padding: EdgeInsets.zero,
         ),
@@ -584,13 +634,14 @@ class _TestRow extends StatelessWidget {
     return Row(
       children: [
         OutlinedButton.icon(
-          icon: loading
-              ? const SizedBox(
-                  width: 12,
-                  height: 12,
-                  child: CircularProgressIndicator(strokeWidth: 1.5),
-                )
-              : const Icon(Icons.network_ping, size: 14),
+          icon:
+              loading
+                  ? const SizedBox(
+                    width: 12,
+                    height: 12,
+                    child: CircularProgressIndicator(strokeWidth: 1.5),
+                  )
+                  : const Icon(Icons.network_ping, size: 14),
           label: const Text('Test Connection', style: TextStyle(fontSize: 12)),
           onPressed: loading ? null : onTest,
           style: OutlinedButton.styleFrom(
@@ -671,14 +722,17 @@ class _ActionBar extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           FilledButton.icon(
-            icon: connecting
-                ? const SizedBox(
-                    width: 13,
-                    height: 13,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : const Icon(Icons.arrow_forward, size: 15),
+            icon:
+                connecting
+                    ? const SizedBox(
+                      width: 13,
+                      height: 13,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                    : const Icon(Icons.arrow_forward, size: 15),
             label: const Text('Connect', style: TextStyle(fontSize: 12)),
             onPressed: connecting ? null : onConnect,
           ),
@@ -717,8 +771,10 @@ class _ConnectingToast extends StatelessWidget {
           children: [
             CircularProgressIndicator(color: cs.primary, strokeWidth: 3),
             const SizedBox(height: 16),
-            Text('Connecting to',
-                style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+            Text(
+              'Connecting to',
+              style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+            ),
             const SizedBox(height: 4),
             Text(
               name,

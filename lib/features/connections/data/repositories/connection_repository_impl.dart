@@ -28,13 +28,11 @@ class ConnectionRepositoryImpl implements ConnectionRepository {
   }
 
   @override
-  Future<Result<ConnectionEntity, Failure>> getConnectionById(
-      String id) async {
+  Future<Result<ConnectionEntity, Failure>> getConnectionById(String id) async {
     try {
       final entity = await _local.getConnectionById(id);
       if (entity == null) {
-        return Result.failure(
-            const StorageFailure('Connection not found'));
+        return Result.failure(const StorageFailure('Connection not found'));
       }
       return Result.success(entity);
     } catch (e, st) {
@@ -79,7 +77,8 @@ class ConnectionRepositoryImpl implements ConnectionRepository {
       final pw = await _secure.getPassword(connectionId);
       if (pw == null) {
         return Result.failure(
-            const StorageFailure('Password not found in secure storage'));
+          const StorageFailure('Password not found in secure storage'),
+        );
       }
       return Result.success(pw);
     } catch (e, st) {

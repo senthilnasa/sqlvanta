@@ -10,8 +10,7 @@ class ObjectBrowserPanel extends ConsumerStatefulWidget {
   const ObjectBrowserPanel({super.key, required this.session});
 
   @override
-  ConsumerState<ObjectBrowserPanel> createState() =>
-      _ObjectBrowserPanelState();
+  ConsumerState<ObjectBrowserPanel> createState() => _ObjectBrowserPanelState();
 }
 
 class _ObjectBrowserPanelState extends ConsumerState<ObjectBrowserPanel> {
@@ -41,17 +40,20 @@ class _ObjectBrowserPanelState extends ConsumerState<ObjectBrowserPanel> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(6),
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-              suffixIcon: _filter.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, size: 14),
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() => _filter = '');
-                      },
-                    )
-                  : null,
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 6,
+                horizontal: 8,
+              ),
+              suffixIcon:
+                  _filter.isNotEmpty
+                      ? IconButton(
+                        icon: const Icon(Icons.clear, size: 14),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _filter = '');
+                        },
+                      )
+                      : null,
             ),
             onChanged: (v) => setState(() => _filter = v.toLowerCase()),
           ),

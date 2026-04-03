@@ -35,10 +35,10 @@ class QueryHistoryDao extends DatabaseAccessor<AppDatabase>
 
   Future<int> deleteForConnection(String connectionId) =>
       (delete(queryHistory)
-            ..where((t) => t.connectionId.equals(connectionId)))
-          .go();
+        ..where((t) => t.connectionId.equals(connectionId))).go();
 
   Future<void> toggleFavorite(String id, {required bool isFavorite}) =>
-      (update(queryHistory)..where((t) => t.id.equals(id)))
-          .write(QueryHistoryCompanion(isFavorite: Value(isFavorite)));
+      (update(queryHistory)..where(
+        (t) => t.id.equals(id),
+      )).write(QueryHistoryCompanion(isFavorite: Value(isFavorite)));
 }

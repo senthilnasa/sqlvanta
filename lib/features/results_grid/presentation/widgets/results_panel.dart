@@ -18,11 +18,7 @@ class ResultsPanel extends ConsumerWidget {
   final String tabId;
   final String sessionId;
 
-  const ResultsPanel({
-    super.key,
-    required this.tabId,
-    required this.sessionId,
-  });
+  const ResultsPanel({super.key, required this.tabId, required this.sessionId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,13 +28,14 @@ class ResultsPanel extends ConsumerWidget {
     return resultAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('Error: $e')),
-      data: (result) => _TabShell(
-        result: result,
-        tabId: tabId,
-        sessionId: sessionId,
-        session: session,
-        sourceSql: ref.read(editorContentProvider(tabId)),
-      ),
+      data:
+          (result) => _TabShell(
+            result: result,
+            tabId: tabId,
+            sessionId: sessionId,
+            session: session,
+            sourceSql: ref.read(editorContentProvider(tabId)),
+          ),
     );
   }
 }
@@ -46,7 +43,7 @@ class ResultsPanel extends ConsumerWidget {
 // ── Tab shell ────────────────────────────────────────────────────────────────
 
 class _TabShell extends ConsumerStatefulWidget {
-  final dynamic result;   // QueryResult?
+  final dynamic result; // QueryResult?
   final String tabId;
   final String sessionId;
   final WorkspaceSession? session;
@@ -103,8 +100,7 @@ class _TabShellState extends ConsumerState<_TabShell>
             tabAlignment: TabAlignment.start,
             dividerColor: Colors.transparent,
             indicatorWeight: 2,
-            labelPadding:
-                const EdgeInsets.symmetric(horizontal: 4),
+            labelPadding: const EdgeInsets.symmetric(horizontal: 4),
             tabs: [
               _SqlyogTab(
                 n: 1,
@@ -112,11 +108,7 @@ class _TabShellState extends ConsumerState<_TabShell>
                 label: 'Result',
                 hasData: result != null && result.hasData,
               ),
-              _SqlyogTab(
-                n: 2,
-                icon: Icons.info_outline,
-                label: 'Messages',
-              ),
+              _SqlyogTab(n: 2, icon: Icons.info_outline, label: 'Messages'),
               _SqlyogTab(
                 n: 3,
                 icon: Icons.table_chart_outlined,
@@ -128,11 +120,7 @@ class _TabShellState extends ConsumerState<_TabShell>
                 label: 'Info',
                 hasData: result != null,
               ),
-              _SqlyogTab(
-                n: 5,
-                icon: Icons.history_outlined,
-                label: 'History',
-              ),
+              _SqlyogTab(n: 5, icon: Icons.history_outlined, label: 'History'),
             ],
           ),
         ),
@@ -148,16 +136,17 @@ class _TabShellState extends ConsumerState<_TabShell>
               // ── 1 Result ─────────────────────────────────────────────────
               result != null && result.hasData
                   ? ResultsDataGrid(
-                      result: result,
-                      tabId: widget.tabId,
-                      sessionId: widget.sessionId,
-                    )
+                    result: result,
+                    tabId: widget.tabId,
+                    sessionId: widget.sessionId,
+                  )
                   : _EmptyTab(
-                      icon: Icons.grid_on_outlined,
-                      message: result?.isError == true
-                          ? 'Query returned an error — see Messages tab'
-                          : 'Run a query to see results',
-                    ),
+                    icon: Icons.grid_on_outlined,
+                    message:
+                        result?.isError == true
+                            ? 'Query returned an error — see Messages tab'
+                            : 'Run a query to see results',
+                  ),
 
               // ── 2 Messages ───────────────────────────────────────────────
               ResultsMessagesView(result: result),
@@ -166,23 +155,20 @@ class _TabShellState extends ConsumerState<_TabShell>
               widget.session != null
                   ? ResultsTableDataTab(session: widget.session!)
                   : const _EmptyTab(
-                      icon: Icons.table_chart_outlined,
-                      message: 'No active session'),
+                    icon: Icons.table_chart_outlined,
+                    message: 'No active session',
+                  ),
 
               // ── 4 Info ───────────────────────────────────────────────────
               ResultsInfoTab(
                 result: result,
-                sourceSql: widget.sourceSql.trim().isEmpty
-                    ? null
-                    : widget.sourceSql,
+                sourceSql:
+                    widget.sourceSql.trim().isEmpty ? null : widget.sourceSql,
                 session: widget.session,
               ),
 
               // ── 5 History ─────────────────────────────────────────────────
-              _HistoryTab(
-                sessionId: widget.sessionId,
-                tabId: widget.tabId,
-              ),
+              _HistoryTab(sessionId: widget.sessionId, tabId: widget.tabId),
             ],
           ),
         ),
@@ -219,10 +205,7 @@ class _SqlyogTab extends StatelessWidget {
         children: [
           Icon(icon, size: 13),
           const SizedBox(width: 5),
-          Text(
-            '$n $label',
-            style: const TextStyle(fontSize: 12),
-          ),
+          Text('$n $label', style: const TextStyle(fontSize: 12)),
           if (hasData) ...[
             const SizedBox(width: 4),
             Container(
@@ -251,10 +234,7 @@ class _ResultsStatusBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final style = TextStyle(
-      fontSize: 11,
-      color: cs.onSurface.withAlpha(160),
-    );
+    final style = TextStyle(fontSize: 11, color: cs.onSurface.withAlpha(160));
 
     if (result == null) {
       return Container(
@@ -324,8 +304,7 @@ class _EmptyTab extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             message,
-            style: TextStyle(
-                fontSize: 12, color: cs.onSurface.withAlpha(120)),
+            style: TextStyle(fontSize: 12, color: cs.onSurface.withAlpha(120)),
           ),
         ],
       ),
@@ -375,11 +354,14 @@ class _HistoryTabState extends ConsumerState<_HistoryTab> {
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Row(
             children: [
-              Text('Query History',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: cs.onSurface)),
+              Text(
+                'Query History',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: cs.onSurface,
+                ),
+              ),
               const Spacer(),
               TextButton.icon(
                 icon: const Icon(Icons.refresh, size: 13),
@@ -387,7 +369,9 @@ class _HistoryTabState extends ConsumerState<_HistoryTab> {
                 onPressed: () => setState(_loadHistory),
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -406,8 +390,9 @@ class _HistoryTabState extends ConsumerState<_HistoryTab> {
               final entries = snap.data ?? [];
               if (entries.isEmpty) {
                 return _EmptyTab(
-                    icon: Icons.history_outlined,
-                    message: 'No history yet');
+                  icon: Icons.history_outlined,
+                  message: 'No history yet',
+                );
               }
               return ListView.separated(
                 itemCount: entries.length,
@@ -421,28 +406,36 @@ class _HistoryTabState extends ConsumerState<_HistoryTab> {
                           ? Icons.error_outline
                           : Icons.check_circle_outline,
                       size: 15,
-                      color: e.hadError
-                          ? Colors.red.shade400
-                          : Colors.green.shade500,
+                      color:
+                          e.hadError
+                              ? Colors.red.shade400
+                              : Colors.green.shade500,
                     ),
                     title: Text(
                       e.sqlText.replaceAll('\n', ' '),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                          fontSize: 12, fontFamily: 'monospace'),
+                        fontSize: 12,
+                        fontFamily: 'monospace',
+                      ),
                     ),
                     subtitle: Text(
                       '${e.durationMs}ms · ${_fmt(e.executedAt)}',
                       style: const TextStyle(fontSize: 10),
                     ),
-                    trailing: e.isFavorite
-                        ? Icon(Icons.star,
-                            size: 13, color: Colors.amber.shade400)
-                        : null,
-                    onTap: () => ref
-                        .read(editorContentProvider(widget.tabId).notifier)
-                        .update(e.sqlText),
+                    trailing:
+                        e.isFavorite
+                            ? Icon(
+                              Icons.star,
+                              size: 13,
+                              color: Colors.amber.shade400,
+                            )
+                            : null,
+                    onTap:
+                        () => ref
+                            .read(editorContentProvider(widget.tabId).notifier)
+                            .update(e.sqlText),
                   );
                 },
               );

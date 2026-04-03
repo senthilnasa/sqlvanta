@@ -24,9 +24,8 @@ class WorkspaceLayout extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final activeTab = session.tabs
-        .where((t) => t.id == session.activeTabId)
-        .firstOrNull;
+    final activeTab =
+        session.tabs.where((t) => t.id == session.activeTabId).firstOrNull;
 
     return Column(
       children: [
@@ -53,28 +52,31 @@ class WorkspaceLayout extends ConsumerWidget {
   Widget _buildMainContent(QueryTab? activeTab) {
     if (activeTab == null) {
       return const Center(
-          child: Text('No tab — press Ctrl+T to add one',
-              style: TextStyle(fontSize: 13)));
+        child: Text(
+          'No tab — press Ctrl+T to add one',
+          style: TextStyle(fontSize: 13),
+        ),
+      );
     }
 
     return switch (activeTab.type) {
       TabType.schemaDesigner => SchemaDesignerPanel(session: session),
       TabType.schemaExplorer => SchemaExplorerPanel(session: session),
-      TabType.queryBuilder   => QueryBuilderPanel(
-          session: session,
-          tabId: activeTab.id,
-        ),
+      TabType.queryBuilder => QueryBuilderPanel(
+        session: session,
+        tabId: activeTab.id,
+      ),
       TabType.query => AppSplitView(
-          axis: Axis.vertical,
-          initialRatio: 0.55,
-          minRatio: 0.20,
-          maxRatio: 0.85,
-          leading: QueryEditorPanel(tab: activeTab, session: session),
-          trailing: ResultsPanel(
-            tabId: activeTab.id,
-            sessionId: session.sessionId,
-          ),
+        axis: Axis.vertical,
+        initialRatio: 0.55,
+        minRatio: 0.20,
+        maxRatio: 0.85,
+        leading: QueryEditorPanel(tab: activeTab, session: session),
+        trailing: ResultsPanel(
+          tabId: activeTab.id,
+          sessionId: session.sessionId,
         ),
+      ),
     };
   }
 }

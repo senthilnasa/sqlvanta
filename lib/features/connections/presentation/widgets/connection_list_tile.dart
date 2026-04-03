@@ -19,14 +19,16 @@ class ConnectionListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = connection.colorTag != null
-        ? Color(int.parse(connection.colorTag!.replaceFirst('#', '0xFF')))
-        : theme.colorScheme.primary;
+    final color =
+        connection.colorTag != null
+            ? Color(int.parse(connection.colorTag!.replaceFirst('#', '0xFF')))
+            : theme.colorScheme.primary;
 
     return ListTile(
       selected: isSelected,
-      selectedTileColor:
-          theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+      selectedTileColor: theme.colorScheme.primaryContainer.withValues(
+        alpha: 0.3,
+      ),
       leading: CircleAvatar(
         radius: 14,
         backgroundColor: color.withValues(alpha: 0.2),
@@ -34,8 +36,9 @@ class ConnectionListTile extends StatelessWidget {
       ),
       title: Text(
         connection.name,
-        style: theme.textTheme.bodyMedium
-            ?.copyWith(fontWeight: FontWeight.w500),
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

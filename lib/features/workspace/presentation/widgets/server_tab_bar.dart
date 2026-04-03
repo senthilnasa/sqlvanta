@@ -32,15 +32,16 @@ class ServerTabBar extends StatelessWidget {
           Expanded(
             child: ListView(
               scrollDirection: Axis.horizontal,
-              children: sessions.entries.map((entry) {
-                final isActive = entry.key == activeSessionId;
-                return _ServerTab(
-                  session: entry.value,
-                  isActive: isActive,
-                  onTap: () => onSelect(entry.key),
-                  onClose: () => onClose(entry.key),
-                );
-              }).toList(),
+              children:
+                  sessions.entries.map((entry) {
+                    final isActive = entry.key == activeSessionId;
+                    return _ServerTab(
+                      session: entry.value,
+                      isActive: isActive,
+                      onTap: () => onSelect(entry.key),
+                      onClose: () => onClose(entry.key),
+                    );
+                  }).toList(),
             ),
           ),
           // Add connection button

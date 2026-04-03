@@ -43,7 +43,9 @@ class WorkspaceScreen extends ConsumerWidget {
                 Text(
                   session.connection.name,
                   style: const TextStyle(
-                      fontWeight: FontWeight.w600, fontSize: 13),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
                 ),
                 if (session.connection.host.isNotEmpty) ...[
                   Text(
@@ -58,8 +60,10 @@ class WorkspaceScreen extends ConsumerWidget {
                   tooltip: 'Settings',
                   onPressed: () => context.push('/settings'),
                   padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 28, minHeight: 28),
+                  constraints: const BoxConstraints(
+                    minWidth: 28,
+                    minHeight: 28,
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close, size: 16),
@@ -71,8 +75,10 @@ class WorkspaceScreen extends ConsumerWidget {
                     if (context.mounted) context.go('/connections');
                   },
                   padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 28, minHeight: 28),
+                  constraints: const BoxConstraints(
+                    minWidth: 28,
+                    minHeight: 28,
+                  ),
                 ),
               ],
             ),

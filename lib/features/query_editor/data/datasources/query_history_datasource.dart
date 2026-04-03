@@ -14,20 +14,24 @@ class QueryHistoryDatasource {
     int limit = 100,
   }) async {
     final rows = await _dao.getRecentHistory(
-        connectionId: connectionId, limit: limit);
+      connectionId: connectionId,
+      limit: limit,
+    );
     return rows
-        .map((r) => QueryHistoryEntry(
-              id: r.id,
-              connectionId: r.connectionId,
-              databaseName: r.databaseName,
-              sqlText: r.sqlText,
-              executedAt: r.executedAt,
-              durationMs: r.durationMs,
-              rowsAffected: r.rowsAffected,
-              hadError: r.hadError,
-              errorMessage: r.errorMessage,
-              isFavorite: r.isFavorite,
-            ))
+        .map(
+          (r) => QueryHistoryEntry(
+            id: r.id,
+            connectionId: r.connectionId,
+            databaseName: r.databaseName,
+            sqlText: r.sqlText,
+            executedAt: r.executedAt,
+            durationMs: r.durationMs,
+            rowsAffected: r.rowsAffected,
+            hadError: r.hadError,
+            errorMessage: r.errorMessage,
+            isFavorite: r.isFavorite,
+          ),
+        )
         .toList();
   }
 
@@ -39,17 +43,16 @@ class QueryHistoryDatasource {
     int? rowsAffected,
     bool hadError = false,
     String? errorMessage,
-  }) =>
-      _dao.insertEntry(
-        QueryHistoryCompanion.insert(
-          id: const Uuid().v4(),
-          connectionId: connectionId,
-          databaseName: Value(databaseName),
-          sqlText: sqlText,
-          durationMs: durationMs,
-          rowsAffected: Value(rowsAffected),
-          hadError: Value(hadError),
-          errorMessage: Value(errorMessage),
-        ),
-      );
+  }) => _dao.insertEntry(
+    QueryHistoryCompanion.insert(
+      id: const Uuid().v4(),
+      connectionId: connectionId,
+      databaseName: Value(databaseName),
+      sqlText: sqlText,
+      durationMs: durationMs,
+      rowsAffected: Value(rowsAffected),
+      hadError: Value(hadError),
+      errorMessage: Value(errorMessage),
+    ),
+  );
 }

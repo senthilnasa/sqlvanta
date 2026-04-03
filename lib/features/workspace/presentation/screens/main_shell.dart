@@ -45,9 +45,10 @@ class _MainShellState extends ConsumerState<MainShell> {
     final sessions = ref.watch(workspaceProvider);
     final activeId = ref.watch(activeSessionIdProvider);
 
-    final effectiveId = (activeId != null && sessions.containsKey(activeId))
-        ? activeId
-        : sessions.keys.firstOrNull;
+    final effectiveId =
+        (activeId != null && sessions.containsKey(activeId))
+            ? activeId
+            : sessions.keys.firstOrNull;
 
     if (effectiveId != activeId) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -59,25 +60,39 @@ class _MainShellState extends ConsumerState<MainShell> {
       bindings: {
         // ── Connection ────────────────────────────────────────────────────
         // Ctrl+M  New connection
-        const SingleActivator(LogicalKeyboardKey.keyM, control: true): () =>
-            ConnectionDialog.show(context),
+        const SingleActivator(LogicalKeyboardKey.keyM, control: true):
+            () => ConnectionDialog.show(context),
         // Ctrl+Shift+C  Connection manager (alias)
-        const SingleActivator(LogicalKeyboardKey.keyC,
-            control: true, shift: true): () =>
-            ConnectionDialog.show(context),
+        const SingleActivator(
+              LogicalKeyboardKey.keyC,
+              control: true,
+              shift: true,
+            ):
+            () => ConnectionDialog.show(context),
         // Ctrl+F4 / Ctrl+W  Disconnect active
         const SingleActivator(LogicalKeyboardKey.f4, control: true): () async {
           if (effectiveId != null) {
-            await ref.read(workspaceProvider.notifier).closeSession(effectiveId);
+            await ref
+                .read(workspaceProvider.notifier)
+                .closeSession(effectiveId);
             final rem = ref.read(workspaceProvider);
-            ref.read(activeSessionIdProvider.notifier).select(rem.keys.firstOrNull);
+            ref
+                .read(activeSessionIdProvider.notifier)
+                .select(rem.keys.firstOrNull);
           }
         },
-        const SingleActivator(LogicalKeyboardKey.keyW, control: true): () async {
+        const SingleActivator(
+          LogicalKeyboardKey.keyW,
+          control: true,
+        ): () async {
           if (effectiveId != null) {
-            await ref.read(workspaceProvider.notifier).closeSession(effectiveId);
+            await ref
+                .read(workspaceProvider.notifier)
+                .closeSession(effectiveId);
             final rem = ref.read(workspaceProvider);
-            ref.read(activeSessionIdProvider.notifier).select(rem.keys.firstOrNull);
+            ref
+                .read(activeSessionIdProvider.notifier)
+                .select(rem.keys.firstOrNull);
           }
         },
         // Ctrl+Tab  Next connection
@@ -89,8 +104,11 @@ class _MainShellState extends ConsumerState<MainShell> {
           ref.read(activeSessionIdProvider.notifier).select(next);
         },
         // Ctrl+Shift+Tab  Previous connection
-        const SingleActivator(LogicalKeyboardKey.tab,
-            control: true, shift: true): () {
+        const SingleActivator(
+          LogicalKeyboardKey.tab,
+          control: true,
+          shift: true,
+        ): () {
           final keys = ref.read(workspaceProvider).keys.toList();
           if (keys.length < 2 || effectiveId == null) return;
           final idx = keys.indexOf(effectiveId);
@@ -98,17 +116,18 @@ class _MainShellState extends ConsumerState<MainShell> {
           ref.read(activeSessionIdProvider.notifier).select(prev);
         },
         // Ctrl+1..9  Select connection by index
-        for (final entry in {
-          LogicalKeyboardKey.digit1: 0,
-          LogicalKeyboardKey.digit2: 1,
-          LogicalKeyboardKey.digit3: 2,
-          LogicalKeyboardKey.digit4: 3,
-          LogicalKeyboardKey.digit5: 4,
-          LogicalKeyboardKey.digit6: 5,
-          LogicalKeyboardKey.digit7: 6,
-          LogicalKeyboardKey.digit8: 7,
-          LogicalKeyboardKey.digit9: -1, // last
-        }.entries)
+        for (final entry
+            in {
+              LogicalKeyboardKey.digit1: 0,
+              LogicalKeyboardKey.digit2: 1,
+              LogicalKeyboardKey.digit3: 2,
+              LogicalKeyboardKey.digit4: 3,
+              LogicalKeyboardKey.digit5: 4,
+              LogicalKeyboardKey.digit6: 5,
+              LogicalKeyboardKey.digit7: 6,
+              LogicalKeyboardKey.digit8: 7,
+              LogicalKeyboardKey.digit9: -1, // last
+            }.entries)
           SingleActivator(entry.key, control: true): () {
             final keys = ref.read(workspaceProvider).keys.toList();
             if (keys.isEmpty) return;
@@ -126,24 +145,30 @@ class _MainShellState extends ConsumerState<MainShell> {
           }
         },
         // Ctrl+Alt+D  New schema designer tab
-        const SingleActivator(LogicalKeyboardKey.keyD,
-            control: true, alt: true): () {
+        const SingleActivator(
+          LogicalKeyboardKey.keyD,
+          control: true,
+          alt: true,
+        ): () {
           if (effectiveId != null) {
-            ref.read(workspaceProvider.notifier)
+            ref
+                .read(workspaceProvider.notifier)
                 .addSchemaDesignerTab(effectiveId);
           }
         },
         // Ctrl+E  New schema explorer tab
         const SingleActivator(LogicalKeyboardKey.keyE, control: true): () {
           if (effectiveId != null) {
-            ref.read(workspaceProvider.notifier)
+            ref
+                .read(workspaceProvider.notifier)
                 .addSchemaExplorerTab(effectiveId);
           }
         },
         // Ctrl+K  New query builder tab
         const SingleActivator(LogicalKeyboardKey.keyK, control: true): () {
           if (effectiveId != null) {
-            ref.read(workspaceProvider.notifier)
+            ref
+                .read(workspaceProvider.notifier)
                 .addQueryBuilderTab(effectiveId);
           }
         },
@@ -152,9 +177,12 @@ class _MainShellState extends ConsumerState<MainShell> {
           if (effectiveId == null) return;
           final session = ref.read(workspaceProvider)[effectiveId];
           if (session == null || session.tabs.length < 2) return;
-          final idx = session.tabs.indexWhere((t) => t.id == session.activeTabId);
+          final idx = session.tabs.indexWhere(
+            (t) => t.id == session.activeTabId,
+          );
           final prev = (idx - 1 + session.tabs.length) % session.tabs.length;
-          ref.read(workspaceProvider.notifier)
+          ref
+              .read(workspaceProvider.notifier)
               .setActiveTab(effectiveId, session.tabs[prev].id);
         },
         // Ctrl+PgDn  Next tab
@@ -162,9 +190,12 @@ class _MainShellState extends ConsumerState<MainShell> {
           if (effectiveId == null) return;
           final session = ref.read(workspaceProvider)[effectiveId];
           if (session == null || session.tabs.length < 2) return;
-          final idx = session.tabs.indexWhere((t) => t.id == session.activeTabId);
+          final idx = session.tabs.indexWhere(
+            (t) => t.id == session.activeTabId,
+          );
           final next = (idx + 1) % session.tabs.length;
-          ref.read(workspaceProvider.notifier)
+          ref
+              .read(workspaceProvider.notifier)
               .setActiveTab(effectiveId, session.tabs[next].id);
         },
         // Alt+L  Close active tab
@@ -172,15 +203,16 @@ class _MainShellState extends ConsumerState<MainShell> {
           if (effectiveId == null) return;
           final session = ref.read(workspaceProvider)[effectiveId];
           if (session?.activeTabId != null) {
-            ref.read(workspaceProvider.notifier)
+            ref
+                .read(workspaceProvider.notifier)
                 .closeTab(effectiveId, session!.activeTabId!);
           }
         },
 
         // ── Settings / other ──────────────────────────────────────────────
         // Ctrl+, Preferences
-        const SingleActivator(LogicalKeyboardKey.comma, control: true): () =>
-            context.push('/settings'),
+        const SingleActivator(LogicalKeyboardKey.comma, control: true):
+            () => context.push('/settings'),
       },
       child: Focus(
         autofocus: true,
@@ -191,8 +223,9 @@ class _MainShellState extends ConsumerState<MainShell> {
               ServerTabBar(
                 sessions: sessions,
                 activeSessionId: effectiveId,
-                onSelect: (id) =>
-                    ref.read(activeSessionIdProvider.notifier).select(id),
+                onSelect:
+                    (id) =>
+                        ref.read(activeSessionIdProvider.notifier).select(id),
                 onClose: (id) async {
                   await ref.read(workspaceProvider.notifier).closeSession(id);
                   final remaining = ref.read(workspaceProvider);
@@ -204,18 +237,19 @@ class _MainShellState extends ConsumerState<MainShell> {
               ),
               const Divider(height: 1),
               Expanded(
-                child: effectiveId != null && sessions.containsKey(effectiveId)
-                    ? WorkspaceLayout(session: sessions[effectiveId]!)
-                    : EmptyStateWidget(
-                        icon: Icons.storage_outlined,
-                        title: 'No active connection',
-                        subtitle: 'Connect to a MySQL server to get started',
-                        action: FilledButton.icon(
-                          icon: const Icon(Icons.add, size: 16),
-                          label: const Text('Connect…'),
-                          onPressed: () => ConnectionDialog.show(context),
+                child:
+                    effectiveId != null && sessions.containsKey(effectiveId)
+                        ? WorkspaceLayout(session: sessions[effectiveId]!)
+                        : EmptyStateWidget(
+                          icon: Icons.storage_outlined,
+                          title: 'No active connection',
+                          subtitle: 'Connect to a MySQL server to get started',
+                          action: FilledButton.icon(
+                            icon: const Icon(Icons.add, size: 16),
+                            label: const Text('Connect…'),
+                            onPressed: () => ConnectionDialog.show(context),
+                          ),
                         ),
-                      ),
               ),
             ],
           ),
@@ -268,17 +302,18 @@ class _MenuBar extends ConsumerWidget {
               _MenuItem(
                 icon: Icons.close,
                 label: 'Close Active Connection',
-                onTap: activeSessionId == null
-                    ? null
-                    : () async {
-                        await ref
-                            .read(workspaceProvider.notifier)
-                            .closeSession(activeSessionId!);
-                        final remaining = ref.read(workspaceProvider);
-                        ref
-                            .read(activeSessionIdProvider.notifier)
-                            .select(remaining.keys.firstOrNull);
-                      },
+                onTap:
+                    activeSessionId == null
+                        ? null
+                        : () async {
+                          await ref
+                              .read(workspaceProvider.notifier)
+                              .closeSession(activeSessionId!);
+                          final remaining = ref.read(workspaceProvider);
+                          ref
+                              .read(activeSessionIdProvider.notifier)
+                              .select(remaining.keys.firstOrNull);
+                        },
               ),
             ],
           ),
@@ -295,41 +330,45 @@ class _MenuBar extends ConsumerWidget {
                 icon: Icons.code,
                 label: 'New Query Editor',
                 shortcut: 'Ctrl+T',
-                onTap: activeSessionId == null
-                    ? null
-                    : () => ref
-                        .read(workspaceProvider.notifier)
-                        .addTab(activeSessionId!),
+                onTap:
+                    activeSessionId == null
+                        ? null
+                        : () => ref
+                            .read(workspaceProvider.notifier)
+                            .addTab(activeSessionId!),
               ),
               _MenuItem(
                 icon: Icons.build_outlined,
                 label: 'New Query Builder',
                 shortcut: 'Ctrl+K',
-                onTap: activeSessionId == null
-                    ? null
-                    : () => ref
-                        .read(workspaceProvider.notifier)
-                        .addQueryBuilderTab(activeSessionId!),
+                onTap:
+                    activeSessionId == null
+                        ? null
+                        : () => ref
+                            .read(workspaceProvider.notifier)
+                            .addQueryBuilderTab(activeSessionId!),
               ),
               _MenuItem(
                 icon: Icons.schema_outlined,
                 label: 'New Schema Designer',
                 shortcut: 'Ctrl+Alt+D',
-                onTap: activeSessionId == null
-                    ? null
-                    : () => ref
-                        .read(workspaceProvider.notifier)
-                        .addSchemaDesignerTab(activeSessionId!),
+                onTap:
+                    activeSessionId == null
+                        ? null
+                        : () => ref
+                            .read(workspaceProvider.notifier)
+                            .addSchemaDesignerTab(activeSessionId!),
               ),
               _MenuItem(
                 icon: Icons.explore_outlined,
                 label: 'New Schema Explorer',
                 shortcut: 'Ctrl+E',
-                onTap: activeSessionId == null
-                    ? null
-                    : () => ref
-                        .read(workspaceProvider.notifier)
-                        .addSchemaExplorerTab(activeSessionId!),
+                onTap:
+                    activeSessionId == null
+                        ? null
+                        : () => ref
+                            .read(workspaceProvider.notifier)
+                            .addSchemaExplorerTab(activeSessionId!),
               ),
             ],
           ),
@@ -339,9 +378,11 @@ class _MenuBar extends ConsumerWidget {
               _MenuItem(
                 icon: Icons.compare_arrows,
                 label: 'Copy Database…',
-                onTap: activeSessionId == null
-                    ? null
-                    : () => _showDbCopyDialog(context, ref, activeSessionId!),
+                onTap:
+                    activeSessionId == null
+                        ? null
+                        : () =>
+                            _showDbCopyDialog(context, ref, activeSessionId!),
               ),
               _MenuItem(
                 icon: Icons.settings_outlined,
@@ -352,8 +393,7 @@ class _MenuBar extends ConsumerWidget {
             ],
           ),
           const Spacer(),
-          if (sessionCount > 0)
-            _ConnectionsBadge(count: sessionCount),
+          if (sessionCount > 0) _ConnectionsBadge(count: sessionCount),
           const SizedBox(width: 8),
         ],
       ),
@@ -361,7 +401,10 @@ class _MenuBar extends ConsumerWidget {
   }
 
   void _showDbCopyDialog(
-      BuildContext context, WidgetRef ref, String sessionId) {
+    BuildContext context,
+    WidgetRef ref,
+    String sessionId,
+  ) {
     showDialog<void>(
       context: context,
       builder: (_) => DbCopyDialog(sourceSessionId: sessionId),
@@ -385,33 +428,39 @@ class _MenuButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Text(label, style: const TextStyle(fontSize: 12)),
       ),
-      itemBuilder: (_) => items.map((item) {
-        return PopupMenuItem<_MenuItem>(
-          value: item,
-          enabled: item.onTap != null,
-          height: 36,
-          child: Row(
-            children: [
-              Icon(item.icon, size: 15),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: Text(item.label, style: const TextStyle(fontSize: 12))),
-              if (item.shortcut != null) ...[
-                const SizedBox(width: 16),
-                Text(
-                  item.shortcut!,
-                  style: TextStyle(
-                      fontSize: 10,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withAlpha(100)),
-                ),
-              ],
-            ],
-          ),
-        );
-      }).toList(),
+      itemBuilder:
+          (_) =>
+              items.map((item) {
+                return PopupMenuItem<_MenuItem>(
+                  value: item,
+                  enabled: item.onTap != null,
+                  height: 36,
+                  child: Row(
+                    children: [
+                      Icon(item.icon, size: 15),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          item.label,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      if (item.shortcut != null) ...[
+                        const SizedBox(width: 16),
+                        Text(
+                          item.shortcut!,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withAlpha(100),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(),
       onSelected: (item) => item.onTap?.call(),
     );
   }
@@ -422,8 +471,12 @@ class _MenuItem {
   final String label;
   final String? shortcut;
   final VoidCallback? onTap;
-  const _MenuItem(
-      {required this.icon, required this.label, this.shortcut, this.onTap});
+  const _MenuItem({
+    required this.icon,
+    required this.label,
+    this.shortcut,
+    this.onTap,
+  });
 }
 
 class _ConnectionsBadge extends StatelessWidget {
@@ -474,9 +527,8 @@ class _DbCopyDialogState extends ConsumerState<DbCopyDialog> {
   @override
   Widget build(BuildContext context) {
     final sessions = ref.watch(workspaceProvider);
-    final otherSessions = sessions.entries
-        .where((e) => e.key != widget.sourceSessionId)
-        .toList();
+    final otherSessions =
+        sessions.entries.where((e) => e.key != widget.sourceSessionId).toList();
 
     return AlertDialog(
       title: const Row(
@@ -492,75 +544,97 @@ class _DbCopyDialogState extends ConsumerState<DbCopyDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Source',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+            const Text(
+              'Source',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+            ),
             const SizedBox(height: 6),
-            Row(children: [
-              Expanded(
-                child: Text(
-                  sessions[widget.sourceSessionId]?.connection.name ?? '—',
-                  style: const TextStyle(fontSize: 13),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _DatabaseDropdown(
-                  sessionId: widget.sourceSessionId,
-                  value: _sourceDb,
-                  hint: 'Select database',
-                  onChanged: (v) => setState(() => _sourceDb = v),
-                ),
-              ),
-            ]),
-            const SizedBox(height: 16),
-            const Text('Target',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
-            const SizedBox(height: 6),
-            if (otherSessions.isEmpty)
-              const Text('Open another connection to copy to.',
-                  style: TextStyle(fontSize: 12, color: Colors.orange))
-            else
-              Row(children: [
+            Row(
+              children: [
                 Expanded(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _targetSessionId,
-                    hint: const Text('Target server',
-                        style: TextStyle(fontSize: 12)),
-                    decoration: const InputDecoration(
-                        isDense: true, border: OutlineInputBorder()),
-                    items: otherSessions
-                        .map((e) => DropdownMenuItem(
-                              value: e.key,
-                              child: Text(e.value.connection.name,
-                                  style: const TextStyle(fontSize: 12)),
-                            ))
-                        .toList(),
-                    onChanged: (v) => setState(() {
-                      _targetSessionId = v;
-                      _targetDb = null;
-                    }),
+                  child: Text(
+                    sessions[widget.sourceSessionId]?.connection.name ?? '—',
+                    style: const TextStyle(fontSize: 13),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _targetSessionId == null
-                      ? const SizedBox.shrink()
-                      : _DatabaseDropdown(
-                          sessionId: _targetSessionId!,
-                          value: _targetDb,
-                          hint: 'Target DB',
-                          onChanged: (v) => setState(() => _targetDb = v),
-                        ),
+                  child: _DatabaseDropdown(
+                    sessionId: widget.sourceSessionId,
+                    value: _sourceDb,
+                    hint: 'Select database',
+                    onChanged: (v) => setState(() => _sourceDb = v),
+                  ),
                 ),
-              ]),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Target',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+            ),
+            const SizedBox(height: 6),
+            if (otherSessions.isEmpty)
+              const Text(
+                'Open another connection to copy to.',
+                style: TextStyle(fontSize: 12, color: Colors.orange),
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: _targetSessionId,
+                      hint: const Text(
+                        'Target server',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        border: OutlineInputBorder(),
+                      ),
+                      items:
+                          otherSessions
+                              .map(
+                                (e) => DropdownMenuItem(
+                                  value: e.key,
+                                  child: Text(
+                                    e.value.connection.name,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                      onChanged:
+                          (v) => setState(() {
+                            _targetSessionId = v;
+                            _targetDb = null;
+                          }),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child:
+                        _targetSessionId == null
+                            ? const SizedBox.shrink()
+                            : _DatabaseDropdown(
+                              sessionId: _targetSessionId!,
+                              value: _targetDb,
+                              hint: 'Target DB',
+                              onChanged: (v) => setState(() => _targetDb = v),
+                            ),
+                  ),
+                ],
+              ),
             if (_status != null) ...[
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _status!.startsWith('✓')
-                      ? Colors.green.withAlpha(20)
-                      : Colors.red.withAlpha(20),
+                  color:
+                      _status!.startsWith('✓')
+                          ? Colors.green.withAlpha(20)
+                          : Colors.red.withAlpha(20),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(_status!, style: const TextStyle(fontSize: 12)),
@@ -571,20 +645,26 @@ class _DbCopyDialogState extends ConsumerState<DbCopyDialog> {
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel')),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
         FilledButton.icon(
-          icon: _copying
-              ? const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Colors.white))
-              : const Icon(Icons.copy, size: 16),
+          icon:
+              _copying
+                  ? const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                  : const Icon(Icons.copy, size: 16),
           label: const Text('Copy'),
-          onPressed: (_copying || _sourceDb == null || _targetSessionId == null)
-              ? null
-              : _startCopy,
+          onPressed:
+              (_copying || _sourceDb == null || _targetSessionId == null)
+                  ? null
+                  : _startCopy,
         ),
       ],
     );
@@ -607,36 +687,45 @@ class _DbCopyDialogState extends ConsumerState<DbCopyDialog> {
         'ORDER BY TABLE_NAME',
         {'db': _sourceDb},
       );
-      final tableNames = tables.rows
-          .map((r) => r.colByName('TABLE_NAME') ?? '')
-          .where((n) => n.isNotEmpty)
-          .toList();
+      final tableNames =
+          tables.rows
+              .map((r) => r.colByName('TABLE_NAME') ?? '')
+              .where((n) => n.isNotEmpty)
+              .toList();
 
-      await tgt.mysqlConnection
-          .execute('CREATE DATABASE IF NOT EXISTS `$targetDb`');
+      await tgt.mysqlConnection.execute(
+        'CREATE DATABASE IF NOT EXISTS `$targetDb`',
+      );
 
       int copied = 0;
       for (final table in tableNames) {
-        final ddlRes = await src.mysqlConnection
-            .execute('SHOW CREATE TABLE `$_sourceDb`.`$table`');
+        final ddlRes = await src.mysqlConnection.execute(
+          'SHOW CREATE TABLE `$_sourceDb`.`$table`',
+        );
         var ddl = ddlRes.rows.first.colByName('Create Table') ?? '';
         ddl = ddl.replaceFirst(
-            RegExp(r'CREATE TABLE'), 'CREATE TABLE IF NOT EXISTS');
+          RegExp(r'CREATE TABLE'),
+          'CREATE TABLE IF NOT EXISTS',
+        );
         await tgt.mysqlConnection.execute('USE `$targetDb`');
         await tgt.mysqlConnection.execute(ddl);
 
-        final rows = await src.mysqlConnection
-            .execute('SELECT * FROM `$_sourceDb`.`$table`');
+        final rows = await src.mysqlConnection.execute(
+          'SELECT * FROM `$_sourceDb`.`$table`',
+        );
         final colNames = rows.cols.map((c) => c.name).toList();
         for (final row in rows.rows) {
-          final values = colNames.map((col) {
-            final v = row.colByName(col);
-            if (v == null) return 'NULL';
-            return "'${v.replaceAll("'", "''")}'";
-          }).join(', ');
+          final values = colNames
+              .map((col) {
+                final v = row.colByName(col);
+                if (v == null) return 'NULL';
+                return "'${v.replaceAll("'", "''")}'";
+              })
+              .join(', ');
           if (values.isNotEmpty) {
             await tgt.mysqlConnection.execute(
-                'INSERT IGNORE INTO `$targetDb`.`$table` VALUES ($values)');
+              'INSERT IGNORE INTO `$targetDb`.`$table` VALUES ($values)',
+            );
           }
         }
         copied++;
@@ -671,24 +760,33 @@ class _DatabaseDropdown extends ConsumerWidget {
     return FutureBuilder<List<String>>(
       future: session.mysqlConnection
           .execute(
-              'SELECT SCHEMA_NAME FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME')
-          .then((r) => r.rows
-              .map((row) => row.colByName('SCHEMA_NAME') ?? '')
-              .where((n) => n.isNotEmpty)
-              .toList()),
+            'SELECT SCHEMA_NAME FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME',
+          )
+          .then(
+            (r) =>
+                r.rows
+                    .map((row) => row.colByName('SCHEMA_NAME') ?? '')
+                    .where((n) => n.isNotEmpty)
+                    .toList(),
+          ),
       builder: (ctx, snap) {
         final dbs = snap.data ?? [];
         return DropdownButtonFormField<String>(
           initialValue: dbs.contains(value) ? value : null,
           hint: Text(hint, style: const TextStyle(fontSize: 12)),
           decoration: const InputDecoration(
-              isDense: true, border: OutlineInputBorder()),
-          items: dbs
-              .map((db) => DropdownMenuItem(
-                    value: db,
-                    child: Text(db, style: const TextStyle(fontSize: 12)),
-                  ))
-              .toList(),
+            isDense: true,
+            border: OutlineInputBorder(),
+          ),
+          items:
+              dbs
+                  .map(
+                    (db) => DropdownMenuItem(
+                      value: db,
+                      child: Text(db, style: const TextStyle(fontSize: 12)),
+                    ),
+                  )
+                  .toList(),
           onChanged: onChanged,
         );
       },

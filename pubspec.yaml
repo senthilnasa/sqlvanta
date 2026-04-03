@@ -1,6 +1,6 @@
 name: sqlvanta
 description: "Sqlvanta is a fast, open-source MySQL client built with Flutter, offering secure connections, a powerful query editor, and an intuitive UI for efficient database management."
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 

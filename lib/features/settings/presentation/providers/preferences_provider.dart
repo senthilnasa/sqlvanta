@@ -30,16 +30,12 @@ class Preferences extends _$Preferences {
 
     return AppPreferences(
       themeMode: map[_keys.themeMode] ?? 'system',
-      editorFontSize:
-          double.tryParse(map[_keys.editorFontSize] ?? '') ?? 14,
-      editorTabSize:
-          int.tryParse(map[_keys.editorTabSize] ?? '') ?? 2,
+      editorFontSize: double.tryParse(map[_keys.editorFontSize] ?? '') ?? 14,
+      editorTabSize: int.tryParse(map[_keys.editorTabSize] ?? '') ?? 2,
       editorWordWrap: map[_keys.editorWordWrap] == 'true',
-      resultMaxRows:
-          int.tryParse(map[_keys.resultMaxRows] ?? '') ?? 1000,
+      resultMaxRows: int.tryParse(map[_keys.resultMaxRows] ?? '') ?? 1000,
       nullDisplayText: map[_keys.nullDisplayText] ?? 'NULL',
-      sidebarWidth:
-          double.tryParse(map[_keys.sidebarWidth] ?? '') ?? 260,
+      sidebarWidth: double.tryParse(map[_keys.sidebarWidth] ?? '') ?? 260,
     );
   }
 

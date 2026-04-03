@@ -8,15 +8,10 @@ import '../../../workspace/domain/entities/workspace_session.dart';
 /// plus table structure when a table name can be inferred from the SQL.
 class ResultsInfoTab extends StatefulWidget {
   final QueryResult? result;
-  final String? sourceSql;        // the SQL that produced the result
+  final String? sourceSql; // the SQL that produced the result
   final WorkspaceSession? session;
 
-  const ResultsInfoTab({
-    super.key,
-    this.result,
-    this.sourceSql,
-    this.session,
-  });
+  const ResultsInfoTab({super.key, this.result, this.sourceSql, this.session});
 
   @override
   State<ResultsInfoTab> createState() => _ResultsInfoTabState();
@@ -50,8 +45,15 @@ class _ResultsInfoTabState extends State<ResultsInfoTab> {
     setState(() => _loadingCols = true);
     try {
       final cols = await _fetcher.fetchColumns(
-          widget.session!.mysqlConnection, db, table);
-      if (mounted) setState(() { _columns = cols; _loadingCols = false; });
+        widget.session!.mysqlConnection,
+        db,
+        table,
+      );
+      if (mounted)
+        setState(() {
+          _columns = cols;
+          _loadingCols = false;
+        });
     } catch (_) {
       if (mounted) setState(() => _loadingCols = false);
     }
@@ -65,8 +67,10 @@ class _ResultsInfoTabState extends State<ResultsInfoTab> {
 
     if (result == null) {
       return Center(
-        child: Text('Run a query to see info.',
-            style: TextStyle(fontSize: 12, color: cs.onSurface.withAlpha(120))),
+        child: Text(
+          'Run a query to see info.',
+          style: TextStyle(fontSize: 12, color: cs.onSurface.withAlpha(120)),
+        ),
       );
     }
 
@@ -76,43 +80,52 @@ class _ResultsInfoTabState extends State<ResultsInfoTab> {
         // ── Query Statistics ───────────────────────────────────────────────
         _SectionHeader(title: 'Query Statistics', icon: Icons.query_stats),
         const SizedBox(height: 6),
-        _StatCard(children: [
-          _StatRow(
-            icon: result.isError ? Icons.error_outline : Icons.check_circle_outline,
-            iconColor: result.isError ? cs.error : Colors.green.shade500,
-            label: 'Status',
-            value: result.isError ? 'Error' : 'Success',
-          ),
-          _StatRow(
-            icon: Icons.timer_outlined,
-            label: 'Execution time',
-            value: '${result.duration.inMilliseconds} ms',
-          ),
-          if (result.hasData) ...[
+        _StatCard(
+          children: [
             _StatRow(
-              icon: Icons.table_rows_outlined,
-              label: 'Rows returned',
-              value: '${result.rowCount}'
-                  '${result.rowCount >= 1000 ? '  (limit reached)' : ''}',
+              icon:
+                  result.isError
+                      ? Icons.error_outline
+                      : Icons.check_circle_outline,
+              iconColor: result.isError ? cs.error : Colors.green.shade500,
+              label: 'Status',
+              value: result.isError ? 'Error' : 'Success',
             ),
             _StatRow(
-              icon: Icons.view_column_outlined,
-              label: 'Columns',
-              value: '${result.columns.length}',
+              icon: Icons.timer_outlined,
+              label: 'Execution time',
+              value: '${result.duration.inMilliseconds} ms',
             ),
-          ] else ...[
-            _StatRow(
-              icon: Icons.edit_outlined,
-              label: 'Rows affected',
-              value: '${result.affectedRows ?? 0}',
-            ),
+            if (result.hasData) ...[
+              _StatRow(
+                icon: Icons.table_rows_outlined,
+                label: 'Rows returned',
+                value:
+                    '${result.rowCount}'
+                    '${result.rowCount >= 1000 ? '  (limit reached)' : ''}',
+              ),
+              _StatRow(
+                icon: Icons.view_column_outlined,
+                label: 'Columns',
+                value: '${result.columns.length}',
+              ),
+            ] else ...[
+              _StatRow(
+                icon: Icons.edit_outlined,
+                label: 'Rows affected',
+                value: '${result.affectedRows ?? 0}',
+              ),
+            ],
           ],
-        ]),
+        ),
 
         // ── Error detail ────────────────────────────────────────────────────
         if (result.isError) ...[
           const SizedBox(height: 12),
-          _SectionHeader(title: 'Error Detail', icon: Icons.bug_report_outlined),
+          _SectionHeader(
+            title: 'Error Detail',
+            icon: Icons.bug_report_outlined,
+          ),
           const SizedBox(height: 6),
           Container(
             padding: const EdgeInsets.all(10),
@@ -137,7 +150,8 @@ class _ResultsInfoTabState extends State<ResultsInfoTab> {
         if (_detectedTable != null) ...[
           const SizedBox(height: 12),
           _SectionHeader(
-            title: 'Table Structure'
+            title:
+                'Table Structure'
                 '${_detectedDb != null ? '  (`$_detectedDb`.`$_detectedTable`)' : '  (`$_detectedTable`)'}',
             icon: Icons.schema_outlined,
           ),
@@ -152,8 +166,13 @@ class _ResultsInfoTabState extends State<ResultsInfoTab> {
           else if (_columns != null && _columns!.isNotEmpty)
             _ColumnsTable(columns: _columns!, cs: cs)
           else
-            Text('Could not load columns.',
-                style: TextStyle(fontSize: 11, color: cs.onSurface.withAlpha(120))),
+            Text(
+              'Could not load columns.',
+              style: TextStyle(
+                fontSize: 11,
+                color: cs.onSurface.withAlpha(120),
+              ),
+            ),
         ],
       ],
     );
@@ -161,15 +180,19 @@ class _ResultsInfoTabState extends State<ResultsInfoTab> {
 
   static String? _extractDb(String? sql) {
     if (sql == null) return null;
-    final m = RegExp(r'\bFROM\b\s+`?(\w+)`?\.`?\w+`?',
-        caseSensitive: false).firstMatch(sql);
+    final m = RegExp(
+      r'\bFROM\b\s+`?(\w+)`?\.`?\w+`?',
+      caseSensitive: false,
+    ).firstMatch(sql);
     return m?.group(1);
   }
 
   static String? _extractTable(String? sql) {
     if (sql == null) return null;
-    final m = RegExp(r'\bFROM\b\s+(?:`?\w+`?\.)?`?(\w+)`?',
-        caseSensitive: false).firstMatch(sql);
+    final m = RegExp(
+      r'\bFROM\b\s+(?:`?\w+`?\.)?`?(\w+)`?',
+      caseSensitive: false,
+    ).firstMatch(sql);
     return m?.group(1);
   }
 }
@@ -244,14 +267,19 @@ class _StatRow extends StatelessWidget {
           const SizedBox(width: 8),
           SizedBox(
             width: 130,
-            child: Text(label,
-                style: TextStyle(
-                    fontSize: 12, color: cs.onSurface.withAlpha(160))),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: cs.onSurface.withAlpha(160),
+              ),
+            ),
           ),
           Expanded(
-            child: Text(value,
-                style: const TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w500)),
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            ),
           ),
         ],
       ),
@@ -304,7 +332,8 @@ class _ColumnsTable extends StatelessWidget {
           ),
           // Rows
           ...columns.map((col) {
-            final isPk = col.extra?.toLowerCase().contains('auto_increment') ?? false;
+            final isPk =
+                col.extra?.toLowerCase().contains('auto_increment') ?? false;
             return TableRow(
               children: [
                 _Cell(
@@ -313,15 +342,20 @@ class _ColumnsTable extends StatelessWidget {
                     fontWeight: isPk ? FontWeight.w700 : FontWeight.normal,
                     color: isPk ? cs.primary : null,
                   ),
-                  leading: isPk
-                      ? Icon(Icons.vpn_key_outlined,
-                          size: 10, color: Colors.amber.shade600)
-                      : null,
+                  leading:
+                      isPk
+                          ? Icon(
+                            Icons.vpn_key_outlined,
+                            size: 10,
+                            color: Colors.amber.shade600,
+                          )
+                          : null,
                 ),
                 _Cell(col.dataType, style: cell.copyWith(color: cs.secondary)),
-                _Cell(col.isNullable ? 'YES' : 'NO',
-                    style: cell.copyWith(
-                        color: col.isNullable ? null : cs.error)),
+                _Cell(
+                  col.isNullable ? 'YES' : 'NO',
+                  style: cell.copyWith(color: col.isNullable ? null : cs.error),
+                ),
                 _Cell(col.columnDefault ?? '', style: cell),
                 _Cell(col.extra ?? '', style: cell),
               ],

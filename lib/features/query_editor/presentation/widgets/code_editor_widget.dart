@@ -15,7 +15,7 @@ enum _CtxType { dotDb, dotTable, clause, keywords }
 class _AcCtx {
   final _CtxType type;
   final String? qualifier; // db or table name before the dot
-  final String prefix;     // what the user has typed so far after qualifier
+  final String prefix; // what the user has typed so far after qualifier
   const _AcCtx(this.type, {this.qualifier, this.prefix = ''});
 }
 
@@ -43,13 +43,13 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
   // ── Schema cache ────────────────────────────────────────────────────────────
   final _fetcher = const MysqlSchemaFetcher();
   List<String> _dbNames = [];
-  final Map<String, List<String>> _tablesCache = {};   // db → table names
-  final Map<String, List<String>> _columnsCache = {};  // 'db.table' → col names
+  final Map<String, List<String>> _tablesCache = {}; // db → table names
+  final Map<String, List<String>> _columnsCache = {}; // 'db.table' → col names
 
   // ── Popup state — read by OverlayEntry builder closure ──────────────────────
   // Storing here (not in popup widget) lets markNeedsBuild() refresh with fresh data.
-  List<String> _acAllSuggestions = [];       // full set for current popup context
-  List<String> _acCurrentSuggestions = [];   // filtered by prefix
+  List<String> _acAllSuggestions = []; // full set for current popup context
+  List<String> _acCurrentSuggestions = []; // filtered by prefix
   String _acCurrentPrefix = '';
   int _acSelectedIdx = 0;
   String _acHeaderLabel = '';
@@ -103,8 +103,11 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
     final session = ref.read(workspaceProvider)[widget.sessionId];
     if (session == null) return [];
     try {
-      final cols =
-          await _fetcher.fetchColumns(session.mysqlConnection, db, table);
+      final cols = await _fetcher.fetchColumns(
+        session.mysqlConnection,
+        db,
+        table,
+      );
       _columnsCache[cacheKey] = cols.map((c) => c.name).toList();
       return _columnsCache[cacheKey]!;
     } catch (_) {
@@ -159,7 +162,9 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
   /// User just typed '.': figure out the qualifier before the dot.
   void _onDotTyped(String text, int offset) {
     var i = offset - 2; // skip the dot itself
-    while (i >= 0 && RegExp(r'\w').hasMatch(text[i])) { i--; }
+    while (i >= 0 && RegExp(r'\w').hasMatch(text[i])) {
+      i--;
+    }
     final qualifier = text.substring(i + 1, offset - 1);
     if (qualifier.isEmpty) {
       _dismissAutocomplete();
@@ -171,9 +176,10 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
   // ── Live-filter update ──────────────────────────────────────────────────────
 
   void _updatePopupFilter(String newPrefix) {
-    final filtered = _acAllSuggestions
-        .where((s) => s.toLowerCase().startsWith(newPrefix.toLowerCase()))
-        .toList();
+    final filtered =
+        _acAllSuggestions
+            .where((s) => s.toLowerCase().startsWith(newPrefix.toLowerCase()))
+            .toList();
     if (filtered.isEmpty) {
       _dismissAutocomplete();
       return;
@@ -197,16 +203,26 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
       final afterDot = before.substring(dotIdx + 1);
       if (RegExp(r'^\w*$').hasMatch(afterDot)) {
         var i = dotIdx - 1;
-        while (i >= 0 && RegExp(r'\w').hasMatch(before[i])) { i--; }
+        while (i >= 0 && RegExp(r'\w').hasMatch(before[i])) {
+          i--;
+        }
         final qualifier = before.substring(i + 1, dotIdx);
 
         if (qualifier.isNotEmpty) {
           if (_dbNames.any((d) => d.toLowerCase() == qualifier.toLowerCase())) {
-            return _AcCtx(_CtxType.dotDb, qualifier: qualifier, prefix: afterDot);
+            return _AcCtx(
+              _CtxType.dotDb,
+              qualifier: qualifier,
+              prefix: afterDot,
+            );
           }
           for (final tables in _tablesCache.values) {
             if (tables.any((t) => t.toLowerCase() == qualifier.toLowerCase())) {
-              return _AcCtx(_CtxType.dotTable, qualifier: qualifier, prefix: afterDot);
+              return _AcCtx(
+                _CtxType.dotTable,
+                qualifier: qualifier,
+                prefix: afterDot,
+              );
             }
           }
         }
@@ -214,8 +230,10 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
     }
 
     // 2. SQL clause context — after FROM / JOIN / UPDATE / INTO / TABLE
-    final clauseRe =
-        RegExp(r'\b(?:FROM|JOIN|UPDATE|INTO|TABLE)\s+(\w*)$', caseSensitive: false);
+    final clauseRe = RegExp(
+      r'\b(?:FROM|JOIN|UPDATE|INTO|TABLE)\s+(\w*)$',
+      caseSensitive: false,
+    );
     final clauseMatch = clauseRe.firstMatch(before);
     if (clauseMatch != null) {
       return _AcCtx(_CtxType.clause, prefix: clauseMatch.group(1) ?? '');
@@ -232,15 +250,19 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
 
     // Qualifier is a database name → show tables
     if (_dbNames.any((d) => d.toLowerCase() == qualifier.toLowerCase())) {
-      final dbName =
-          _dbNames.firstWhere((d) => d.toLowerCase() == qualifier.toLowerCase());
+      final dbName = _dbNames.firstWhere(
+        (d) => d.toLowerCase() == qualifier.toLowerCase(),
+      );
       final tables = await _getTablesFor(dbName);
       if (!mounted) return;
-      final filtered = prefix.isEmpty
-          ? tables
-          : tables
-              .where((t) => t.toLowerCase().startsWith(prefix.toLowerCase()))
-              .toList();
+      final filtered =
+          prefix.isEmpty
+              ? tables
+              : tables
+                  .where(
+                    (t) => t.toLowerCase().startsWith(prefix.toLowerCase()),
+                  )
+                  .toList();
       if (filtered.isEmpty) return;
       _openPopup(
         allSuggestions: tables,
@@ -255,15 +277,17 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
     // Qualifier might be a table name → show columns
     final matchDb = await _findDbForTable(qualifier);
     if (matchDb == null || !mounted) return;
-    final tableName = _tablesCache[matchDb]!
-        .firstWhere((t) => t.toLowerCase() == qualifier.toLowerCase());
+    final tableName = _tablesCache[matchDb]!.firstWhere(
+      (t) => t.toLowerCase() == qualifier.toLowerCase(),
+    );
     final cols = await _getColumnsFor(matchDb, tableName);
     if (!mounted) return;
-    final filtered = prefix.isEmpty
-        ? cols
-        : cols
-            .where((c) => c.toLowerCase().startsWith(prefix.toLowerCase()))
-            .toList();
+    final filtered =
+        prefix.isEmpty
+            ? cols
+            : cols
+                .where((c) => c.toLowerCase().startsWith(prefix.toLowerCase()))
+                .toList();
     if (filtered.isEmpty) return;
     _openPopup(
       allSuggestions: cols,
@@ -279,8 +303,9 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
     final activeDb = _getActiveDb();
     if (activeDb != null) {
       await _getTablesFor(activeDb); // ensure cached
-      if (_tablesCache[activeDb]
-              ?.any((t) => t.toLowerCase() == tableName.toLowerCase()) ==
+      if (_tablesCache[activeDb]?.any(
+            (t) => t.toLowerCase() == tableName.toLowerCase(),
+          ) ==
           true) {
         return activeDb;
       }
@@ -303,16 +328,20 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
       case _CtxType.dotTable:
         final matchDb = await _findDbForTable(ctx.qualifier!);
         if (matchDb == null || !mounted) return;
-        final tableName = _tablesCache[matchDb]!
-            .firstWhere((t) => t.toLowerCase() == ctx.qualifier!.toLowerCase());
+        final tableName = _tablesCache[matchDb]!.firstWhere(
+          (t) => t.toLowerCase() == ctx.qualifier!.toLowerCase(),
+        );
         final cols = await _getColumnsFor(matchDb, tableName);
         if (!mounted) return;
-        final filtered = ctx.prefix.isEmpty
-            ? cols
-            : cols
-                .where((c) =>
-                    c.toLowerCase().startsWith(ctx.prefix.toLowerCase()))
-                .toList();
+        final filtered =
+            ctx.prefix.isEmpty
+                ? cols
+                : cols
+                    .where(
+                      (c) =>
+                          c.toLowerCase().startsWith(ctx.prefix.toLowerCase()),
+                    )
+                    .toList();
         if (filtered.isEmpty) return;
         _openPopup(
           allSuggestions: cols,
@@ -328,22 +357,29 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
         for (final db in _dbNames) {
           items.add(db);
           final tables = _tablesCache[db] ?? [];
-          for (final t in tables) { items.add('$db.$t'); }
+          for (final t in tables) {
+            items.add('$db.$t');
+          }
         }
         final activeDb = _getActiveDb();
         if (activeDb != null) {
           final tables = await _getTablesFor(activeDb);
           for (final t in tables) {
-            if (!items.contains(t)) { items.add(t); }
+            if (!items.contains(t)) {
+              items.add(t);
+            }
           }
         }
         if (!mounted) return;
-        final filtered = ctx.prefix.isEmpty
-            ? items
-            : items
-                .where((s) =>
-                    s.toLowerCase().startsWith(ctx.prefix.toLowerCase()))
-                .toList();
+        final filtered =
+            ctx.prefix.isEmpty
+                ? items
+                : items
+                    .where(
+                      (s) =>
+                          s.toLowerCase().startsWith(ctx.prefix.toLowerCase()),
+                    )
+                    .toList();
         if (filtered.isNotEmpty) {
           _openPopup(
             allSuggestions: items,
@@ -364,11 +400,12 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
   /// Shows keyword suggestions filtered from our curated [_sqlKeywords] list.
   /// Does NOT call flutter_code_editor's autocompleter — that returns weird tokens.
   void _showKeywordPopup(String prefix) {
-    final suggestions = prefix.isEmpty
-        ? List<String>.from(_sqlKeywords)
-        : _sqlKeywords
-            .where((k) => k.toLowerCase().startsWith(prefix.toLowerCase()))
-            .toList();
+    final suggestions =
+        prefix.isEmpty
+            ? List<String>.from(_sqlKeywords)
+            : _sqlKeywords
+                .where((k) => k.toLowerCase().startsWith(prefix.toLowerCase()))
+                .toList();
     if (suggestions.isEmpty) return;
     _openPopup(
       allSuggestions: _sqlKeywords,
@@ -411,20 +448,21 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
     // Create and insert the overlay.  The builder closure captures `this` so
     // every markNeedsBuild() call reads the latest _ac* values.
     _autocompleteOverlay = OverlayEntry(
-      builder: (_) => _AutocompletePopup(
-        left: _acLeft,
-        top: _acTop,
-        suggestions: _acCurrentSuggestions,
-        selectedIdx: _acSelectedIdx,
-        prefix: _acCurrentPrefix,
-        headerLabel: _acHeaderLabel,
-        headerIcon: _acHeaderIcon,
-        onSelect: (p, word) {
-          _insertCompletion(p, word);
-          _dismissAutocomplete();
-        },
-        onDismiss: _dismissAutocomplete,
-      ),
+      builder:
+          (_) => _AutocompletePopup(
+            left: _acLeft,
+            top: _acTop,
+            suggestions: _acCurrentSuggestions,
+            selectedIdx: _acSelectedIdx,
+            prefix: _acCurrentPrefix,
+            headerLabel: _acHeaderLabel,
+            headerIcon: _acHeaderIcon,
+            onSelect: (p, word) {
+              _insertCompletion(p, word);
+              _dismissAutocomplete();
+            },
+            onDismiss: _dismissAutocomplete,
+          ),
     );
     Overlay.of(context, rootOverlay: true).insert(_autocompleteOverlay!);
   }
@@ -509,14 +547,18 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
             return KeyEventResult.handled;
           }
           if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            _acSelectedIdx = (_acSelectedIdx + 1)
-                .clamp(0, _acCurrentSuggestions.length - 1);
+            _acSelectedIdx = (_acSelectedIdx + 1).clamp(
+              0,
+              _acCurrentSuggestions.length - 1,
+            );
             _autocompleteOverlay?.markNeedsBuild();
             return KeyEventResult.handled;
           }
           if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _acSelectedIdx = (_acSelectedIdx - 1)
-                .clamp(0, _acCurrentSuggestions.length - 1);
+            _acSelectedIdx = (_acSelectedIdx - 1).clamp(
+              0,
+              _acCurrentSuggestions.length - 1,
+            );
             _autocompleteOverlay?.markNeedsBuild();
             return KeyEventResult.handled;
           }
@@ -524,7 +566,9 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
               event.logicalKey == LogicalKeyboardKey.tab) {
             if (_acCurrentSuggestions.isNotEmpty) {
               _insertCompletion(
-                  _acCurrentPrefix, _acCurrentSuggestions[_acSelectedIdx]);
+                _acCurrentPrefix,
+                _acCurrentSuggestions[_acSelectedIdx],
+              );
               _dismissAutocomplete();
               return KeyEventResult.handled;
             }
@@ -548,9 +592,8 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
                 fontSize: 13.5,
                 height: 1.5,
               ),
-              background: isDark
-                  ? const Color(0xFF1E1E1E)
-                  : theme.colorScheme.surface,
+              background:
+                  isDark ? const Color(0xFF1E1E1E) : theme.colorScheme.surface,
               minLines: 10,
             ),
           ),
@@ -562,59 +605,210 @@ class _CodeEditorWidgetState extends ConsumerState<CodeEditorWidget> {
   // ── SQL keyword list ──────────────────────────────────────────────────────
 
   static const List<String> _sqlKeywords = [
-    'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'REPLACE', 'MERGE',
-    'CREATE', 'ALTER', 'DROP', 'TRUNCATE', 'RENAME',
-    'GRANT', 'REVOKE',
-    'BEGIN', 'START', 'TRANSACTION', 'COMMIT', 'ROLLBACK', 'SAVEPOINT',
-    'FROM', 'WHERE', 'HAVING', 'GROUP', 'ORDER', 'BY', 'LIMIT', 'OFFSET',
-    'JOIN', 'INNER', 'LEFT', 'RIGHT', 'OUTER', 'CROSS', 'FULL', 'ON',
-    'UNION', 'INTERSECT', 'EXCEPT', 'ALL', 'DISTINCT',
-    'INTO', 'VALUES', 'SET', 'AS', 'WITH', 'RECURSIVE',
-    'AND', 'OR', 'NOT', 'IN', 'EXISTS', 'BETWEEN', 'LIKE', 'RLIKE', 'IS',
-    'NULL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END',
-    'IF', 'IFNULL', 'NULLIF', 'COALESCE', 'ISNULL',
-    'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'GROUP_CONCAT',
-    'CONCAT', 'CONCAT_WS', 'SUBSTRING', 'SUBSTR', 'LENGTH', 'CHAR_LENGTH',
-    'UPPER', 'LOWER', 'LTRIM', 'RTRIM', 'TRIM', 'REPLACE', 'INSTR',
-    'LPAD', 'RPAD', 'REPEAT', 'REVERSE', 'FORMAT',
-    'ABS', 'CEILING', 'FLOOR', 'ROUND', 'MOD', 'POWER', 'SQRT', 'RAND',
-    'NOW', 'CURDATE', 'CURTIME', 'CURRENT_TIMESTAMP', 'CURRENT_DATE',
-    'DATE', 'TIME', 'YEAR', 'MONTH', 'DAY', 'HOUR', 'MINUTE', 'SECOND',
-    'DATE_FORMAT', 'STR_TO_DATE', 'DATE_ADD', 'DATE_SUB', 'DATEDIFF',
-    'UNIX_TIMESTAMP', 'FROM_UNIXTIME',
-    'CAST', 'CONVERT',
-    'TABLE', 'VIEW', 'INDEX', 'DATABASE', 'SCHEMA', 'COLUMN', 'CONSTRAINT',
-    'PROCEDURE', 'FUNCTION', 'TRIGGER', 'EVENT',
-    'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES', 'UNIQUE', 'DEFAULT',
+    'SELECT',
+    'INSERT',
+    'UPDATE',
+    'DELETE',
+    'REPLACE',
+    'MERGE',
+    'CREATE',
+    'ALTER',
+    'DROP',
+    'TRUNCATE',
+    'RENAME',
+    'GRANT',
+    'REVOKE',
+    'BEGIN',
+    'START',
+    'TRANSACTION',
+    'COMMIT',
+    'ROLLBACK',
+    'SAVEPOINT',
+    'FROM',
+    'WHERE',
+    'HAVING',
+    'GROUP',
+    'ORDER',
+    'BY',
+    'LIMIT',
+    'OFFSET',
+    'JOIN',
+    'INNER',
+    'LEFT',
+    'RIGHT',
+    'OUTER',
+    'CROSS',
+    'FULL',
+    'ON',
+    'UNION',
+    'INTERSECT',
+    'EXCEPT',
+    'ALL',
+    'DISTINCT',
+    'INTO',
+    'VALUES',
+    'SET',
+    'AS',
+    'WITH',
+    'RECURSIVE',
+    'AND',
+    'OR',
+    'NOT',
+    'IN',
+    'EXISTS',
+    'BETWEEN',
+    'LIKE',
+    'RLIKE',
+    'IS',
+    'NULL',
+    'CASE',
+    'WHEN',
+    'THEN',
+    'ELSE',
+    'END',
+    'IF',
+    'IFNULL',
+    'NULLIF',
+    'COALESCE',
+    'ISNULL',
+    'COUNT',
+    'SUM',
+    'AVG',
+    'MIN',
+    'MAX',
+    'GROUP_CONCAT',
+    'CONCAT',
+    'CONCAT_WS',
+    'SUBSTRING',
+    'SUBSTR',
+    'LENGTH',
+    'CHAR_LENGTH',
+    'UPPER',
+    'LOWER',
+    'LTRIM',
+    'RTRIM',
+    'TRIM',
+    'REPLACE',
+    'INSTR',
+    'LPAD',
+    'RPAD',
+    'REPEAT',
+    'REVERSE',
+    'FORMAT',
+    'ABS',
+    'CEILING',
+    'FLOOR',
+    'ROUND',
+    'MOD',
+    'POWER',
+    'SQRT',
+    'RAND',
+    'NOW',
+    'CURDATE',
+    'CURTIME',
+    'CURRENT_TIMESTAMP',
+    'CURRENT_DATE',
+    'DATE',
+    'TIME',
+    'YEAR',
+    'MONTH',
+    'DAY',
+    'HOUR',
+    'MINUTE',
+    'SECOND',
+    'DATE_FORMAT',
+    'STR_TO_DATE',
+    'DATE_ADD',
+    'DATE_SUB',
+    'DATEDIFF',
+    'UNIX_TIMESTAMP',
+    'FROM_UNIXTIME',
+    'CAST',
+    'CONVERT',
+    'TABLE',
+    'VIEW',
+    'INDEX',
+    'DATABASE',
+    'SCHEMA',
+    'COLUMN',
+    'CONSTRAINT',
+    'PROCEDURE',
+    'FUNCTION',
+    'TRIGGER',
+    'EVENT',
+    'PRIMARY',
+    'KEY',
+    'FOREIGN',
+    'REFERENCES',
+    'UNIQUE',
+    'DEFAULT',
     'AUTO_INCREMENT',
-    'INT', 'INTEGER', 'BIGINT', 'SMALLINT', 'TINYINT', 'MEDIUMINT',
-    'DECIMAL', 'NUMERIC', 'FLOAT', 'DOUBLE',
-    'VARCHAR', 'CHAR', 'TEXT', 'LONGTEXT', 'MEDIUMTEXT', 'TINYTEXT',
-    'BLOB', 'LONGBLOB', 'MEDIUMBLOB',
-    'DATETIME', 'TIMESTAMP',
-    'BOOL', 'BOOLEAN', 'ENUM', 'JSON',
-    'SHOW', 'DESCRIBE', 'EXPLAIN', 'USE', 'DATABASES', 'TABLES', 'COLUMNS',
-    'ENGINE', 'CHARSET', 'COLLATE', 'CHARACTER',
-    'IGNORE', 'FORCE', 'LOCK', 'UNLOCK', 'CALL',
+    'INT',
+    'INTEGER',
+    'BIGINT',
+    'SMALLINT',
+    'TINYINT',
+    'MEDIUMINT',
+    'DECIMAL',
+    'NUMERIC',
+    'FLOAT',
+    'DOUBLE',
+    'VARCHAR',
+    'CHAR',
+    'TEXT',
+    'LONGTEXT',
+    'MEDIUMTEXT',
+    'TINYTEXT',
+    'BLOB',
+    'LONGBLOB',
+    'MEDIUMBLOB',
+    'DATETIME',
+    'TIMESTAMP',
+    'BOOL',
+    'BOOLEAN',
+    'ENUM',
+    'JSON',
+    'SHOW',
+    'DESCRIBE',
+    'EXPLAIN',
+    'USE',
+    'DATABASES',
+    'TABLES',
+    'COLUMNS',
+    'ENGINE',
+    'CHARSET',
+    'COLLATE',
+    'CHARACTER',
+    'IGNORE',
+    'FORCE',
+    'LOCK',
+    'UNLOCK',
+    'CALL',
   ];
 
   // ── Syntax highlight themes ───────────────────────────────────────────────
 
   static const Map<String, TextStyle> _darkStyles = {
-    'root':     TextStyle(backgroundColor: Color(0xFF1E1E1E), color: Color(0xFFD4D4D4)),
-    'keyword':  TextStyle(color: Color(0xFF569CD6), fontWeight: FontWeight.w600),
-    'string':   TextStyle(color: Color(0xFFCE9178)),
-    'comment':  TextStyle(color: Color(0xFF6A9955), fontStyle: FontStyle.italic),
-    'number':   TextStyle(color: Color(0xFFB5CEA8)),
+    'root': TextStyle(
+      backgroundColor: Color(0xFF1E1E1E),
+      color: Color(0xFFD4D4D4),
+    ),
+    'keyword': TextStyle(color: Color(0xFF569CD6), fontWeight: FontWeight.w600),
+    'string': TextStyle(color: Color(0xFFCE9178)),
+    'comment': TextStyle(color: Color(0xFF6A9955), fontStyle: FontStyle.italic),
+    'number': TextStyle(color: Color(0xFFB5CEA8)),
     'built_in': TextStyle(color: Color(0xFFDCDCAA)),
   };
 
   static const Map<String, TextStyle> _lightStyles = {
-    'root':     TextStyle(backgroundColor: Color(0xFFFCFCFC), color: Color(0xFF1F1F1F)),
-    'keyword':  TextStyle(color: Color(0xFF0000FF), fontWeight: FontWeight.w600),
-    'string':   TextStyle(color: Color(0xFFA31515)),
-    'comment':  TextStyle(color: Color(0xFF008000), fontStyle: FontStyle.italic),
-    'number':   TextStyle(color: Color(0xFF098658)),
+    'root': TextStyle(
+      backgroundColor: Color(0xFFFCFCFC),
+      color: Color(0xFF1F1F1F),
+    ),
+    'keyword': TextStyle(color: Color(0xFF0000FF), fontWeight: FontWeight.w600),
+    'string': TextStyle(color: Color(0xFFA31515)),
+    'comment': TextStyle(color: Color(0xFF008000), fontStyle: FontStyle.italic),
+    'number': TextStyle(color: Color(0xFF098658)),
     'built_in': TextStyle(color: Color(0xFF795E26)),
   };
 }
@@ -703,8 +897,7 @@ class _AutocompletePopupState extends State<_AutocompletePopup> {
             borderRadius: BorderRadius.circular(6),
             shadowColor: Colors.black.withAlpha(80),
             child: Container(
-              constraints:
-                  const BoxConstraints(maxWidth: 300, maxHeight: 260),
+              constraints: const BoxConstraints(maxWidth: 300, maxHeight: 260),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: cs.outlineVariant),
@@ -717,31 +910,35 @@ class _AutocompletePopupState extends State<_AutocompletePopup> {
                   // Header
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: cs.surfaceContainerHighest,
                       borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(6)),
+                        top: Radius.circular(6),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        Icon(widget.headerIcon,
-                            size: 11, color: cs.primary),
+                        Icon(widget.headerIcon, size: 11, color: cs.primary),
                         const SizedBox(width: 5),
                         Expanded(
                           child: Text(
                             widget.headerLabel,
                             style: TextStyle(
-                                fontSize: 10,
-                                color: cs.onSurfaceVariant),
+                              fontSize: 10,
+                              color: cs.onSurfaceVariant,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         Text(
                           '↑↓  Tab / ↵',
                           style: TextStyle(
-                              fontSize: 9,
-                              color: cs.onSurface.withAlpha(100)),
+                            fontSize: 9,
+                            color: cs.onSurface.withAlpha(100),
+                          ),
                         ),
                       ],
                     ),
@@ -757,45 +954,49 @@ class _AutocompletePopupState extends State<_AutocompletePopup> {
                       itemBuilder: (ctx, i) {
                         final word = widget.suggestions[i];
                         final isSelected = i == widget.selectedIdx;
-                        final prefixLen =
-                            widget.prefix.length.clamp(0, word.length);
+                        final prefixLen = widget.prefix.length.clamp(
+                          0,
+                          word.length,
+                        );
 
                         return InkWell(
-                          onTap: () =>
-                              widget.onSelect(widget.prefix, word),
+                          onTap: () => widget.onSelect(widget.prefix, word),
                           child: Container(
-                            color: isSelected
-                                ? cs.primaryContainer
-                                : Colors.transparent,
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10),
+                            color:
+                                isSelected
+                                    ? cs.primaryContainer
+                                    : Colors.transparent,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             alignment: Alignment.centerLeft,
                             child: RichText(
                               overflow: TextOverflow.ellipsis,
-                              text: TextSpan(children: [
-                                // Bold-highlight the matched prefix
-                                if (prefixLen > 0)
+                              text: TextSpan(
+                                children: [
+                                  // Bold-highlight the matched prefix
+                                  if (prefixLen > 0)
+                                    TextSpan(
+                                      text: word.substring(0, prefixLen),
+                                      style: TextStyle(
+                                        fontFamily: 'monospace',
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: cs.primary,
+                                      ),
+                                    ),
+                                  // Rest of the word
                                   TextSpan(
-                                    text: word.substring(0, prefixLen),
+                                    text: word.substring(prefixLen),
                                     style: TextStyle(
                                       fontFamily: 'monospace',
                                       fontSize: 12,
-                                      fontWeight: FontWeight.w700,
-                                      color: cs.primary,
+                                      color:
+                                          isSelected
+                                              ? cs.onPrimaryContainer
+                                              : cs.onSurface,
                                     ),
                                   ),
-                                // Rest of the word
-                                TextSpan(
-                                  text: word.substring(prefixLen),
-                                  style: TextStyle(
-                                    fontFamily: 'monospace',
-                                    fontSize: 12,
-                                    color: isSelected
-                                        ? cs.onPrimaryContainer
-                                        : cs.onSurface,
-                                  ),
-                                ),
-                              ]),
+                                ],
+                              ),
                             ),
                           ),
                         );

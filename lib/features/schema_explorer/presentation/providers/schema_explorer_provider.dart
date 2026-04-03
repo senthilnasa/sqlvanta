@@ -42,9 +42,8 @@ class RecentTables extends _$RecentTables {
 
   void add(String database, String table) {
     final entry = (database: database, table: table);
-    final updated = state.where(
-      (e) => e.database != database || e.table != table,
-    ).toList();
+    final updated =
+        state.where((e) => e.database != database || e.table != table).toList();
     updated.insert(0, entry);
     state = updated.take(20).toList();
   }

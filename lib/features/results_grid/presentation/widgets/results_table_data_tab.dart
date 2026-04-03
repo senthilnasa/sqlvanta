@@ -33,7 +33,7 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
   String? _selectedTable;
 
   final _firstRowCtrl = TextEditingController(text: '0');
-  final _numRowsCtrl  = TextEditingController(text: '1000');
+  final _numRowsCtrl = TextEditingController(text: '1000');
 
   // ── Schema cache for the current table ───────────────────────────────────
   List<ColumnInfo> _columnSchema = [];
@@ -60,8 +60,9 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
 
   Future<void> _loadDatabases() async {
     try {
-      final dbs =
-          await _fetcher.fetchAllDatabases(widget.session.mysqlConnection);
+      final dbs = await _fetcher.fetchAllDatabases(
+        widget.session.mysqlConnection,
+      );
       if (mounted) {
         setState(() => _databases = dbs.map((d) => d.name).toList());
       }
@@ -78,8 +79,10 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
       _foreignKeys = [];
     });
     try {
-      final tables =
-          await _fetcher.fetchTables(widget.session.mysqlConnection, db);
+      final tables = await _fetcher.fetchTables(
+        widget.session.mysqlConnection,
+        db,
+      );
       if (mounted) {
         setState(() => _tables = tables.map((t) => t.name).toList());
       }
@@ -89,14 +92,18 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
   Future<void> _loadSchema(String db, String table) async {
     try {
       final cols = await _fetcher.fetchColumns(
-          widget.session.mysqlConnection, db, table);
+        widget.session.mysqlConnection,
+        db,
+        table,
+      );
       final fks = await _fetcher.fetchForeignKeys(
-          widget.session.mysqlConnection, db);
+        widget.session.mysqlConnection,
+        db,
+      );
       if (mounted) {
         setState(() {
           _columnSchema = cols;
-          _foreignKeys =
-              fks.where((fk) => fk.table == table).toList();
+          _foreignKeys = fks.where((fk) => fk.table == table).toList();
         });
       }
     } catch (_) {}
@@ -106,21 +113,18 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
     if (_selectedDb == null || _selectedTable == null) return;
     setState(() {
       _loading = true;
-      _error   = null;
-      _result  = null;
+      _error = null;
+      _result = null;
     });
 
     await _loadSchema(_selectedDb!, _selectedTable!);
 
     final offset = int.tryParse(_firstRowCtrl.text) ?? 0;
-    final limit  = int.tryParse(_numRowsCtrl.text)  ?? 1000;
+    final limit = int.tryParse(_numRowsCtrl.text) ?? 1000;
     final sql =
         'SELECT * FROM `$_selectedDb`.`$_selectedTable` LIMIT $limit OFFSET $offset';
 
-    final result = await _executor.execute(
-      widget.session.mysqlConnection,
-      sql,
-    );
+    final result = await _executor.execute(widget.session.mysqlConnection, sql);
 
     if (!mounted) return;
     setState(() {
@@ -135,18 +139,20 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
 
   // ── Helper: is this column a date/datetime type? ──────────────────────────
   bool _isDateCol(String colName) {
-    final info = _columnSchema
-        .where((c) => c.name.toLowerCase() == colName.toLowerCase())
-        .firstOrNull;
+    final info =
+        _columnSchema
+            .where((c) => c.name.toLowerCase() == colName.toLowerCase())
+            .firstOrNull;
     if (info == null) return false;
     final dt = info.dataType.toLowerCase();
     return dt == 'date' || dt == 'datetime' || dt == 'timestamp';
   }
 
   // ── Helper: does this column have a FK? ──────────────────────────────────
-  ForeignKeyInfo? _fkFor(String colName) => _foreignKeys
-      .where((fk) => fk.column.toLowerCase() == colName.toLowerCase())
-      .firstOrNull;
+  ForeignKeyInfo? _fkFor(String colName) =>
+      _foreignKeys
+          .where((fk) => fk.column.toLowerCase() == colName.toLowerCase())
+          .firstOrNull;
 
   // ── Date picker ───────────────────────────────────────────────────────────
   Future<String?> _pickDate(BuildContext ctx, String current) async {
@@ -170,14 +176,18 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
 
   // ── FK row-picker popup ───────────────────────────────────────────────────
   Future<String?> _pickFkValue(
-      BuildContext ctx, ForeignKeyInfo fk, String current) async {
+    BuildContext ctx,
+    ForeignKeyInfo fk,
+    String current,
+  ) async {
     return showDialog<String>(
       context: ctx,
-      builder: (dctx) => _FkPickerDialog(
-        session: widget.session,
-        fk: fk,
-        currentValue: current,
-      ),
+      builder:
+          (dctx) => _FkPickerDialog(
+            session: widget.session,
+            fk: fk,
+            currentValue: current,
+          ),
     );
   }
 
@@ -188,10 +198,11 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
     // Watch for selection pushed from the object browser.
     ref.listen(selectedTableProvider(widget.session.sessionId), (prev, next) {
       if (next == null) return;
-      final newDb    = next.database;
+      final newDb = next.database;
       final newTable = next.table;
       // Skip if already showing this exact table with data.
-      if (newDb == _selectedDb && newTable == _selectedTable && _result != null) return;
+      if (newDb == _selectedDb && newTable == _selectedTable && _result != null)
+        return;
 
       // Ensure DB appears in the dropdown.
       if (!_databases.contains(newDb)) {
@@ -202,12 +213,12 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
         // DB changed — load tables first, then set both pickers and execute.
         setState(() {
           _selectedDb = newDb;
-          _selectedTable = newTable;  // Set immediately
+          _selectedTable = newTable; // Set immediately
           _tables = [];
         });
-        _fetcher
-            .fetchTables(widget.session.mysqlConnection, newDb)
-            .then((tables) {
+        _fetcher.fetchTables(widget.session.mysqlConnection, newDb).then((
+          tables,
+        ) {
           if (!mounted) return;
           setState(() {
             _tables = tables.map((t) => t.name).toList();
@@ -222,7 +233,7 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
     });
 
     final theme = Theme.of(context);
-    final cs    = theme.colorScheme;
+    final cs = theme.colorScheme;
 
     return Column(
       children: [
@@ -264,8 +275,10 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
                   decoration: const InputDecoration(
                     isDense: true,
                     border: OutlineInputBorder(),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
                   ),
                   keyboardType: TextInputType.number,
                 ),
@@ -281,31 +294,37 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
                   decoration: const InputDecoration(
                     isDense: true,
                     border: OutlineInputBorder(),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
                   ),
                   keyboardType: TextInputType.number,
                 ),
               ),
               const SizedBox(width: 8),
               FilledButton.icon(
-                icon: _loading
-                    ? const SizedBox(
-                        width: 12,
-                        height: 12,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Icon(Icons.play_circle_filled, size: 14),
+                icon:
+                    _loading
+                        ? const SizedBox(
+                          width: 12,
+                          height: 12,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                        : const Icon(Icons.play_circle_filled, size: 14),
                 label: const Text('Load', style: TextStyle(fontSize: 12)),
-                onPressed: (_loading ||
-                        _selectedDb == null ||
-                        _selectedTable == null)
-                    ? null
-                    : _loadData,
+                onPressed:
+                    (_loading || _selectedDb == null || _selectedTable == null)
+                        ? null
+                        : _loadData,
                 style: FilledButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -314,8 +333,7 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
               if (_result != null)
                 Text(
                   '${_result!.rowCount} row${_result!.rowCount == 1 ? '' : 's'}',
-                  style:
-                      TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+                  style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
                 ),
             ],
           ),
@@ -339,7 +357,10 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
           child: Text(
             _error!,
             style: TextStyle(
-                color: cs.error, fontSize: 12, fontFamily: 'monospace'),
+              color: cs.error,
+              fontSize: 12,
+              fontFamily: 'monospace',
+            ),
           ),
         ),
       );
@@ -350,13 +371,19 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.table_rows_outlined,
-                size: 40, color: cs.onSurface.withAlpha(40)),
+            Icon(
+              Icons.table_rows_outlined,
+              size: 40,
+              color: cs.onSurface.withAlpha(40),
+            ),
             const SizedBox(height: 12),
             Text(
               'Double-click a table in the Object Browser\nor select one above and press Load',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: cs.onSurface.withAlpha(100)),
+              style: TextStyle(
+                fontSize: 13,
+                color: cs.onSurface.withAlpha(100),
+              ),
             ),
           ],
         ),
@@ -366,53 +393,59 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
     final result = _result!;
     if (!result.hasData || result.columns.isEmpty) {
       return const Center(
-          child: Text('No data', style: TextStyle(fontSize: 12)));
+        child: Text('No data', style: TextStyle(fontSize: 12)),
+      );
     }
 
     // Build PlutoGrid columns with smart types.
-    final columns = result.columns.map((col) {
-      final fk = _fkFor(col);
-      return PlutoColumn(
-        title: col,
-        field: col,
-        type: PlutoColumnType.text(),
-        readOnly: true,
-        enableSorting: true,
-        enableContextMenu: false,
-        width: 130,
-        // Show icon in header for date/FK columns
-        titleSpan: TextSpan(
-          children: [
-            if (_isDateCol(col))
-              const WidgetSpan(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: Icon(Icons.calendar_today, size: 11,
-                      color: Colors.blueAccent),
-                ),
-              ),
-            if (fk != null)
-              const WidgetSpan(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: Icon(Icons.link, size: 11, color: Colors.teal),
-                ),
-              ),
-            TextSpan(text: col),
-          ],
-        ),
-      );
-    }).toList();
+    final columns =
+        result.columns.map((col) {
+          final fk = _fkFor(col);
+          return PlutoColumn(
+            title: col,
+            field: col,
+            type: PlutoColumnType.text(),
+            readOnly: true,
+            enableSorting: true,
+            enableContextMenu: false,
+            width: 130,
+            // Show icon in header for date/FK columns
+            titleSpan: TextSpan(
+              children: [
+                if (_isDateCol(col))
+                  const WidgetSpan(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: Icon(
+                        Icons.calendar_today,
+                        size: 11,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                  ),
+                if (fk != null)
+                  const WidgetSpan(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: Icon(Icons.link, size: 11, color: Colors.teal),
+                    ),
+                  ),
+                TextSpan(text: col),
+              ],
+            ),
+          );
+        }).toList();
 
-    final rows = result.rows.map((row) {
-      final cells = <String, PlutoCell>{};
-      for (var i = 0; i < result.columns.length; i++) {
-        cells[result.columns[i]] = PlutoCell(
-          value: row.length > i ? (row[i]?.toString() ?? '') : '',
-        );
-      }
-      return PlutoRow(cells: cells);
-    }).toList();
+    final rows =
+        result.rows.map((row) {
+          final cells = <String, PlutoCell>{};
+          for (var i = 0; i < result.columns.length; i++) {
+            cells[result.columns[i]] = PlutoCell(
+              value: row.length > i ? (row[i]?.toString() ?? '') : '',
+            );
+          }
+          return PlutoRow(cells: cells);
+        }).toList();
 
     return PlutoGrid(
       columns: columns,
@@ -445,9 +478,10 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
         }
       },
       configuration: PlutoGridConfiguration(
-        style: Theme.of(ctx).brightness == Brightness.dark
-            ? const PlutoGridStyleConfig.dark()
-            : const PlutoGridStyleConfig(),
+        style:
+            Theme.of(ctx).brightness == Brightness.dark
+                ? const PlutoGridStyleConfig.dark()
+                : const PlutoGridStyleConfig(),
       ),
     );
   }
@@ -471,13 +505,13 @@ class _FkPickerDialog extends StatefulWidget {
 }
 
 class _FkPickerDialogState extends State<_FkPickerDialog> {
-  final _executor  = const MysqlQueryExecutor(maxRows: 500);
-  final _search    = TextEditingController();
-  List<List<dynamic>> _rows    = [];
-  List<String>        _cols    = [];
-  bool                _loading = true;
-  String?             _error;
-  String              _filter  = '';
+  final _executor = const MysqlQueryExecutor(maxRows: 500);
+  final _search = TextEditingController();
+  List<List<dynamic>> _rows = [];
+  List<String> _cols = [];
+  bool _loading = true;
+  String? _error;
+  String _filter = '';
 
   @override
   void initState() {
@@ -508,7 +542,11 @@ class _FkPickerDialogState extends State<_FkPickerDialog> {
         }
       });
     } catch (e) {
-      if (mounted) setState(() { _loading = false; _error = e.toString(); });
+      if (mounted)
+        setState(() {
+          _loading = false;
+          _error = e.toString();
+        });
     }
   }
 
@@ -518,15 +556,22 @@ class _FkPickerDialogState extends State<_FkPickerDialog> {
     final refCol = widget.fk.refColumn;
 
     // Filter rows by search text.
-    final filtered = _filter.isEmpty
-        ? _rows
-        : _rows.where((row) => row.any((cell) =>
-            (cell?.toString() ?? '').toLowerCase().contains(_filter))).toList();
+    final filtered =
+        _filter.isEmpty
+            ? _rows
+            : _rows
+                .where(
+                  (row) => row.any(
+                    (cell) => (cell?.toString() ?? '').toLowerCase().contains(
+                      _filter,
+                    ),
+                  ),
+                )
+                .toList();
 
     return Dialog(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-            maxWidth: 600, maxHeight: 500),
+        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 500),
         child: Column(
           children: [
             // Header
@@ -541,7 +586,9 @@ class _FkPickerDialogState extends State<_FkPickerDialog> {
                     child: Text(
                       'Pick from `${widget.fk.refTable}` → ${widget.fk.refColumn}',
                       style: const TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 13),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -565,27 +612,36 @@ class _FkPickerDialogState extends State<_FkPickerDialog> {
                   prefixIcon: const Icon(Icons.search, size: 16),
                   isDense: true,
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6)),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 6),
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
                 ),
-                onChanged: (v) =>
-                    setState(() => _filter = v.toLowerCase()),
+                onChanged: (v) => setState(() => _filter = v.toLowerCase()),
               ),
             ),
             // Content
             Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _error != null
+              child:
+                  _loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _error != null
                       ? Center(
-                          child: Text(_error!,
-                              style: TextStyle(color: cs.error, fontSize: 12)))
+                        child: Text(
+                          _error!,
+                          style: TextStyle(color: cs.error, fontSize: 12),
+                        ),
+                      )
                       : filtered.isEmpty
-                          ? const Center(
-                              child: Text('No rows found',
-                                  style: TextStyle(fontSize: 12)))
-                          : _buildTable(cs, filtered, refCol),
+                      ? const Center(
+                        child: Text(
+                          'No rows found',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      )
+                      : _buildTable(cs, filtered, refCol),
             ),
           ],
         ),
@@ -593,10 +649,10 @@ class _FkPickerDialogState extends State<_FkPickerDialog> {
     );
   }
 
-  Widget _buildTable(
-      ColorScheme cs, List<List<dynamic>> rows, String refCol) {
-    final refColIdx =
-        _cols.indexWhere((c) => c.toLowerCase() == refCol.toLowerCase());
+  Widget _buildTable(ColorScheme cs, List<List<dynamic>> rows, String refCol) {
+    final refColIdx = _cols.indexWhere(
+      (c) => c.toLowerCase() == refCol.toLowerCase(),
+    );
 
     return SingleChildScrollView(
       child: DataTable(
@@ -604,41 +660,52 @@ class _FkPickerDialogState extends State<_FkPickerDialog> {
         headingRowHeight: 30,
         dataRowMinHeight: 28,
         dataRowMaxHeight: 28,
-        headingRowColor: WidgetStateProperty.all(
-            cs.surfaceContainerHighest),
-        columns: _cols
-            .map((c) => DataColumn(
-                  label: Text(c,
+        headingRowColor: WidgetStateProperty.all(cs.surfaceContainerHighest),
+        columns:
+            _cols
+                .map(
+                  (c) => DataColumn(
+                    label: Text(
+                      c,
                       style: const TextStyle(
-                          fontSize: 11, fontWeight: FontWeight.w600)),
-                ))
-            .toList(),
-        rows: rows.map((row) {
-          final pkVal = refColIdx >= 0 && refColIdx < row.length
-              ? row[refColIdx]?.toString() ?? ''
-              : '';
-          final isSelected = pkVal == widget.currentValue;
-          return DataRow(
-            selected: isSelected,
-            color: isSelected
-                ? WidgetStateProperty.all(
-                    cs.primaryContainer.withAlpha(120))
-                : null,
-            onSelectChanged: (_) =>
-                Navigator.pop(context, pkVal),
-            cells: List.generate(
-              _cols.length,
-              (i) => DataCell(
-                Text(
-                  i < row.length ? (row[i]?.toString() ?? '') : '',
-                  style: const TextStyle(
-                      fontSize: 11, fontFamily: 'monospace'),
-                  overflow: TextOverflow.ellipsis,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+        rows:
+            rows.map((row) {
+              final pkVal =
+                  refColIdx >= 0 && refColIdx < row.length
+                      ? row[refColIdx]?.toString() ?? ''
+                      : '';
+              final isSelected = pkVal == widget.currentValue;
+              return DataRow(
+                selected: isSelected,
+                color:
+                    isSelected
+                        ? WidgetStateProperty.all(
+                          cs.primaryContainer.withAlpha(120),
+                        )
+                        : null,
+                onSelectChanged: (_) => Navigator.pop(context, pkVal),
+                cells: List.generate(
+                  _cols.length,
+                  (i) => DataCell(
+                    Text(
+                      i < row.length ? (row[i]?.toString() ?? '') : '',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontFamily: 'monospace',
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          );
-        }).toList(),
+              );
+            }).toList(),
       ),
     );
   }
@@ -673,21 +740,25 @@ class _PickerDropdown extends StatelessWidget {
             children: [
               Icon(icon, size: 12, color: cs.onSurfaceVariant),
               const SizedBox(width: 4),
-              Text(hint,
-                  style: TextStyle(
-                      fontSize: 12, color: cs.onSurfaceVariant)),
+              Text(
+                hint,
+                style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+              ),
             ],
           ),
           isDense: true,
           isExpanded: true,
           style: const TextStyle(fontSize: 12),
           borderRadius: BorderRadius.circular(6),
-          items: items
-              .map((s) => DropdownMenuItem(
-                    value: s,
-                    child: Text(s, overflow: TextOverflow.ellipsis),
-                  ))
-              .toList(),
+          items:
+              items
+                  .map(
+                    (s) => DropdownMenuItem(
+                      value: s,
+                      child: Text(s, overflow: TextOverflow.ellipsis),
+                    ),
+                  )
+                  .toList(),
           onChanged: onChanged,
         ),
       ),

@@ -12,10 +12,8 @@ MysqlQueryExecutor queryExecutor(QueryExecutorRef ref) =>
     const MysqlQueryExecutor();
 
 @riverpod
-QueryHistoryDatasource queryHistoryDatasource(
-        QueryHistoryDatasourceRef ref) =>
-    QueryHistoryDatasource(
-        ref.watch(appDatabaseProvider).queryHistoryDao);
+QueryHistoryDatasource queryHistoryDatasource(QueryHistoryDatasourceRef ref) =>
+    QueryHistoryDatasource(ref.watch(appDatabaseProvider).queryHistoryDao);
 
 // Per-tab SQL content
 @riverpod
@@ -30,8 +28,7 @@ class EditorContent extends _$EditorContent {
 @riverpod
 class QueryExecution extends _$QueryExecution {
   @override
-  AsyncValue<QueryResult?> build(String tabId) =>
-      const AsyncValue.data(null);
+  AsyncValue<QueryResult?> build(String tabId) => const AsyncValue.data(null);
 
   Future<void> execute({
     required String sql,

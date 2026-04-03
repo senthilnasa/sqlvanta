@@ -17,6 +17,7 @@ import 'tree_node_tile.dart';
 class SchemaTreeView extends ConsumerStatefulWidget {
   final WorkspaceSession session;
   final String filter;
+
   /// Called when the user double-taps a table — consumer can switch to Table Data tab.
   final VoidCallback? onTableDoubleClick;
 
@@ -44,18 +45,20 @@ class _SchemaTreeViewState extends ConsumerState<SchemaTreeView> {
 
     return dbAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Text('Error: $e', style: const TextStyle(fontSize: 12)),
-        ),
-      ),
+      error:
+          (e, _) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text('Error: $e', style: const TextStyle(fontSize: 12)),
+            ),
+          ),
       data: (databases) {
-        final filtered = widget.filter.isEmpty
-            ? databases
-            : databases
-                .where((d) => d.name.toLowerCase().contains(widget.filter))
-                .toList();
+        final filtered =
+            widget.filter.isEmpty
+                ? databases
+                : databases
+                    .where((d) => d.name.toLowerCase().contains(widget.filter))
+                    .toList();
 
         if (filtered.isEmpty) {
           return const Center(
@@ -76,17 +79,25 @@ class _SchemaTreeViewState extends ConsumerState<SchemaTreeView> {
                   label: db.name,
                   type: TreeNodeType.database,
                   isExpanded: isExpanded,
-                  onTap: () => setState(() => isExpanded
-                      ? _expandedDbs.remove(db.name)
-                      : _expandedDbs.add(db.name)),
+                  onTap:
+                      () => setState(
+                        () =>
+                            isExpanded
+                                ? _expandedDbs.remove(db.name)
+                                : _expandedDbs.add(db.name),
+                      ),
                   contextMenuItems: [
                     const PopupMenuItem(
-                        value: 'use_db', child: Text('Use Database')),
+                      value: 'use_db',
+                      child: Text('Use Database'),
+                    ),
                     const PopupMenuItem(
-                        value: 'copy_name', child: Text('Copy Name')),
+                      value: 'copy_name',
+                      child: Text('Copy Name'),
+                    ),
                   ],
-                  onContextMenuSelected: (action) =>
-                      _onDbAction(action, db.name),
+                  onContextMenuSelected:
+                      (action) => _onDbAction(action, db.name),
                 ),
                 if (isExpanded)
                   _DbCategories(
@@ -95,14 +106,20 @@ class _SchemaTreeViewState extends ConsumerState<SchemaTreeView> {
                     filter: widget.filter,
                     expandedCats: _expandedCats,
                     expandedTables: _expandedTables,
-                    onToggleCat: (key) => setState(() =>
-                        _expandedCats.contains(key)
-                            ? _expandedCats.remove(key)
-                            : _expandedCats.add(key)),
-                    onToggleTable: (key) => setState(() =>
-                        _expandedTables.contains(key)
-                            ? _expandedTables.remove(key)
-                            : _expandedTables.add(key)),
+                    onToggleCat:
+                        (key) => setState(
+                          () =>
+                              _expandedCats.contains(key)
+                                  ? _expandedCats.remove(key)
+                                  : _expandedCats.add(key),
+                        ),
+                    onToggleTable:
+                        (key) => setState(
+                          () =>
+                              _expandedTables.contains(key)
+                                  ? _expandedTables.remove(key)
+                                  : _expandedTables.add(key),
+                        ),
                     onTableAction: _onTableAction,
                     onTableDoubleClick: widget.onTableDoubleClick,
                   ),
@@ -118,9 +135,8 @@ class _SchemaTreeViewState extends ConsumerState<SchemaTreeView> {
     switch (action) {
       case 'use_db':
         final session = widget.session;
-        final activeTab = session.tabs
-            .where((t) => t.id == session.activeTabId)
-            .firstOrNull;
+        final activeTab =
+            session.tabs.where((t) => t.id == session.activeTabId).firstOrNull;
         if (activeTab != null) {
           ref
               .read(workspaceProvider.notifier)
@@ -136,13 +152,10 @@ class _SchemaTreeViewState extends ConsumerState<SchemaTreeView> {
       case 'select_1000':
         final sql = 'SELECT * FROM `$dbName`.`$tableName` LIMIT 1000;';
         final session = widget.session;
-        final activeTab = session.tabs
-            .where((t) => t.id == session.activeTabId)
-            .firstOrNull;
+        final activeTab =
+            session.tabs.where((t) => t.id == session.activeTabId).firstOrNull;
         if (activeTab != null) {
-          ref
-              .read(editorContentProvider(activeTab.id).notifier)
-              .update(sql);
+          ref.read(editorContentProvider(activeTab.id).notifier).update(sql);
           ref
               .read(workspaceProvider.notifier)
               .updateTabDatabase(session.sessionId, activeTab.id, dbName);
@@ -189,30 +202,38 @@ class _DbCategories extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tablesAsync =
-        ref.watch(schemaTablesProvider(session.mysqlConnection, database));
+    final tablesAsync = ref.watch(
+      schemaTablesProvider(session.mysqlConnection, database),
+    );
 
     return tablesAsync.when(
-      loading: () => const Padding(
-        padding: EdgeInsets.only(left: 24, top: 4, bottom: 4),
-        child: SizedBox(
-          height: 14,
-          width: 14,
-          child: CircularProgressIndicator(strokeWidth: 1.5),
-        ),
-      ),
+      loading:
+          () => const Padding(
+            padding: EdgeInsets.only(left: 24, top: 4, bottom: 4),
+            child: SizedBox(
+              height: 14,
+              width: 14,
+              child: CircularProgressIndicator(strokeWidth: 1.5),
+            ),
+          ),
       error: (_, s) => const SizedBox.shrink(),
       data: (tableNodes) {
-        final tables = tableNodes
-            .where((t) => !t.isView)
-            .where((t) =>
-                filter.isEmpty || t.name.toLowerCase().contains(filter))
-            .toList();
-        final views = tableNodes
-            .where((t) => t.isView)
-            .where((t) =>
-                filter.isEmpty || t.name.toLowerCase().contains(filter))
-            .toList();
+        final tables =
+            tableNodes
+                .where((t) => !t.isView)
+                .where(
+                  (t) =>
+                      filter.isEmpty || t.name.toLowerCase().contains(filter),
+                )
+                .toList();
+        final views =
+            tableNodes
+                .where((t) => t.isView)
+                .where(
+                  (t) =>
+                      filter.isEmpty || t.name.toLowerCase().contains(filter),
+                )
+                .toList();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -226,69 +247,83 @@ class _DbCategories extends ConsumerWidget {
               isExpanded: expandedCats.contains('$database::tables'),
               onToggle: () => onToggleCat('$database::tables'),
               child: Column(
-                children: tables.map((t) {
-                  final key = '$database.${t.name}';
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 32),
-                        child: TreeNodeTile(
-                          label: t.name,
-                          type: TreeNodeType.table,
-                          isExpanded: expandedTables.contains(key),
-                          subtitle: t.estimatedRows > 0
-                              ? _fmtRows(t.estimatedRows)
-                              : null,
-                          onTap: () => onToggleTable(key),
-                          onDoubleTap: () {
-                            // Set selected table so Table Data tab auto-loads it.
-                            ref
-                                .read(selectedTableProvider(session.sessionId).notifier)
-                                .state = SelectedTable(
+                children:
+                    tables.map((t) {
+                      final key = '$database.${t.name}';
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 32),
+                            child: TreeNodeTile(
+                              label: t.name,
+                              type: TreeNodeType.table,
+                              isExpanded: expandedTables.contains(key),
+                              subtitle:
+                                  t.estimatedRows > 0
+                                      ? _fmtRows(t.estimatedRows)
+                                      : null,
+                              onTap: () => onToggleTable(key),
+                              onDoubleTap: () {
+                                // Set selected table so Table Data tab auto-loads it.
+                                ref
+                                    .read(
+                                      selectedTableProvider(
+                                        session.sessionId,
+                                      ).notifier,
+                                    )
+                                    .state = SelectedTable(
+                                  database: database,
+                                  table: t.name,
+                                );
+                                onTableDoubleClick?.call();
+                              },
+                              contextMenuItems: [
+                                const PopupMenuItem(
+                                  value: 'select_1000',
+                                  child: Text('Select Top 1000 Rows'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'open_table_data',
+                                  child: Text('Open in Table Data'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'copy_name',
+                                  child: Text('Copy Table Name'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'copy_qualified',
+                                  child: Text('Copy Qualified Name'),
+                                ),
+                              ],
+                              onContextMenuSelected: (action) {
+                                if (action == 'open_table_data') {
+                                  ref
+                                      .read(
+                                        selectedTableProvider(
+                                          session.sessionId,
+                                        ).notifier,
+                                      )
+                                      .state = SelectedTable(
+                                    database: database,
+                                    table: t.name,
+                                  );
+                                  onTableDoubleClick?.call();
+                                } else {
+                                  onTableAction(action, database, t.name);
+                                }
+                              },
+                            ),
+                          ),
+                          if (expandedTables.contains(key))
+                            _ColumnList(
+                              session: session,
                               database: database,
                               table: t.name,
-                            );
-                            onTableDoubleClick?.call();
-                          },
-                          contextMenuItems: [
-                            const PopupMenuItem(
-                                value: 'select_1000',
-                                child: Text('Select Top 1000 Rows')),
-                            const PopupMenuItem(
-                                value: 'open_table_data',
-                                child: Text('Open in Table Data')),
-                            const PopupMenuItem(
-                                value: 'copy_name',
-                                child: Text('Copy Table Name')),
-                            const PopupMenuItem(
-                                value: 'copy_qualified',
-                                child: Text('Copy Qualified Name')),
-                          ],
-                          onContextMenuSelected: (action) {
-                            if (action == 'open_table_data') {
-                              ref
-                                  .read(selectedTableProvider(session.sessionId).notifier)
-                                  .state = SelectedTable(
-                                database: database,
-                                table: t.name,
-                              );
-                              onTableDoubleClick?.call();
-                            } else {
-                              onTableAction(action, database, t.name);
-                            }
-                          },
-                        ),
-                      ),
-                      if (expandedTables.contains(key))
-                        _ColumnList(
-                          session: session,
-                          database: database,
-                          table: t.name,
-                        ),
-                    ],
-                  );
-                }).toList(),
+                            ),
+                        ],
+                      );
+                    }).toList(),
               ),
             ),
 
@@ -302,26 +337,38 @@ class _DbCategories extends ConsumerWidget {
                 isExpanded: expandedCats.contains('$database::views'),
                 onToggle: () => onToggleCat('$database::views'),
                 child: Column(
-                  children: views.map((v) => Padding(
-                        padding: const EdgeInsets.only(left: 32),
-                        child: TreeNodeTile(
-                          label: v.name,
-                          type: TreeNodeType.view,
-                          isExpanded: false,
-                          onTap: () =>
-                              onTableAction('select_1000', database, v.name),
-                          contextMenuItems: [
-                            const PopupMenuItem(
-                                value: 'select_1000',
-                                child: Text('Select Top 1000 Rows')),
-                            const PopupMenuItem(
-                                value: 'copy_name',
-                                child: Text('Copy Name')),
-                          ],
-                          onContextMenuSelected: (action) =>
-                              onTableAction(action, database, v.name),
-                        ),
-                      )).toList(),
+                  children:
+                      views
+                          .map(
+                            (v) => Padding(
+                              padding: const EdgeInsets.only(left: 32),
+                              child: TreeNodeTile(
+                                label: v.name,
+                                type: TreeNodeType.view,
+                                isExpanded: false,
+                                onTap:
+                                    () => onTableAction(
+                                      'select_1000',
+                                      database,
+                                      v.name,
+                                    ),
+                                contextMenuItems: [
+                                  const PopupMenuItem(
+                                    value: 'select_1000',
+                                    child: Text('Select Top 1000 Rows'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'copy_name',
+                                    child: Text('Copy Name'),
+                                  ),
+                                ],
+                                onContextMenuSelected:
+                                    (action) =>
+                                        onTableAction(action, database, v.name),
+                              ),
+                            ),
+                          )
+                          .toList(),
                 ),
               ),
 
@@ -332,27 +379,35 @@ class _DbCategories extends ConsumerWidget {
               type: TreeNodeType.storedProc,
               isExpanded: expandedCats.contains('$database::procs'),
               onToggle: () => onToggleCat('$database::procs'),
-              future: () => MysqlSchemaFetcher()
-                  .fetchRoutines(session.mysqlConnection, database, 'PROCEDURE'),
-              itemBuilder: (name) => Padding(
-                padding: const EdgeInsets.only(left: 32),
-                child: TreeNodeTile(
-                  label: name,
-                  type: TreeNodeType.storedProc,
-                  isExpanded: false,
-                  onTap: () {},
-                  contextMenuItems: [
-                    PopupMenuItem(
-                        value: 'copy_call',
-                        child: Text('Copy: CALL $name()')),
-                  ],
-                  onContextMenuSelected: (action) {
-                    if (action == 'copy_call') {
-                      Clipboard.setData(ClipboardData(text: 'CALL $name()'));
-                    }
-                  },
-                ),
-              ),
+              future:
+                  () => MysqlSchemaFetcher().fetchRoutines(
+                    session.mysqlConnection,
+                    database,
+                    'PROCEDURE',
+                  ),
+              itemBuilder:
+                  (name) => Padding(
+                    padding: const EdgeInsets.only(left: 32),
+                    child: TreeNodeTile(
+                      label: name,
+                      type: TreeNodeType.storedProc,
+                      isExpanded: false,
+                      onTap: () {},
+                      contextMenuItems: [
+                        PopupMenuItem(
+                          value: 'copy_call',
+                          child: Text('Copy: CALL $name()'),
+                        ),
+                      ],
+                      onContextMenuSelected: (action) {
+                        if (action == 'copy_call') {
+                          Clipboard.setData(
+                            ClipboardData(text: 'CALL $name()'),
+                          );
+                        }
+                      },
+                    ),
+                  ),
             ),
 
             // Functions
@@ -362,26 +417,35 @@ class _DbCategories extends ConsumerWidget {
               type: TreeNodeType.function,
               isExpanded: expandedCats.contains('$database::funcs'),
               onToggle: () => onToggleCat('$database::funcs'),
-              future: () => MysqlSchemaFetcher()
-                  .fetchRoutines(session.mysqlConnection, database, 'FUNCTION')
-                  .then((r) => r.map((x) => RoutineInfo(x.name)).toList()),
-              itemBuilder: (name) => Padding(
-                padding: const EdgeInsets.only(left: 32),
-                child: TreeNodeTile(
-                  label: name,
-                  type: TreeNodeType.function,
-                  isExpanded: false,
-                  onTap: () {},
-                  contextMenuItems: [
-                    PopupMenuItem(value: 'copy', child: Text('Copy: $name')),
-                  ],
-                  onContextMenuSelected: (action) {
-                    if (action == 'copy') {
-                      Clipboard.setData(ClipboardData(text: name));
-                    }
-                  },
-                ),
-              ),
+              future:
+                  () => MysqlSchemaFetcher()
+                      .fetchRoutines(
+                        session.mysqlConnection,
+                        database,
+                        'FUNCTION',
+                      )
+                      .then((r) => r.map((x) => RoutineInfo(x.name)).toList()),
+              itemBuilder:
+                  (name) => Padding(
+                    padding: const EdgeInsets.only(left: 32),
+                    child: TreeNodeTile(
+                      label: name,
+                      type: TreeNodeType.function,
+                      isExpanded: false,
+                      onTap: () {},
+                      contextMenuItems: [
+                        PopupMenuItem(
+                          value: 'copy',
+                          child: Text('Copy: $name'),
+                        ),
+                      ],
+                      onContextMenuSelected: (action) {
+                        if (action == 'copy') {
+                          Clipboard.setData(ClipboardData(text: name));
+                        }
+                      },
+                    ),
+                  ),
             ),
 
             // Triggers
@@ -391,18 +455,20 @@ class _DbCategories extends ConsumerWidget {
               type: TreeNodeType.trigger,
               isExpanded: expandedCats.contains('$database::triggers'),
               onToggle: () => onToggleCat('$database::triggers'),
-              future: () => MysqlSchemaFetcher()
-                  .fetchTriggers(session.mysqlConnection, database)
-                  .then((r) => r.map((x) => RoutineInfo(x.name)).toList()),
-              itemBuilder: (name) => Padding(
-                padding: const EdgeInsets.only(left: 32),
-                child: TreeNodeTile(
-                  label: name,
-                  type: TreeNodeType.trigger,
-                  isExpanded: false,
-                  onTap: () {},
-                ),
-              ),
+              future:
+                  () => MysqlSchemaFetcher()
+                      .fetchTriggers(session.mysqlConnection, database)
+                      .then((r) => r.map((x) => RoutineInfo(x.name)).toList()),
+              itemBuilder:
+                  (name) => Padding(
+                    padding: const EdgeInsets.only(left: 32),
+                    child: TreeNodeTile(
+                      label: name,
+                      type: TreeNodeType.trigger,
+                      isExpanded: false,
+                      onTap: () {},
+                    ),
+                  ),
             ),
 
             // Events
@@ -412,18 +478,20 @@ class _DbCategories extends ConsumerWidget {
               type: TreeNodeType.event,
               isExpanded: expandedCats.contains('$database::events'),
               onToggle: () => onToggleCat('$database::events'),
-              future: () => MysqlSchemaFetcher()
-                  .fetchEvents(session.mysqlConnection, database)
-                  .then((r) => r.map((x) => RoutineInfo(x.name)).toList()),
-              itemBuilder: (name) => Padding(
-                padding: const EdgeInsets.only(left: 32),
-                child: TreeNodeTile(
-                  label: name,
-                  type: TreeNodeType.event,
-                  isExpanded: false,
-                  onTap: () {},
-                ),
-              ),
+              future:
+                  () => MysqlSchemaFetcher()
+                      .fetchEvents(session.mysqlConnection, database)
+                      .then((r) => r.map((x) => RoutineInfo(x.name)).toList()),
+              itemBuilder:
+                  (name) => Padding(
+                    padding: const EdgeInsets.only(left: 32),
+                    child: TreeNodeTile(
+                      label: name,
+                      type: TreeNodeType.event,
+                      isExpanded: false,
+                      onTap: () {},
+                    ),
+                  ),
             ),
           ],
         );
@@ -541,27 +609,30 @@ class _LazyCategoryState extends State<_LazyCategory> {
               if (snap.connectionState == ConnectionState.waiting) {
                 return const Padding(
                   padding: EdgeInsets.only(left: 48, top: 4, bottom: 4),
-                  child:
-                      SizedBox(height: 12, width: 12, child: CircularProgressIndicator(strokeWidth: 1)),
+                  child: SizedBox(
+                    height: 12,
+                    width: 12,
+                    child: CircularProgressIndicator(strokeWidth: 1),
+                  ),
                 );
               }
               final items = snap.data ?? [];
               if (items.isEmpty) {
                 return Padding(
                   padding: const EdgeInsets.only(left: 48, top: 2, bottom: 4),
-                  child: Text('(none)',
-                      style: TextStyle(
-                          fontSize: 10,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.4))),
+                  child: Text(
+                    '(none)',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
+                  ),
                 );
               }
               return Column(
-                children: items
-                    .map((r) => widget.itemBuilder(r.name))
-                    .toList(),
+                children: items.map((r) => widget.itemBuilder(r.name)).toList(),
               );
             },
           ),
@@ -594,7 +665,10 @@ class _ColumnListState extends State<_ColumnList> {
   void initState() {
     super.initState();
     _future = MysqlSchemaFetcher().fetchColumns(
-        widget.session.mysqlConnection, widget.database, widget.table);
+      widget.session.mysqlConnection,
+      widget.database,
+      widget.table,
+    );
   }
 
   @override
@@ -617,94 +691,102 @@ class _ColumnListState extends State<_ColumnList> {
         }
         final cols = snap.data ?? [];
         return Column(
-          children: cols.map((col) {
-            return Padding(
-              padding: const EdgeInsets.only(left: 48),
-              child: GestureDetector(
-                onSecondaryTapUp: (details) async {
-                  final result = await showMenu<String>(
-                    context: ctx,
-                    position: RelativeRect.fromLTRB(
-                      details.globalPosition.dx,
-                      details.globalPosition.dy,
-                      details.globalPosition.dx,
-                      details.globalPosition.dy,
-                    ),
-                    items: [
-                      PopupMenuItem(
-                          value: 'copy',
-                          child: Text('Copy: ${col.name}')),
-                    ],
-                  );
-                  if (result == 'copy') {
-                    Clipboard.setData(ClipboardData(text: col.name));
-                  }
-                },
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  child: Row(
-                    children: [
-                      Icon(
-                        col.isPrimaryKey
-                            ? Icons.vpn_key_outlined
-                            : col.isForeignKey
+          children:
+              cols.map((col) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 48),
+                  child: GestureDetector(
+                    onSecondaryTapUp: (details) async {
+                      final result = await showMenu<String>(
+                        context: ctx,
+                        position: RelativeRect.fromLTRB(
+                          details.globalPosition.dx,
+                          details.globalPosition.dy,
+                          details.globalPosition.dx,
+                          details.globalPosition.dy,
+                        ),
+                        items: [
+                          PopupMenuItem(
+                            value: 'copy',
+                            child: Text('Copy: ${col.name}'),
+                          ),
+                        ],
+                      );
+                      if (result == 'copy') {
+                        Clipboard.setData(ClipboardData(text: col.name));
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            col.isPrimaryKey
+                                ? Icons.vpn_key_outlined
+                                : col.isForeignKey
                                 ? Icons.link
                                 : col.isUniqueKey
-                                    ? Icons.fingerprint
-                                    : Icons.horizontal_rule,
-                        size: 12,
-                        color: col.isPrimaryKey
-                            ? Colors.amber.shade600
-                            : col.isForeignKey
-                                ? cs.tertiary
-                                : col.isUniqueKey
+                                ? Icons.fingerprint
+                                : Icons.horizontal_rule,
+                            size: 12,
+                            color:
+                                col.isPrimaryKey
+                                    ? Colors.amber.shade600
+                                    : col.isForeignKey
+                                    ? cs.tertiary
+                                    : col.isUniqueKey
                                     ? cs.secondary
                                     : cs.onSurface.withValues(alpha: 0.5),
-                      ),
-                      const SizedBox(width: 5),
-                      Expanded(
-                        child: Text(
-                          col.name,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontSize: 11,
-                            fontWeight: col.isPrimaryKey
-                                ? FontWeight.w600
-                                : FontWeight.normal,
-                            color: col.isPrimaryKey
-                                ? Colors.amber.shade700
-                                : null,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              col.name,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontSize: 11,
+                                fontWeight:
+                                    col.isPrimaryKey
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                color:
+                                    col.isPrimaryKey
+                                        ? Colors.amber.shade700
+                                        : null,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          // Badges
+                          if (col.isPrimaryKey)
+                            _keyBadge('PK', Colors.amber.shade700),
+                          if (col.isForeignKey) _keyBadge('FK', cs.tertiary),
+                          if (col.isUniqueKey) _keyBadge('UQ', cs.secondary),
+                          const SizedBox(width: 4),
+                          Text(
+                            col.columnType ?? col.dataType,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontSize: 9,
+                              color: cs.onSurface.withValues(alpha: 0.5),
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          if (!col.isNullable) ...[
+                            const SizedBox(width: 3),
+                            Icon(
+                              Icons.block,
+                              size: 9,
+                              color: cs.error.withValues(alpha: 0.6),
+                            ),
+                          ],
+                        ],
                       ),
-                      // Badges
-                      if (col.isPrimaryKey)
-                        _keyBadge('PK', Colors.amber.shade700),
-                      if (col.isForeignKey)
-                        _keyBadge('FK', cs.tertiary),
-                      if (col.isUniqueKey)
-                        _keyBadge('UQ', cs.secondary),
-                      const SizedBox(width: 4),
-                      Text(
-                        col.columnType ?? col.dataType,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          fontSize: 9,
-                          color: cs.onSurface.withValues(alpha: 0.5),
-                          fontFamily: 'monospace',
-                        ),
-                      ),
-                      if (!col.isNullable) ...[
-                        const SizedBox(width: 3),
-                        Icon(Icons.block,
-                            size: 9, color: cs.error.withValues(alpha: 0.6)),
-                      ],
-                    ],
+                    ),
                   ),
-                ),
-              ),
-            );
-          }).toList(),
+                );
+              }).toList(),
         );
       },
     );

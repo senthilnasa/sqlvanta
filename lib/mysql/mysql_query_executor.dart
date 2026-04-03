@@ -25,9 +25,7 @@ class QueryResult {
 class MysqlQueryExecutor {
   final int maxRows;
 
-  const MysqlQueryExecutor({
-    this.maxRows = DbConstants.defaultResultMaxRows,
-  });
+  const MysqlQueryExecutor({this.maxRows = DbConstants.defaultResultMaxRows});
 
   Future<QueryResult> execute(
     MySQLConnection conn,
@@ -47,8 +45,7 @@ class MysqlQueryExecutor {
       final result = await conn.execute(finalSql);
       stopwatch.stop();
 
-      final cols =
-          result.cols.map((c) => c.name).toList();
+      final cols = result.cols.map((c) => c.name).toList();
 
       if (cols.isEmpty) {
         // DML result (INSERT/UPDATE/DELETE)
@@ -59,10 +56,10 @@ class MysqlQueryExecutor {
       }
 
       // SELECT result
-      final rows = result.rows.map((row) {
-        return List<dynamic>.generate(
-            cols.length, (i) => row.colAt(i));
-      }).toList();
+      final rows =
+          result.rows.map((row) {
+            return List<dynamic>.generate(cols.length, (i) => row.colAt(i));
+          }).toList();
 
       return QueryResult(
         columns: cols,
@@ -83,7 +80,8 @@ class MysqlQueryExecutor {
   String _injectLimit(String sql, int limit) {
     final upper = sql.toUpperCase();
     // Only inject for SELECT statements without an existing LIMIT
-    if (upper.startsWith('SELECT') && !upper.contains('\nLIMIT') &&
+    if (upper.startsWith('SELECT') &&
+        !upper.contains('\nLIMIT') &&
         !RegExp(r'\bLIMIT\b', caseSensitive: false).hasMatch(sql)) {
       // Strip trailing semicolon if present
       final trimmed =

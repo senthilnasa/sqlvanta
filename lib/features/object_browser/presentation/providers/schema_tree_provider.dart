@@ -30,10 +30,12 @@ Future<List<TableNode>> schemaTables(
   final fetcher = ref.watch(schemaFetcherProvider);
   final results = await fetcher.fetchTables(conn, database);
   return results
-      .map((t) => TableNode(
-            name: t.name,
-            type: t.type,
-            estimatedRows: t.estimatedRows,
-          ))
+      .map(
+        (t) => TableNode(
+          name: t.name,
+          type: t.type,
+          estimatedRows: t.estimatedRows,
+        ),
+      )
       .toList();
 }

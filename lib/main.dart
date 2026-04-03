@@ -11,8 +11,14 @@ void main() async {
   await windowManager.ensureInitialized();
 
   const windowOptions = WindowOptions(
-    size: Size(AppConstants.defaultWindowWidth, AppConstants.defaultWindowHeight),
-    minimumSize: Size(AppConstants.minWindowWidth, AppConstants.minWindowHeight),
+    size: Size(
+      AppConstants.defaultWindowWidth,
+      AppConstants.defaultWindowHeight,
+    ),
+    minimumSize: Size(
+      AppConstants.minWindowWidth,
+      AppConstants.minWindowHeight,
+    ),
     title: AppConstants.appName,
     center: true,
     backgroundColor: Colors.transparent,
@@ -25,9 +31,5 @@ void main() async {
     await windowManager.focus();
   });
 
-  runApp(
-    const ProviderScope(
-      child: SQLvantaApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: SQLvantaApp()));
 }

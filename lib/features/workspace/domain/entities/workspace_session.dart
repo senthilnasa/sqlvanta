@@ -19,10 +19,7 @@ class WorkspaceSession extends Equatable {
     this.activeTabId,
   });
 
-  WorkspaceSession copyWith({
-    List<QueryTab>? tabs,
-    String? activeTabId,
-  }) {
+  WorkspaceSession copyWith({List<QueryTab>? tabs, String? activeTabId}) {
     return WorkspaceSession(
       sessionId: sessionId,
       connection: connection,
@@ -33,6 +30,5 @@ class WorkspaceSession extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [sessionId, connection, tabs, activeTabId];
+  List<Object?> get props => [sessionId, connection, tabs, activeTabId];
 }

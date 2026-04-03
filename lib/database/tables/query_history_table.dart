@@ -8,8 +8,7 @@ class QueryHistory extends Table {
       text().references(Connections, #id, onDelete: KeyAction.cascade)();
   TextColumn get databaseName => text().nullable()();
   TextColumn get sqlText => text()();
-  DateTimeColumn get executedAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get executedAt => dateTime().withDefault(currentDateAndTime)();
   IntColumn get durationMs => integer()();
   IntColumn get rowsAffected => integer().nullable()();
   BoolColumn get hadError => boolean().withDefault(const Constant(false))();

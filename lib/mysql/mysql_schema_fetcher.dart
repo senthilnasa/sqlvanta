@@ -22,8 +22,14 @@ class ColumnInfo {
   final String? columnKey; // 'PRI', 'MUL', 'UNI'
   final String? columnType; // Full type e.g. 'varchar(255)', 'int(11)'
   const ColumnInfo(
-      this.name, this.dataType, this.isNullable, this.columnDefault,
-      this.extra, {this.columnKey, this.columnType});
+    this.name,
+    this.dataType,
+    this.isNullable,
+    this.columnDefault,
+    this.extra, {
+    this.columnKey,
+    this.columnType,
+  });
 
   bool get isPrimaryKey => columnKey == 'PRI';
   bool get isForeignKey => columnKey == 'MUL';
@@ -67,6 +73,7 @@ class ForeignKeyInfo {
   final String column;
   final String refTable;
   final String refColumn;
+
   /// The database that owns [refTable]. Empty string means same DB as [table].
   final String refDatabase;
   const ForeignKeyInfo({
@@ -104,7 +111,9 @@ class MysqlSchemaFetcher {
   }
 
   Future<List<TableInfo>> fetchTables(
-      MySQLConnection conn, String database) async {
+    MySQLConnection conn,
+    String database,
+  ) async {
     final result = await conn.execute(
       'SELECT TABLE_NAME, TABLE_TYPE, COALESCE(TABLE_ROWS, 0) AS TABLE_ROWS '
       'FROM information_schema.TABLES '
@@ -122,7 +131,10 @@ class MysqlSchemaFetcher {
   }
 
   Future<List<RoutineInfo>> fetchRoutines(
-      MySQLConnection conn, String database, String routineType) async {
+    MySQLConnection conn,
+    String database,
+    String routineType,
+  ) async {
     final result = await conn.execute(
       'SELECT ROUTINE_NAME FROM information_schema.ROUTINES '
       'WHERE ROUTINE_SCHEMA = :db AND ROUTINE_TYPE = :type '
@@ -136,7 +148,9 @@ class MysqlSchemaFetcher {
   }
 
   Future<List<TriggerInfo>> fetchTriggers(
-      MySQLConnection conn, String database) async {
+    MySQLConnection conn,
+    String database,
+  ) async {
     final result = await conn.execute(
       'SELECT TRIGGER_NAME FROM information_schema.TRIGGERS '
       'WHERE TRIGGER_SCHEMA = :db ORDER BY TRIGGER_NAME',
@@ -149,7 +163,9 @@ class MysqlSchemaFetcher {
   }
 
   Future<List<EventInfo>> fetchEvents(
-      MySQLConnection conn, String database) async {
+    MySQLConnection conn,
+    String database,
+  ) async {
     final result = await conn.execute(
       'SELECT EVENT_NAME FROM information_schema.EVENTS '
       'WHERE EVENT_SCHEMA = :db ORDER BY EVENT_NAME',
@@ -162,7 +178,9 @@ class MysqlSchemaFetcher {
   }
 
   Future<List<ForeignKeyInfo>> fetchForeignKeys(
-      MySQLConnection conn, String database) async {
+    MySQLConnection conn,
+    String database,
+  ) async {
     final result = await conn.execute(
       'SELECT kcu.TABLE_NAME, kcu.COLUMN_NAME, '
       'kcu.REFERENCED_TABLE_NAME, kcu.REFERENCED_COLUMN_NAME, '
@@ -189,7 +207,10 @@ class MysqlSchemaFetcher {
   }
 
   Future<List<ColumnInfo>> fetchColumns(
-      MySQLConnection conn, String database, String table) async {
+    MySQLConnection conn,
+    String database,
+    String table,
+  ) async {
     final result = await conn.execute(
       'SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT, EXTRA, '
       'COLUMN_KEY, COLUMN_TYPE '
@@ -213,7 +234,10 @@ class MysqlSchemaFetcher {
 
   /// Fetch constraints (PK, FK, UNIQUE) for a table.
   Future<List<ConstraintInfo>> fetchConstraints(
-      MySQLConnection conn, String database, String table) async {
+    MySQLConnection conn,
+    String database,
+    String table,
+  ) async {
     final result = await conn.execute(
       'SELECT tc.CONSTRAINT_NAME, tc.CONSTRAINT_TYPE, '
       'kcu.COLUMN_NAME, kcu.REFERENCED_TABLE_NAME, kcu.REFERENCED_COLUMN_NAME '
@@ -260,7 +284,10 @@ class MysqlSchemaFetcher {
 
   /// Fetch the CREATE TABLE DDL statement.
   Future<String> fetchCreateTable(
-      MySQLConnection conn, String database, String table) async {
+    MySQLConnection conn,
+    String database,
+    String table,
+  ) async {
     try {
       final result = await conn.execute(
         'SHOW CREATE TABLE `$database`.`$table`',
@@ -268,8 +295,8 @@ class MysqlSchemaFetcher {
       if (result.rows.isEmpty) return '-- No DDL available';
       final row = result.rows.first;
       return row.colByName('Create Table') ??
-             row.colByName('Create View') ??
-             '-- No DDL available';
+          row.colByName('Create View') ??
+          '-- No DDL available';
     } catch (e) {
       return '-- Error fetching DDL: $e';
     }
@@ -277,7 +304,10 @@ class MysqlSchemaFetcher {
 
   /// Fetch tables that reference a given table (reverse FK lookup).
   Future<List<ForeignKeyInfo>> fetchReferencedBy(
-      MySQLConnection conn, String database, String table) async {
+    MySQLConnection conn,
+    String database,
+    String table,
+  ) async {
     final result = await conn.execute(
       'SELECT kcu.TABLE_NAME, kcu.COLUMN_NAME, '
       'kcu.REFERENCED_TABLE_NAME, kcu.REFERENCED_COLUMN_NAME '
@@ -288,12 +318,14 @@ class MysqlSchemaFetcher {
       {'db': database, 'tbl': table},
     );
     return result.rows
-        .map((r) => ForeignKeyInfo(
-              table: r.colByName('TABLE_NAME') ?? '',
-              column: r.colByName('COLUMN_NAME') ?? '',
-              refTable: r.colByName('REFERENCED_TABLE_NAME') ?? '',
-              refColumn: r.colByName('REFERENCED_COLUMN_NAME') ?? '',
-            ))
+        .map(
+          (r) => ForeignKeyInfo(
+            table: r.colByName('TABLE_NAME') ?? '',
+            column: r.colByName('COLUMN_NAME') ?? '',
+            refTable: r.colByName('REFERENCED_TABLE_NAME') ?? '',
+            refColumn: r.colByName('REFERENCED_COLUMN_NAME') ?? '',
+          ),
+        )
         .where((fk) => fk.table.isNotEmpty)
         .toList();
   }

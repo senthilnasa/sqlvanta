@@ -65,8 +65,18 @@ class ConnectionEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id, name, host, port, username, defaultDatabase,
-        useSsl, sslCaCertPath, connectionTimeout,
-        sortOrder, colorTag, notes, lastConnectedAt,
-      ];
+    id,
+    name,
+    host,
+    port,
+    username,
+    defaultDatabase,
+    useSsl,
+    sslCaCertPath,
+    connectionTimeout,
+    sortOrder,
+    colorTag,
+    notes,
+    lastConnectedAt,
+  ];
 }

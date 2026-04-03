@@ -13,7 +13,8 @@ class Connections extends Table {
   TextColumn get defaultDatabase => text().nullable()();
   BoolColumn get useSsl => boolean().withDefault(const Constant(false))();
   TextColumn get sslCaCertPath => text().nullable()();
-  IntColumn get connectionTimeout => integer().withDefault(const Constant(30))();
+  IntColumn get connectionTimeout =>
+      integer().withDefault(const Constant(30))();
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
