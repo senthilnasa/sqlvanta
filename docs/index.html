@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLvanta — Open-Source MySQL Desktop Client</title>
+    <meta name="description" content="SQLvanta is a production-grade, open-source MySQL desktop client built with Flutter. Features SQL editor with autocomplete, schema designer, query builder, and more.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="theme-color" content="#1565C0">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ── Extended doc styles ─────────────────────────────────── */
+        :root {
+            --green:  #22c55e;
+            --yellow: #eab308;
+            --red:    #ef4444;
+            --cyan:   #22d3ee;
+            --orange: #f97316;
+        }
+
+        /* Nav active */
+        .nav-links a.active { color: var(--brand-primary); }
+
+        /* ── Feature grid (6-up) ─────────────────────────────────── */
+        .features-grid-6 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .feature-card-sm {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .feature-card-sm .feature-icon {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            font-size: 1.5rem;
+            margin-bottom: 0;
+        }
+        .feature-card-sm h3 { font-size: 1.1rem; margin-bottom: 0.25rem; }
+        .feature-card-sm p  { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* ── Shortcut table ──────────────────────────────────────── */
+        .shortcut-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+        .shortcut-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            gap: 1rem;
+        }
+        .shortcut-row span { color: var(--text-secondary); font-size: 0.9rem; }
+        kbd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-bottom-width: 2px;
+            border-radius: 5px;
+            padding: 0.2rem 0.5rem;
+            white-space: nowrap;
+            color: var(--cyan);
+        }
+
+        /* ── Roadmap timeline ────────────────────────────────────── */
+        .timeline { position: relative; padding-left: 2rem; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--brand-primary), transparent);
+        }
+        .timeline-item { position: relative; margin-bottom: 2rem; }
+        .timeline-dot {
+            position: absolute;
+            left: -2.45rem;
+            top: 0.25rem;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--brand-primary);
+            background: var(--bg-color);
+        }
+        .timeline-dot.done  { background: var(--green); border-color: var(--green); }
+        .timeline-dot.next  { background: var(--brand-primary); border-color: var(--brand-primary); box-shadow: 0 0 8px var(--brand-primary); }
+        .timeline-dot.later { background: transparent; border-color: var(--text-secondary); }
+        .phase-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .badge-done  { background: rgba(34,197,94,0.15);  color: var(--green);  border: 1px solid rgba(34,197,94,0.3); }
+        .badge-next  { background: rgba(59,130,246,0.15); color: #60a5fa;        border: 1px solid rgba(59,130,246,0.3); }
+        .badge-later { background: rgba(148,163,184,0.1); color: var(--text-secondary); border: 1px solid var(--glass-border); }
+        .timeline-item h3 { font-size: 1.2rem; margin-bottom: 0.4rem; }
+        .timeline-item ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .timeline-item ul li {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.65rem;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+        }
+
+        /* ── Tech stack chips ────────────────────────────────────── */
+        .stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .stack-chip {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            padding: 1rem 1.25rem;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            transition: border-color 0.2s;
+        }
+        .stack-chip:hover { border-color: rgba(255,255,255,0.15); }
+        .stack-chip .concern {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .stack-chip .package {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--cyan);
+        }
+
+        /* ── Architecture diagram ─────────────────────────────────── */
+        .arch-row {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+        .arch-box {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .arch-box.presentation { background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.4); color: #c084fc; }
+        .arch-box.domain       { background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.4); color: #60a5fa; }
+        .arch-box.data         { background: rgba(34,197,94,0.2);  border: 1px solid rgba(34,197,94,0.4);  color: var(--green); }
+        .arch-arrow { align-self: center; color: var(--text-secondary); font-size: 1.2rem; }
+        .arch-note {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* ── Autocomplete demo block ─────────────────────────────── */
+        .ac-demo {
+            background: #0f172a;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+        }
+        .ac-demo-bar {
+            background: rgba(255,255,255,0.04);
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .ac-demo-body { padding: 1rem 1.25rem; line-height: 1.8; }
+        .ac-kw    { color: #569cd6; font-weight: 600; }
+        .ac-table { color: #4ec9b0; }
+        .ac-col   { color: #9cdcfe; }
+        .ac-str   { color: #ce9178; }
+        .ac-popup {
+            display: inline-block;
+            background: #1e293b;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            margin-left: 1rem;
+            vertical-align: top;
+            min-width: 180px;
+            font-size: 0.8rem;
+        }
+        .ac-popup-hdr {
+            padding: 0.3rem 0.75rem;
+            background: rgba(255,255,255,0.06);
+            color: #94a3b8;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.7rem;
+        }
+        .ac-popup-item { padding: 0.25rem 0.75rem; color: #94a3b8; }
+        .ac-popup-item.selected { background: rgba(59,130,246,0.2); color: #e2e8f0; }
+        .ac-popup-item .match { color: #60a5fa; font-weight: 700; }
+
+        /* ── Section divider ─────────────────────────────────────── */
+        .section-heading h2 { font-size: 2.25rem; }
+
+        /* ── Inline code ─────────────────────────────────────────── */
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            padding: 0.1em 0.4em;
+            color: var(--cyan);
+        }
+
+        /* ── Install block ───────────────────────────────────────── */
+        .install-block {
+            background: #0f172a;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.07);
+            overflow: hidden;
+        }
+        .install-block pre {
+            padding: 1.25rem 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: #e2e8f0;
+            overflow-x: auto;
+            line-height: 1.8;
+        }
+        .install-block pre .comment { color: #6a9955; }
+        .install-block pre .cmd    { color: #4ec9b0; }
+        .install-block pre .flag   { color: #ce9178; }
+
+        /* ── Responsive extras ───────────────────────────────────── */
+        @media (max-width: 600px) {
+            .arch-row { flex-direction: column; align-items: center; }
+            .arch-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="grid-bg"></div>
+
+    <!-- ── Navigation ──────────────────────────────────────────────── -->
+    <header class="glass-header">
+        <div class="container nav-container">
+            <a href="#" class="logo-link">
+                <img src="assets/logo.png" alt="SQLvanta" class="nav-logo">
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#shortcuts">Shortcuts</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li><a href="#roadmap">Roadmap</a></li>
+                    <li><a href="#install">Install</a></li>
+                    <li><a href="https://github.com/senthilnasa/sqlvanta" class="btn btn-outline" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ── Hero ─────────────────────────────────────────────────── -->
+        <section class="hero container">
+            <div class="hero-content">
+                <div class="phase-badge badge-done" style="margin-bottom:1rem;">Phase 1 — Available Now</div>
+                <h1 class="hero-title">
+                    The Open-Source<br><span class="gradient-text">MySQL Desktop Client.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    SQLvanta is a production-grade MySQL client built with Flutter.
+                    Smart SQL editor, visual schema designer, drag-and-drop query builder,
+                    and a beautiful object browser — all in one native app.
+                </p>
+                <div class="hero-cta">
+                    <a href="https://github.com/senthilnasa/sqlvanta" target="_blank" class="btn btn-primary">Star on GitHub</a>
+                    <a href="#install" class="btn btn-secondary">Get Started</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="glass-card visual-card">
+                    <img src="assets/logo.png" alt="SQLvanta" class="hero-logo">
+                    <div class="ac-demo">
+                        <div class="ac-demo-bar">query_editor.sql</div>
+                        <div class="ac-demo-body">
+                            <span class="ac-kw">SELECT</span> <span class="ac-col">u.id</span>, <span class="ac-col">u.name</span>,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ac-col">o.total</span><br>
+                            <span class="ac-kw">FROM</span> <span class="ac-table">users</span> <span class="ac-kw">u</span><br>
+                            <span class="ac-kw">JOIN</span> <span class="ac-table">orders</span>&nbsp;
+                            <span class="ac-popup">
+                                <div class="ac-popup-hdr">Databases &amp; Tables</div>
+                                <div class="ac-popup-item selected"><span class="match">or</span>ders</div>
+                                <div class="ac-popup-item"><span class="match">or</span>der_items</div>
+                                <div class="ac-popup-item"><span class="match">or</span>g_settings</div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Core Features ─────────────────────────────────────────── -->
+        <section id="features" class="section container">
+            <div class="section-heading">
+                <h2>Everything You <span class="gradient-text">Need</span></h2>
+                <p>A complete MySQL workbench experience, built natively with Flutter.</p>
+            </div>
+
+            <div class="features-grid-6">
+
+                <div class="glass-card feature-card-sm">
+                    <div class="feature-icon">🔌</div>
+                    <div>
+                        <h3>Connection Manager</h3>
+                        <p>Save multiple MySQL connections with host, port, user, and database. Passwords stored securely via OS keychain (DPAPI / Keychain / libsecret) — never in plain text.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card feature-card-sm">
+                    <div class="feature-icon">✍️</div>
+                    <div>
+                        <h3>Smart SQL Editor</h3>
+                        <p>Syntax-highlighted SQL editor powered by JetBrains Mono. Context-aware autocomplete surfaces databases, tables, and columns as you type — triggered by <kbd>.</kbd> or <kbd>Ctrl+Space</kbd>.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card feature-card-sm">
+                    <div class="feature-icon">📊</div>
+                    <div>
+                        <h3>Results Grid</h3>
+                        <p>High-performance data grid via <code>pluto_grid</code> with sortable columns, row cap indicator, and a live info bar showing row count, execution time, and affected rows.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card feature-card-sm">
+                    <div class="feature-icon">🌲</div>
+                    <div>
+                        <h3>Object Browser</h3>
+                        <p>Lazy-loaded database tree organized into six colour-coded categories: Tables, Views, Stored Procedures, Functions, Triggers, and Events. Click any table to inspect its columns.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card feature-card-sm">
+                    <div class="feature-icon">🗺️</div>
+                    <div>
+                        <h3>Schema Designer</h3>
+                        <p>Visual ERD canvas with draggable table cards, pan &amp; pinch-zoom, and bezier FK relationship lines. Open via <kbd>Ctrl+Alt+D</kbd>. Pick any database to generate the diagram instantly.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card feature-card-sm">
+                    <div class="feature-icon">🏗️</div>
+                    <div>
+                        <h3>Query Builder</h3>
+                        <p>Form-driven visual SQL builder. Pick columns, add WHERE conditions with AND/OR logic, set ORDER BY and LIMIT — then send the generated SQL straight to the editor with one click.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card feature-card-sm">
+                    <div class="feature-icon">📑</div>
+                    <div>
+                        <h3>Multi-Tab Workspace</h3>
+                        <p>Open unlimited tabs per session — Query Editor, Schema Designer, or Query Builder. Each tab tracks its own SQL state, results, and active database independently.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card feature-card-sm">
+                    <div class="feature-icon">⚙️</div>
+                    <div>
+                        <h3>Settings</h3>
+                        <p>Tune the result row cap (100–10 000), toggle dark/light theme, and adjust font size. Preferences are persisted locally via Drift/SQLite.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card feature-card-sm">
+                    <div class="feature-icon">💻</div>
+                    <div>
+                        <h3>Native Desktop</h3>
+                        <p>First-class Windows, macOS, and Linux support. Native window chrome via <code>window_manager</code>, custom title bar, and platform-appropriate file paths.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ── Autocomplete Deep-Dive ─────────────────────────────────── -->
+        <section class="section container">
+            <div class="section-heading">
+                <h2>Context-Aware <span class="gradient-text">Autocomplete</span></h2>
+                <p>SQLvanta infers what you need from the SQL context — no manual lookup required.</p>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:1.5rem; margin-top:1rem;">
+                <div class="glass-card">
+                    <div style="font-size:1.5rem;margin-bottom:0.75rem;">🔵</div>
+                    <h3 style="font-size:1.1rem;margin-bottom:0.5rem;">Dot trigger — <code style="font-size:0.8em;">dbname.</code></h3>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;">Type a database name followed by <code>.</code> and the popup instantly shows all tables in that database, fetched live from the server.</p>
+                </div>
+                <div class="glass-card">
+                    <div style="font-size:1.5rem;margin-bottom:0.75rem;">🟢</div>
+                    <h3 style="font-size:1.1rem;margin-bottom:0.5rem;">Column trigger — <code style="font-size:0.8em;">tablename.</code></h3>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;">Type a table alias or name followed by <code>.</code> to get a column list for that table, resolved against the active database.</p>
+                </div>
+                <div class="glass-card">
+                    <div style="font-size:1.5rem;margin-bottom:0.75rem;">🟡</div>
+                    <h3 style="font-size:1.1rem;margin-bottom:0.5rem;">Clause trigger — <code style="font-size:0.8em;">FROM </code></h3>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;">After <code>FROM</code>, <code>JOIN</code>, <code>INTO</code>, or <code>UPDATE</code> the popup offers database names, fully-qualified <code>db.table</code> pairs, and bare table names.</p>
+                </div>
+                <div class="glass-card">
+                    <div style="font-size:1.5rem;margin-bottom:0.75rem;">🟣</div>
+                    <h3 style="font-size:1.1rem;margin-bottom:0.5rem;">Keyword completion</h3>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;">Auto-shows after 2+ alphabetic characters. Matches from a curated list of 130+ MySQL keywords and functions. Live-filters as you keep typing.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Keyboard Shortcuts ─────────────────────────────────────── -->
+        <section id="shortcuts" class="section container">
+            <div class="section-heading">
+                <h2>Keyboard <span class="gradient-text">Shortcuts</span></h2>
+                <p>Power-user workflow at your fingertips.</p>
+            </div>
+
+            <div class="shortcut-grid">
+                <div class="shortcut-row"><span>Run query</span>         <kbd>F5</kbd></div>
+                <div class="shortcut-row"><span>Run query (alt)</span>   <kbd>Ctrl + Enter</kbd></div>
+                <div class="shortcut-row"><span>New Query tab</span>     <kbd>Ctrl + T</kbd></div>
+                <div class="shortcut-row"><span>New Query Builder tab</span> <kbd>Ctrl + K</kbd></div>
+                <div class="shortcut-row"><span>New Schema Designer tab</span> <kbd>Ctrl + Alt + D</kbd></div>
+                <div class="shortcut-row"><span>Show autocomplete</span> <kbd>Ctrl + Space</kbd></div>
+                <div class="shortcut-row"><span>Dismiss popup</span>     <kbd>Esc</kbd></div>
+                <div class="shortcut-row"><span>Select suggestion</span> <kbd>Tab</kbd> or <kbd>↵</kbd></div>
+                <div class="shortcut-row"><span>Navigate suggestions</span> <kbd>↑</kbd> <kbd>↓</kbd></div>
+                <div class="shortcut-row"><span>Close tab</span>         <kbd>Ctrl + W</kbd></div>
+                <div class="shortcut-row"><span>Switch theme</span>      Settings → Theme</div>
+                <div class="shortcut-row"><span>Settings</span>          Menu → Settings</div>
+            </div>
+        </section>
+
+        <!-- ── Architecture ───────────────────────────────────────────── -->
+        <section id="architecture" class="section container">
+            <div class="section-heading">
+                <h2>Clean <span class="gradient-text">Architecture</span></h2>
+                <p>Every feature is an isolated module following the same three-layer pattern.</p>
+            </div>
+
+            <div class="glass-card" style="max-width:700px;margin:0 auto;">
+                <div class="arch-row">
+                    <div class="arch-box presentation">Presentation<br><small style="font-weight:400;font-size:0.75rem;">Riverpod · Screens · Widgets</small></div>
+                    <div class="arch-arrow">→</div>
+                    <div class="arch-box domain">Domain<br><small style="font-weight:400;font-size:0.75rem;">Entities · Repos · Use Cases</small></div>
+                    <div class="arch-arrow">←</div>
+                    <div class="arch-box data">Data<br><small style="font-weight:400;font-size:0.75rem;">MySQL · Drift · SecureStorage</small></div>
+                </div>
+                <p class="arch-note">Domain is pure Dart — zero Flutter/framework imports. Data implements domain interfaces.</p>
+
+                <div style="margin-top:2rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.75rem;">
+                    <div style="font-size:0.8rem;padding:0.75rem;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);">
+                        <div style="color:#c084fc;font-weight:600;margin-bottom:0.25rem;">connections/</div>
+                        <div style="color:var(--text-secondary);">CRUD, test, secure password storage</div>
+                    </div>
+                    <div style="font-size:0.8rem;padding:0.75rem;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);">
+                        <div style="color:#60a5fa;font-weight:600;margin-bottom:0.25rem;">workspace/</div>
+                        <div style="color:var(--text-secondary);">Sessions, multi-tab IDE shell</div>
+                    </div>
+                    <div style="font-size:0.8rem;padding:0.75rem;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);">
+                        <div style="color:#4ec9b0;font-weight:600;margin-bottom:0.25rem;">query_editor/</div>
+                        <div style="color:var(--text-secondary);">Editor, execution, history</div>
+                    </div>
+                    <div style="font-size:0.8rem;padding:0.75rem;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);">
+                        <div style="color:#f97316;font-weight:600;margin-bottom:0.25rem;">object_browser/</div>
+                        <div style="color:var(--text-secondary);">DB/table tree, lazy-loaded</div>
+                    </div>
+                    <div style="font-size:0.8rem;padding:0.75rem;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);">
+                        <div style="color:#22d3ee;font-weight:600;margin-bottom:0.25rem;">schema_designer/</div>
+                        <div style="color:var(--text-secondary);">ERD canvas, FK lines</div>
+                    </div>
+                    <div style="font-size:0.8rem;padding:0.75rem;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);">
+                        <div style="color:#eab308;font-weight:600;margin-bottom:0.25rem;">query_builder/</div>
+                        <div style="color:var(--text-secondary);">Visual SQL form builder</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Tech Stack ─────────────────────────────────────────────── -->
+        <section class="section container">
+            <div class="section-heading">
+                <h2>Tech <span class="gradient-text">Stack</span></h2>
+                <p>Best-in-class Flutter packages, carefully chosen for each concern.</p>
+            </div>
+            <div class="stack-grid">
+                <div class="stack-chip"><span class="concern">State Management</span><span class="package">flutter_riverpod ^2.6</span></div>
+                <div class="stack-chip"><span class="concern">Navigation</span><span class="package">go_router ^14</span></div>
+                <div class="stack-chip"><span class="concern">Local Database</span><span class="package">drift ^2.20</span></div>
+                <div class="stack-chip"><span class="concern">Passwords</span><span class="package">flutter_secure_storage ^9</span></div>
+                <div class="stack-chip"><span class="concern">MySQL Driver</span><span class="package">mysql_client ^0.0.27</span></div>
+                <div class="stack-chip"><span class="concern">Window Chrome</span><span class="package">window_manager ^0.4</span></div>
+                <div class="stack-chip"><span class="concern">Theming</span><span class="package">flex_color_scheme ^8</span></div>
+                <div class="stack-chip"><span class="concern">SQL Editor</span><span class="package">flutter_code_editor ^0.3</span></div>
+                <div class="stack-chip"><span class="concern">Data Grid</span><span class="package">pluto_grid ^8.1</span></div>
+                <div class="stack-chip"><span class="concern">Split Panels</span><span class="package">split_view ^3.2</span></div>
+                <div class="stack-chip"><span class="concern">Fonts</span><span class="package">google_fonts ^6</span></div>
+                <div class="stack-chip"><span class="concern">Splash Shimmer</span><span class="package">shimmer ^3.0</span></div>
+            </div>
+        </section>
+
+        <!-- ── Roadmap ────────────────────────────────────────────────── -->
+        <section id="roadmap" class="section container">
+            <div class="section-heading">
+                <h2>Phase <span class="gradient-text">Roadmap</span></h2>
+                <p>Where we are and where we're heading.</p>
+            </div>
+
+            <div class="glass-card" style="max-width:760px;margin:0 auto;padding:2.5rem 3rem;">
+                <div class="timeline">
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot done"></div>
+                        <span class="phase-badge badge-done">Phase 1 — Complete</span>
+                        <h3>Core Workbench</h3>
+                        <ul>
+                            <li>Connection Manager</li>
+                            <li>Secure password storage</li>
+                            <li>SQL Editor + syntax highlighting</li>
+                            <li>Context-aware autocomplete</li>
+                            <li>Results grid (pluto_grid)</li>
+                            <li>Object browser with 6 categories</li>
+                            <li>Schema Designer (ERD)</li>
+                            <li>Visual Query Builder</li>
+                            <li>Multi-tab workspace</li>
+                            <li>Dark &amp; light themes</li>
+                            <li>Windows / macOS / Linux</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot next"></div>
+                        <span class="phase-badge badge-next">Phase 2 — Next</span>
+                        <h3>Power Features</h3>
+                        <ul>
+                            <li>Native MySQL C API via FFI</li>
+                            <li>Monaco editor via WebView</li>
+                            <li>Inline table data editing</li>
+                            <li>Query history browser</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot later"></div>
+                        <span class="phase-badge badge-later">Phase 3</span>
+                        <h3>Schema Tools</h3>
+                        <ul>
+                            <li>Schema alteration wizard</li>
+                            <li>SSH tunneling</li>
+                            <li>SSL connections</li>
+                            <li>Import / export wizards</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot later"></div>
+                        <span class="phase-badge badge-later">Phase 4</span>
+                        <h3>Advanced Analysis</h3>
+                        <ul>
+                            <li>Schema compare</li>
+                            <li>EXPLAIN visualizer</li>
+                            <li>Backup scheduler</li>
+                            <li>Sync wizard</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item" style="margin-bottom:0;">
+                        <div class="timeline-dot later"></div>
+                        <span class="phase-badge badge-later">Phase 5</span>
+                        <h3>Extensibility</h3>
+                        <ul>
+                            <li>Plugin system</li>
+                            <li>Automation &amp; job scheduler</li>
+                            <li>Email alerts</li>
+                            <li>PostgreSQL, SQLite, SQL Server</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Install / Get Started ──────────────────────────────────── -->
+        <section id="install" class="section container">
+            <div class="section-heading">
+                <h2>Get <span class="gradient-text">Started</span></h2>
+                <p>Build from source in under 5 minutes.</p>
+            </div>
+
+            <div style="max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem;">
+
+                <div>
+                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.08em;">Prerequisites</p>
+                    <div class="install-block">
+                        <pre><span class="comment"># Flutter 3.x (stable channel)</span>
+<span class="cmd">flutter</span> doctor
+<span class="comment"># Ensure Windows / macOS / Linux desktop is enabled</span>
+<span class="cmd">flutter</span> config <span class="flag">--enable-windows-desktop</span></pre>
+                    </div>
+                </div>
+
+                <div>
+                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.08em;">Clone &amp; Run</p>
+                    <div class="install-block">
+                        <pre><span class="cmd">git</span> clone https://github.com/senthilnasa/sqlvanta
+<span class="cmd">cd</span> sqlvanta
+<span class="cmd">flutter</span> pub get
+<span class="cmd">flutter</span> run <span class="flag">-d windows</span>    <span class="comment"># or -d macos / -d linux</span></pre>
+                    </div>
+                </div>
+
+                <div>
+                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.08em;">After modifying Drift / Riverpod / Freezed</p>
+                    <div class="install-block">
+                        <pre><span class="cmd">dart</span> run build_runner build <span class="flag">--delete-conflicting-outputs</span></pre>
+                    </div>
+                </div>
+
+                <div>
+                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.08em;">Tests</p>
+                    <div class="install-block">
+                        <pre><span class="cmd">flutter</span> test                          <span class="comment"># unit + widget</span>
+<span class="cmd">flutter</span> test integration_test/         <span class="comment"># integration</span></pre>
+                    </div>
+                </div>
+
+                <div style="text-align:center;padding-top:1rem;">
+                    <a href="https://github.com/senthilnasa/sqlvanta" target="_blank" class="btn btn-primary" style="margin-right:1rem;">View on GitHub</a>
+                    <a href="https://github.com/senthilnasa/sqlvanta/issues" target="_blank" class="btn btn-secondary">Report an Issue</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Community Docs ─────────────────────────────────────────── -->
+        <section class="section container text-center">
+            <h2 class="gradient-text">Open Documentation</h2>
+            <p class="doc-text">
+                Documentation is community-driven. The primary source of truth lives in the project
+                <code>README.md</code> — anyone can improve it directly via GitHub.
+            </p>
+            <a href="https://github.com/senthilnasa/sqlvanta/edit/main/README.md" target="_blank" class="btn btn-outline edit-btn">
+                📝 Edit README and Contribute
+            </a>
+        </section>
+
+    </main>
+
+    <!-- ── Footer ─────────────────────────────────────────────────────── -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-logo">
+                <img src="assets/logo.png" alt="SQLvanta">
+                <p>&copy; 2026 SQLvanta Contributors. MIT License.</p>
+            </div>
+            <div class="footer-credits">
+                <p>Built with Flutter &amp; ❤️</p>
+                <div class="special-thanks">
+                    <p>Special thanks to <a href="https://bestbuddy.dev/"><span class="highlight-credit">Best Buudy Technology</span></a> and <span class="highlight-credit">GitHub</span> for helping build this app!</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const target = document.querySelector(this.getAttribute('href'));
+                if (!target) return;
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Highlight active nav link on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    const link = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+                    if (link) link.classList.add('active');
+                }
+            });
+        }, { threshold: 0.4 });
+        sections.forEach(s => observer.observe(s));
+    </script>
+</body>
+</html>
