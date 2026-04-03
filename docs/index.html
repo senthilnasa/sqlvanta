@@ -4,7 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SQLvanta — Open-Source MySQL Desktop Client</title>
-    <meta name="description" content="SQLvanta is a production-grade, open-source MySQL desktop client built with Flutter. Features SQL editor with autocomplete, schema designer, query builder, and more.">
+    <meta name="title" content="SQLvanta | Modern Open-Source Database Manager">
+    <meta name="description" content="SQLvanta is a production-grade, open-source MySQL desktop client built with Flutter. Features SQL editor with autocomplete, schema designer, query builder, and native performance.">
+    <meta name="keywords" content="MySQL client, Database Manager, Flutter desktop app, Open source SQL GUI, ER Diagram, Database admin, Cross-platform DB tool">
+    <meta name="author" content="Senthilnasa">
+    <link rel="canonical" href="https://sqlvanta.senthilnasa.me/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sqlvanta.senthilnasa.me/">
+    <meta property="og:title" content="SQLvanta - The Ultimate Cross-Platform MySQL Client">
+    <meta property="og:description" content="Experience database administration reimagined. Advanced query building, visual schema exploration, and native performance on Mac, Windows, Linux, and Web.">
+    <meta property="og:image" content="https://sqlvanta.senthilnasa.me/icon/apple-touch-icon.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://sqlvanta.senthilnasa.me/">
+    <meta property="twitter:title" content="SQLvanta | Open-Source DB Manager">
+    <meta property="twitter:description" content="A blazing-fast, open-source MySQL client. Visual ERD schema design, advanced queries, and beautiful UI cross-platform.">
+    <meta property="twitter:image" content="https://sqlvanta.senthilnasa.me/icon/apple-touch-icon.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -274,6 +293,33 @@
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
     <div class="grid-bg"></div>
+
+    <!-- Floating Dynamic Download Button -->
+    <div id="download-container" style="
+        position: fixed; 
+        bottom: 30px; 
+        right: 30px; 
+        z-index: 9999; 
+        display: none; /* Hidden until API load */
+      ">
+      <a id="download-btn" href="https://github.com/senthilnasa/sqlvanta/releases/latest" style="
+          background-color: var(--brand-primary, #1565C0);
+          color: white;
+          text-decoration: none;
+          padding: 14px 24px;
+          border-radius: 50px;
+          font-weight: 600;
+          font-size: 15px;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+        " onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 40px rgba(0,0,0,0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 30px rgba(0,0,0,0.4)'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span id="download-text">Download App</span>
+      </a>
+    </div>
 
     <!-- ── Navigation ──────────────────────────────────────────────── -->
     <header class="glass-header">
@@ -727,6 +773,43 @@
             });
         }, { threshold: 0.4 });
         sections.forEach(s => observer.observe(s));
+
+        // GitHub API magic to fetch latest version and OS-specific URL
+        function setupDownloadButton() {
+            const btn = document.getElementById('download-btn');
+            const text = document.getElementById('download-text');
+            const container = document.getElementById('download-container');
+            const repoPath = 'senthilnasa/sqlvanta'; 
+            
+            const userAgent = navigator.userAgent.toLowerCase();
+            let platformExt = '.zip'; 
+            let platformName = 'Desktop';
+            
+            if (userAgent.includes('win')) { platformExt = '-windows.zip'; platformName = 'Windows'; }
+            else if (userAgent.includes('mac')) { platformExt = '-macos.zip'; platformName = 'macOS'; }
+            else if (userAgent.includes('linux')) { platformExt = '-linux.tar.gz'; platformName = 'Linux'; }
+            else if (userAgent.includes('android')) { platformExt = '-android.apk'; platformName = 'Android'; }
+
+            fetch(`https://api.github.com/repos/${repoPath}/releases/latest`)
+              .then(res => res.json())
+              .then(data => {
+                if (data && data.tag_name) {
+                  const version = data.tag_name;
+                  text.innerHTML = `Download for ${platformName} <span style="opacity:0.8; font-size: 13px; margin-left:4px;">(${version})</span>`;
+                  
+                  const asset = data.assets.find(a => a.name.endsWith(platformExt));
+                  if (asset && asset.browser_download_url) {
+                    btn.href = asset.browser_download_url;
+                  }
+                  container.style.display = 'block';
+                }
+              })
+              .catch(err => {
+                console.log('GitHub API error:', err);
+                container.style.display = 'block';
+              });
+        }
+        setupDownloadButton();
     </script>
 </body>
 </html>
