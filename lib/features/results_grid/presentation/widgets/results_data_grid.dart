@@ -199,8 +199,9 @@ class _ResultsDataGridState extends ConsumerState<ResultsDataGrid> {
       final setClauses = changedCols.entries
           .map((e) {
             final v = e.value;
-            if (v.isEmpty || v.toUpperCase() == 'NULL')
+            if (v.isEmpty || v.toUpperCase() == 'NULL') {
               return '`${e.key}` = NULL';
+            }
             return '`${e.key}` = \'${v.replaceAll("'", "''")}\'';
           })
           .join(', ');

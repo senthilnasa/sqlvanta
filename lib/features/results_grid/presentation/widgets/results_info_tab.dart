@@ -49,11 +49,12 @@ class _ResultsInfoTabState extends State<ResultsInfoTab> {
         db,
         table,
       );
-      if (mounted)
+      if (mounted) {
         setState(() {
           _columns = cols;
           _loadingCols = false;
         });
+      }
     } catch (_) {
       if (mounted) setState(() => _loadingCols = false);
     }

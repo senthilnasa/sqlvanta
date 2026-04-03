@@ -201,8 +201,9 @@ class _ResultsTableDataTabState extends ConsumerState<ResultsTableDataTab> {
       final newDb = next.database;
       final newTable = next.table;
       // Skip if already showing this exact table with data.
-      if (newDb == _selectedDb && newTable == _selectedTable && _result != null)
+      if (newDb == _selectedDb && newTable == _selectedTable && _result != null) {
         return;
+      }
 
       // Ensure DB appears in the dropdown.
       if (!_databases.contains(newDb)) {
@@ -542,11 +543,12 @@ class _FkPickerDialogState extends State<_FkPickerDialog> {
         }
       });
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
           _error = e.toString();
         });
+      }
     }
   }
 
