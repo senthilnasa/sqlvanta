@@ -20,6 +20,10 @@ class Preferences extends _$Preferences {
     resultMaxRows: 'result_max_rows',
     nullDisplayText: 'null_display_text',
     sidebarWidth: 'sidebar_width',
+    windowWidth: 'window_width',
+    windowHeight: 'window_height',
+    windowX: 'window_x',
+    windowY: 'window_y',
   );
 
   @override
@@ -36,12 +40,16 @@ class Preferences extends _$Preferences {
       resultMaxRows: int.tryParse(map[_keys.resultMaxRows] ?? '') ?? 1000,
       nullDisplayText: map[_keys.nullDisplayText] ?? 'NULL',
       sidebarWidth: double.tryParse(map[_keys.sidebarWidth] ?? '') ?? 260,
+      windowWidth: double.tryParse(map[_keys.windowWidth] ?? ''),
+      windowHeight: double.tryParse(map[_keys.windowHeight] ?? ''),
+      windowX: double.tryParse(map[_keys.windowX] ?? ''),
+      windowY: double.tryParse(map[_keys.windowY] ?? ''),
     );
   }
 
   Future<void> save(AppPreferences prefs) async {
     final dao = ref.read(preferencesDaoProvider);
-    await Future.wait([
+    final saves = [
       dao.setValue(_keys.themeMode, prefs.themeMode),
       dao.setValue(_keys.editorFontSize, prefs.editorFontSize.toString()),
       dao.setValue(_keys.editorTabSize, prefs.editorTabSize.toString()),
@@ -49,7 +57,37 @@ class Preferences extends _$Preferences {
       dao.setValue(_keys.resultMaxRows, prefs.resultMaxRows.toString()),
       dao.setValue(_keys.nullDisplayText, prefs.nullDisplayText),
       dao.setValue(_keys.sidebarWidth, prefs.sidebarWidth.toString()),
-    ]);
+    ];
+    if (prefs.windowWidth != null) {
+      saves.add(dao.setValue(_keys.windowWidth, prefs.windowWidth.toString()));
+    }
+    if (prefs.windowHeight != null) {
+      saves.add(dao.setValue(_keys.windowHeight, prefs.windowHeight.toString()));
+    }
+    if (prefs.windowX != null) {
+      saves.add(dao.setValue(_keys.windowX, prefs.windowX.toString()));
+    }
+    if (prefs.windowY != null) {
+      saves.add(dao.setValue(_keys.windowY, prefs.windowY.toString()));
+    }
+    await Future.wait(saves);
     ref.invalidateSelf();
+  }
+
+  /// Saves only the window bounds without touching other preferences.
+  Future<void> saveWindowBounds({
+    required double width,
+    required double height,
+    required double x,
+    required double y,
+  }) async {
+    final dao = ref.read(preferencesDaoProvider);
+    await Future.wait([
+      dao.setValue(_keys.windowWidth, width.toString()),
+      dao.setValue(_keys.windowHeight, height.toString()),
+      dao.setValue(_keys.windowX, x.toString()),
+      dao.setValue(_keys.windowY, y.toString()),
+    ]);
+    // Don't invalidateSelf here — avoid re-building the whole UI on every resize
   }
 }

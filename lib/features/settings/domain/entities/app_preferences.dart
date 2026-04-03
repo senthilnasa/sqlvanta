@@ -7,6 +7,12 @@ class AppPreferences {
   final String nullDisplayText;
   final double sidebarWidth;
 
+  // Window state
+  final double? windowWidth;
+  final double? windowHeight;
+  final double? windowX;
+  final double? windowY;
+
   const AppPreferences({
     this.themeMode = 'system',
     this.editorFontSize = 14,
@@ -15,6 +21,10 @@ class AppPreferences {
     this.resultMaxRows = 1000,
     this.nullDisplayText = 'NULL',
     this.sidebarWidth = 260,
+    this.windowWidth,
+    this.windowHeight,
+    this.windowX,
+    this.windowY,
   });
 
   AppPreferences copyWith({
@@ -25,6 +35,10 @@ class AppPreferences {
     int? resultMaxRows,
     String? nullDisplayText,
     double? sidebarWidth,
+    double? windowWidth,
+    double? windowHeight,
+    double? windowX,
+    double? windowY,
   }) {
     return AppPreferences(
       themeMode: themeMode ?? this.themeMode,
@@ -34,6 +48,10 @@ class AppPreferences {
       resultMaxRows: resultMaxRows ?? this.resultMaxRows,
       nullDisplayText: nullDisplayText ?? this.nullDisplayText,
       sidebarWidth: sidebarWidth ?? this.sidebarWidth,
+      windowWidth: windowWidth ?? this.windowWidth,
+      windowHeight: windowHeight ?? this.windowHeight,
+      windowX: windowX ?? this.windowX,
+      windowY: windowY ?? this.windowY,
     );
   }
 }
