@@ -1,7 +1,7 @@
 {
-  "name": "SQLvanta",
+  "name": "SQLvanta — Free Open-Source MySQL Client",
   "short_name": "SQLvanta",
-  "description": "Open-source MySQL desktop client built with Flutter",
+  "description": "Free open-source MySQL desktop client for Windows, macOS and Linux. Smart SQL editor, visual ER diagram, schema explorer. The best free alternative to SQLyog and HeidiSQL.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "any",

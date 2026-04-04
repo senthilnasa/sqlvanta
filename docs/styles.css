@@ -8,6 +8,8 @@
     --glass-border: rgba(255, 255, 255, 0.08);
 }
 
+/* font-display:swap is handled via &display=swap in the Google Fonts URL in each HTML <head> */
+
 * {
     margin: 0;
     padding: 0;

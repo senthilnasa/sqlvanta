@@ -3,29 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQLvanta — Open-Source MySQL Desktop Client</title>
-    <meta name="title" content="SQLvanta | Modern Open-Source Database Manager">
-    <meta name="description" content="SQLvanta is a production-grade, open-source MySQL desktop client built with Flutter. Features SQL editor with autocomplete, schema designer, query builder, and native performance.">
-    <meta name="keywords" content="MySQL client, Database Manager, Flutter desktop app, Open source SQL GUI, ER Diagram, Database admin, Cross-platform DB tool">
+    <title>SQLvanta — Free Open-Source MySQL Client for Windows, macOS &amp; Linux</title>
+    <meta name="title" content="SQLvanta — Free Open-Source MySQL Desktop Client">
+    <meta name="description" content="SQLvanta is a free, open-source MySQL desktop client for Windows, macOS &amp; Linux. Smart SQL editor, visual ER diagram, schema explorer, query builder. Free alternative to SQLyog, HeidiSQL, DBeaver, MySQL Workbench, TablePlus, DataGrip, Navicat, and Sequel Pro.">
+    <meta name="keywords" content="open source MySQL client, free MySQL GUI, MySQL desktop client, SQLyog alternative free, HeidiSQL alternative, DBeaver alternative free, MySQL Workbench alternative, TablePlus alternative free, DataGrip alternative free, Navicat alternative free, Sequel Pro alternative, Beekeeper Studio alternative, DBngin alternative, free database manager, MySQL GUI Windows, MySQL client macOS, MySQL GUI Linux, ER diagram tool, visual query builder, open source SQL tool, free SQL client desktop, MariaDB GUI, MySQL 8 client">
     <meta name="author" content="Senthilnasa">
     <link rel="canonical" href="https://sqlvanta.senthilnasa.me/">
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://sqlvanta.senthilnasa.me/">
-    <meta property="og:title" content="SQLvanta - The Ultimate Cross-Platform MySQL Client">
-    <meta property="og:description" content="Experience database administration reimagined. Advanced query building, visual schema exploration, and native performance on Mac, Windows, Linux, and Web.">
-    <meta property="og:image" content="https://sqlvanta.senthilnasa.me/icon/apple-touch-icon.png">
+    <meta property="og:title" content="SQLvanta — Free Open-Source MySQL Client">
+    <meta property="og:description" content="Free open-source MySQL desktop client for Windows, macOS &amp; Linux. Visual ER diagram, smart SQL editor, schema explorer. The best free alternative to SQLyog &amp; HeidiSQL.">
+    <meta property="og:image" content="https://sqlvanta.senthilnasa.me/icon/android-chrome-512x512.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://sqlvanta.senthilnasa.me/">
-    <meta property="twitter:title" content="SQLvanta | Open-Source DB Manager">
-    <meta property="twitter:description" content="A blazing-fast, open-source MySQL client. Visual ERD schema design, advanced queries, and beautiful UI cross-platform.">
-    <meta property="twitter:image" content="https://sqlvanta.senthilnasa.me/icon/apple-touch-icon.png">
+    <meta property="twitter:title" content="SQLvanta — Free Open-Source MySQL Client">
+    <meta property="twitter:description" content="Free MySQL GUI for Windows, macOS &amp; Linux. Visual ER diagram, SQL editor, schema explorer. Open-source SQLyog &amp; HeidiSQL alternative.">
+    <meta property="twitter:image" content="https://sqlvanta.senthilnasa.me/icon/android-chrome-512x512.png">
+    <meta name="twitter:image:alt" content="SQLvanta — Free Open-Source MySQL Desktop Client">
+
+    <!-- Robots -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "name": "SQLvanta",
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Windows 10, Windows 11, macOS 12+, Ubuntu 20.04+",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "downloadUrl": "https://sqlvanta.senthilnasa.me/download.html",
+          "url": "https://sqlvanta.senthilnasa.me/",
+          "description": "Free, open-source MySQL desktop client with smart SQL editor, visual ER diagram designer, interactive schema explorer, and native performance on Windows, macOS, and Linux.",
+          "featureList": [
+            "SQL editor with keyword and column autocomplete",
+            "Visual ER diagram designer with FK relationship lines",
+            "Interactive schema explorer",
+            "Query EXPLAIN visualizer",
+            "Multi-tab workspace",
+            "Secure OS-keychain password storage",
+            "Visual query builder",
+            "Query history",
+            "Dark and light themes"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Is SQLvanta free?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes. SQLvanta is completely free and open-source under the MIT license. No subscription, no account, no telemetry." }
+            },
+            {
+              "@type": "Question",
+              "name": "Is SQLvanta a good SQLyog alternative?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes. SQLvanta offers a smart SQL editor with autocomplete, visual ER diagram, schema explorer, query builder, and multi-tab workspace — the core features of SQLyog — but completely free and open-source." }
+            },
+            {
+              "@type": "Question",
+              "name": "How does SQLvanta compare to HeidiSQL and DBeaver?",
+              "acceptedAnswer": { "@type": "Answer", "text": "SQLvanta is a lightweight, native-performance MySQL client built with Flutter. Unlike HeidiSQL (Windows-only), SQLvanta runs on Windows, macOS, and Linux. Unlike DBeaver, it focuses specifically on MySQL/MariaDB with a clean, modern UI." }
+            },
+            {
+              "@type": "Question",
+              "name": "Which platforms does SQLvanta support?",
+              "acceptedAnswer": { "@type": "Answer", "text": "SQLvanta runs natively on Windows 10/11 (x64), macOS 12 Monterey or later (Apple Silicon and Intel), and Ubuntu 20.04+ / Debian 11+. It requires no .NET or Java runtime." }
+            },
+            {
+              "@type": "Question",
+              "name": "Does SQLvanta support MySQL 8?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes. SQLvanta supports MySQL 5.7, 8.0, and 8.4, as well as MariaDB 10.4+. It uses the mysql_client Dart package which supports caching_sha2_password authentication used by MySQL 8." }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- WebSite schema: enables Google sitelinks search box -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "SQLvanta",
+      "url": "https://sqlvanta.senthilnasa.me/",
+      "description": "Free open-source MySQL desktop client for Windows, macOS and Linux."
+    }
+    </script>
+
+    <!-- BreadcrumbList schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home",     "item": "https://sqlvanta.senthilnasa.me/" },
+        { "@type": "ListItem", "position": 2, "name": "Features", "item": "https://sqlvanta.senthilnasa.me/features.html" },
+        { "@type": "ListItem", "position": 3, "name": "Download", "item": "https://sqlvanta.senthilnasa.me/download.html" },
+        { "@type": "ListItem", "position": 4, "name": "Docs",     "item": "https://sqlvanta.senthilnasa.me/docs.html" }
+      ]
+    }
+    </script>
+
+    <!-- DNS prefetch for third-party origins (faster page load → better CWV) -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://www.clarity.ms">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- font-display:swap added to prevent invisible text during font load (CLS fix) -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
@@ -287,6 +383,24 @@
             .arch-arrow { transform: rotate(90deg); }
         }
     </style>
+
+  <!-- Microsoft Clarity -->
+  <script>
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "w6bocbwf8q");
+  </script>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5L4DY990VP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-5L4DY990VP');
+  </script>
 </head>
 <body>
 
@@ -319,12 +433,12 @@
             <div class="hero-content">
                 <div class="phase-badge badge-done" style="margin-bottom:1rem;">Phase 1 — Available Now</div>
                 <h1 class="hero-title">
-                    The Open-Source<br><span class="gradient-text">MySQL Desktop Client.</span>
+                    Free Open-Source<br><span class="gradient-text">MySQL Desktop Client</span>
                 </h1>
                 <p class="hero-subtitle">
-                    SQLvanta is a production-grade MySQL client built with Flutter.
-                    Smart SQL editor, visual schema designer, drag-and-drop query builder,
-                    and a beautiful object browser — all in one native app.
+                    The best free alternative to SQLyog, HeidiSQL &amp; DBeaver.
+                    Smart SQL editor with autocomplete, visual ER diagram designer,
+                    schema explorer, and query builder — native on Windows, macOS &amp; Linux.
                 </p>
                 <div class="hero-cta">
                     <a href="download.html" class="btn btn-primary">Download Free</a>
@@ -707,13 +821,216 @@
             </div>
         </section>
 
+        <!-- ── SQLvanta vs Competitors ───────────────────────────────── -->
+        <section class="section container" id="alternatives" aria-labelledby="alt-heading">
+            <div class="section-heading">
+                <h2 id="alt-heading">Free Alternative to <span class="gradient-text">Every MySQL Client</span></h2>
+                <p>SQLvanta is a free, open-source replacement for SQLyog, HeidiSQL, DBeaver, MySQL Workbench, TablePlus, DataGrip, Navicat, Sequel Pro, and more.</p>
+            </div>
+
+            <!-- Alternative cards -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:3rem;">
+                <div class="glass-card" style="padding:1.1rem 1.25rem;">
+                    <div style="font-size:0.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Free alternative to</div>
+                    <h3 style="font-size:1rem;margin-bottom:0.3rem;">SQLyog</h3>
+                    <p style="font-size:0.82rem;color:var(--text-secondary);">SQLyog costs $149/year. SQLvanta is free, open-source, and covers the same core feature set.</p>
+                </div>
+                <div class="glass-card" style="padding:1.1rem 1.25rem;">
+                    <div style="font-size:0.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Free alternative to</div>
+                    <h3 style="font-size:1rem;margin-bottom:0.3rem;">HeidiSQL</h3>
+                    <p style="font-size:0.82rem;color:var(--text-secondary);">HeidiSQL is Windows-only. SQLvanta runs on Windows, macOS, and Linux natively.</p>
+                </div>
+                <div class="glass-card" style="padding:1.1rem 1.25rem;">
+                    <div style="font-size:0.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Free alternative to</div>
+                    <h3 style="font-size:1rem;margin-bottom:0.3rem;">MySQL Workbench</h3>
+                    <p style="font-size:0.82rem;color:var(--text-secondary);">Workbench is slow and heavyweight. SQLvanta is a lightweight native app with a modern UI.</p>
+                </div>
+                <div class="glass-card" style="padding:1.1rem 1.25rem;">
+                    <div style="font-size:0.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Free alternative to</div>
+                    <h3 style="font-size:1rem;margin-bottom:0.3rem;">TablePlus</h3>
+                    <p style="font-size:0.82rem;color:var(--text-secondary);">TablePlus costs $89+. SQLvanta is completely free with visual ER diagram and query builder.</p>
+                </div>
+                <div class="glass-card" style="padding:1.1rem 1.25rem;">
+                    <div style="font-size:0.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Free alternative to</div>
+                    <h3 style="font-size:1rem;margin-bottom:0.3rem;">DataGrip</h3>
+                    <p style="font-size:0.82rem;color:var(--text-secondary);">DataGrip is $229/year (JetBrains). SQLvanta is free and MIT-licensed.</p>
+                </div>
+                <div class="glass-card" style="padding:1.1rem 1.25rem;">
+                    <div style="font-size:0.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Free alternative to</div>
+                    <h3 style="font-size:1rem;margin-bottom:0.3rem;">Navicat</h3>
+                    <p style="font-size:0.82rem;color:var(--text-secondary);">Navicat for MySQL costs $199+. SQLvanta is free, open-source, and cross-platform.</p>
+                </div>
+                <div class="glass-card" style="padding:1.1rem 1.25rem;">
+                    <div style="font-size:0.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Free alternative to</div>
+                    <h3 style="font-size:1rem;margin-bottom:0.3rem;">Sequel Pro</h3>
+                    <p style="font-size:0.82rem;color:var(--text-secondary);">Sequel Pro is macOS-only and no longer actively maintained. SQLvanta is cross-platform and actively developed.</p>
+                </div>
+                <div class="glass-card" style="padding:1.1rem 1.25rem;">
+                    <div style="font-size:0.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Free alternative to</div>
+                    <h3 style="font-size:1rem;margin-bottom:0.3rem;">DBeaver</h3>
+                    <p style="font-size:0.82rem;color:var(--text-secondary);">DBeaver requires a Java runtime and is generalist. SQLvanta is focused on MySQL/MariaDB with no JRE dependency.</p>
+                </div>
+            </div>
+
+            <!-- Feature comparison table -->
+            <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.875rem;" aria-label="Comparison of MySQL desktop clients">
+                    <thead>
+                        <tr style="border-bottom:2px solid rgba(255,255,255,0.12);">
+                            <th style="text-align:left;padding:0.75rem 1rem;color:var(--text-secondary);font-weight:600;min-width:160px;">Feature</th>
+                            <th style="padding:0.75rem 1rem;color:#60a5fa;font-weight:700;background:rgba(59,130,246,0.06);border-radius:8px 8px 0 0;">SQLvanta</th>
+                            <th style="padding:0.75rem 1rem;color:var(--text-secondary);font-weight:500;">SQLyog</th>
+                            <th style="padding:0.75rem 1rem;color:var(--text-secondary);font-weight:500;">HeidiSQL</th>
+                            <th style="padding:0.75rem 1rem;color:var(--text-secondary);font-weight:500;">DBeaver CE</th>
+                            <th style="padding:0.75rem 1rem;color:var(--text-secondary);font-weight:500;">TablePlus</th>
+                            <th style="padding:0.75rem 1rem;color:var(--text-secondary);font-weight:500;">Workbench</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:0.65rem 1rem;color:var(--text-primary);">Price</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;font-weight:700;background:rgba(59,130,246,0.04);">Free</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">$149/yr</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">Free</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">Free</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">$89+</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">Free</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:0.65rem 1rem;color:var(--text-primary);">Open Source</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;font-weight:700;background:rgba(59,130,246,0.04);">✓ MIT</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">✗</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">✗</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:0.65rem 1rem;color:var(--text-primary);">Windows</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;font-weight:700;background:rgba(59,130,246,0.04);">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:0.65rem 1rem;color:var(--text-primary);">macOS</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;font-weight:700;background:rgba(59,130,246,0.04);">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">✗</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">✗</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:0.65rem 1rem;color:var(--text-primary);">Linux</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;font-weight:700;background:rgba(59,130,246,0.04);">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">✗</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">✗</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:0.65rem 1rem;color:var(--text-primary);">Visual ER Diagram</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;font-weight:700;background:rgba(59,130,246,0.04);">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">✗</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">✗</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:0.65rem 1rem;color:var(--text-primary);">Visual Query Builder</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;font-weight:700;background:rgba(59,130,246,0.04);">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#eab308;">Partial</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#eab308;">Partial</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">✗</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#eab308;">Partial</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0.65rem 1rem;color:var(--text-primary);">No Java / .NET</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;font-weight:700;background:rgba(59,130,246,0.04);">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#ef4444;">Needs JRE</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                            <td style="padding:0.65rem 1rem;text-align:center;color:#22c55e;">✓</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SEO keyword paragraph (visible but styled as secondary text) -->
+            <p style="margin-top:2rem;font-size:0.82rem;color:var(--text-secondary);text-align:center;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.8;">
+                SQLvanta is a free, open-source alternative to <strong style="color:var(--text-primary);">SQLyog</strong>, <strong style="color:var(--text-primary);">HeidiSQL</strong>, <strong style="color:var(--text-primary);">DBeaver</strong>, <strong style="color:var(--text-primary);">MySQL Workbench</strong>, <strong style="color:var(--text-primary);">TablePlus</strong>, <strong style="color:var(--text-primary);">DataGrip</strong>, <strong style="color:var(--text-primary);">Navicat</strong>, <strong style="color:var(--text-primary);">Sequel Pro</strong>, <strong style="color:var(--text-primary);">Beekeeper Studio</strong>, and <strong style="color:var(--text-primary);">DBngin</strong> — supporting MySQL 5.7, 8.0, 8.4 and MariaDB 10.4+ on Windows, macOS, and Linux.
+            </p>
+        </section>
+
+        <!-- ── Visible FAQ (feeds schema + on-page content) ──────────── -->
+        <section class="section container" id="faq" aria-labelledby="faq-heading">
+            <div class="section-heading">
+                <h2 id="faq-heading">Frequently Asked <span class="gradient-text">Questions</span></h2>
+            </div>
+            <div style="max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;">
+
+                <details class="glass-card" style="padding:1.25rem 1.5rem;cursor:pointer;" open>
+                    <summary style="font-weight:600;font-size:1rem;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                        Is SQLvanta free? <span style="color:var(--brand-primary);font-size:1.2rem;">&#x25BE;</span>
+                    </summary>
+                    <p style="margin-top:0.75rem;color:var(--text-secondary);line-height:1.7;">
+                        Yes. SQLvanta is completely free and open-source under the MIT license. There is no subscription, no account required, no telemetry, and no ads — ever.
+                    </p>
+                </details>
+
+                <details class="glass-card" style="padding:1.25rem 1.5rem;cursor:pointer;">
+                    <summary style="font-weight:600;font-size:1rem;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                        Is SQLvanta a good free alternative to SQLyog? <span style="color:var(--brand-primary);font-size:1.2rem;">&#x25BE;</span>
+                    </summary>
+                    <p style="margin-top:0.75rem;color:var(--text-secondary);line-height:1.7;">
+                        Yes. SQLvanta covers the core SQLyog feature set — smart SQL editor with autocomplete, visual ER diagram, schema explorer, multi-tab workspace, and query builder — completely free and open-source. SQLyog costs $149/year; SQLvanta costs nothing.
+                    </p>
+                </details>
+
+                <details class="glass-card" style="padding:1.25rem 1.5rem;cursor:pointer;">
+                    <summary style="font-weight:600;font-size:1rem;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                        How does SQLvanta compare to HeidiSQL and DBeaver? <span style="color:var(--brand-primary);font-size:1.2rem;">&#x25BE;</span>
+                    </summary>
+                    <p style="margin-top:0.75rem;color:var(--text-secondary);line-height:1.7;">
+                        HeidiSQL is Windows-only. SQLvanta runs on Windows, macOS, and Linux with native performance. DBeaver requires a Java runtime and supports many databases; SQLvanta focuses on MySQL/MariaDB with a lightweight, modern UI and no Java dependency.
+                    </p>
+                </details>
+
+                <details class="glass-card" style="padding:1.25rem 1.5rem;cursor:pointer;">
+                    <summary style="font-weight:600;font-size:1rem;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                        Which platforms does SQLvanta support? <span style="color:var(--brand-primary);font-size:1.2rem;">&#x25BE;</span>
+                    </summary>
+                    <p style="margin-top:0.75rem;color:var(--text-secondary);line-height:1.7;">
+                        SQLvanta runs natively on <strong>Windows 10/11 (x64)</strong>, <strong>macOS 12 Monterey+</strong> (Apple Silicon and Intel), and <strong>Ubuntu 20.04+ / Debian 11+</strong>. No .NET, Java, or browser runtime required.
+                    </p>
+                </details>
+
+                <details class="glass-card" style="padding:1.25rem 1.5rem;cursor:pointer;">
+                    <summary style="font-weight:600;font-size:1rem;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                        Does SQLvanta support MySQL 8 and MariaDB? <span style="color:var(--brand-primary);font-size:1.2rem;">&#x25BE;</span>
+                    </summary>
+                    <p style="margin-top:0.75rem;color:var(--text-secondary);line-height:1.7;">
+                        Yes. SQLvanta supports MySQL 5.7, 8.0, and 8.4 including <code>caching_sha2_password</code> authentication used by MySQL 8+. MariaDB 10.4 and later is also fully supported.
+                    </p>
+                </details>
+
+            </div>
+        </section>
+
     </main>
 
     <!-- ── Footer ─────────────────────────────────────────────────────── -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-logo">
-                <img src="assets/logo.png" alt="SQLvanta">
+                <img src="assets/logo.png" alt="SQLvanta — Free Open-Source MySQL Client" width="120" height="32" loading="lazy">
                 <p>&copy; 2026 SQLvanta Contributors. MIT License.</p>
             </div>
             <div class="footer-credits">

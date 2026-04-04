@@ -1,0 +1,63 @@
+# SQLvanta
+
+> SQLvanta is a free, open-source MySQL desktop client for Windows, macOS, and Linux, built with Flutter.
+> It is a free alternative to SQLyog, HeidiSQL, DBeaver, MySQL Workbench, TablePlus, DataGrip, Navicat, Sequel Pro, Beekeeper Studio, and DBngin.
+
+## Key Facts
+
+- License: MIT (fully open-source, free forever)
+- Platforms: Windows 10/11 (x64), macOS 12+ (Apple Silicon & Intel), Ubuntu 20.04+ / Debian 11+
+- MySQL Support: MySQL 5.7, 8.0, 8.4 and MariaDB 10.4+
+- Built with: Flutter 3.x (Dart), Riverpod, Drift, mysql_client
+- No .NET, Java, or browser runtime required
+- No telemetry, no account, no ads
+
+## Pages
+
+- [Home](https://sqlvanta.senthilnasa.me/): Overview, features, roadmap, keyboard shortcuts, architecture
+- [Features](https://sqlvanta.senthilnasa.me/features.html): Detailed feature list — SQL editor, ER diagram, schema explorer, query builder, EXPLAIN visualizer, CSV import, ALTER TABLE UI
+- [Download](https://sqlvanta.senthilnasa.me/download.html): Download links for Windows, macOS, Linux; install instructions; system requirements
+- [Docs](https://sqlvanta.senthilnasa.me/docs.html): Getting started guide, keyboard shortcuts, connection setup, architecture reference, FAQ
+- [Contribute](https://sqlvanta.senthilnasa.me/contribute.html): How to fork, build locally, implement a feature, and open a pull request
+
+## Core Features
+
+- Smart SQL editor with keyword and column autocomplete (dot-trigger, clause-trigger, Ctrl+Space)
+- Visual ER diagram designer with draggable tables, bezier FK lines, pan & zoom
+- Interactive schema explorer (table details, relationships, SQL preview)
+- Query EXPLAIN visualizer with colour-coded type badges
+- Visual drag-and-drop query builder (SELECT, WHERE, ORDER BY, LIMIT)
+- Multi-tab workspace (Query Editor, Schema Designer, Query Builder tabs per session)
+- Object browser with 6 categories: Tables, Views, Stored Procedures, Functions, Triggers, Events
+- Query history (auto-saved, searchable, last 100 queries)
+- Secure OS-keychain password storage (DPAPI on Windows, Keychain on macOS, libsecret on Linux)
+- Dark and light themes (FlexColorScheme)
+- CSV import with quoted-field parser
+- ALTER TABLE UI with live SQL preview before execution
+- Auto update checker (compares GitHub Releases on startup)
+- Window position and size persistence
+
+## Alternatives SQLvanta Replaces
+
+SQLvanta is a free, open-source alternative to the following paid and closed-source MySQL tools:
+
+| Tool | Why users switch to SQLvanta |
+|---|---|
+| SQLyog | SQLyog costs $149/year; SQLvanta is free and open-source with the same core features |
+| HeidiSQL | HeidiSQL is Windows-only; SQLvanta runs on Windows, macOS, and Linux |
+| DBeaver Community | DBeaver requires a Java runtime and is heavyweight; SQLvanta is lightweight with no JRE dependency |
+| MySQL Workbench | Workbench is slow and complex; SQLvanta is native-performance with a modern UI |
+| TablePlus | TablePlus is paid ($89+); SQLvanta is free with a visual query builder and ER diagram |
+| DataGrip | DataGrip is $229/year (JetBrains); SQLvanta is free and open-source |
+| Navicat | Navicat is $199+; SQLvanta is free and MIT-licensed |
+| Sequel Pro | Sequel Pro is macOS-only and no longer maintained; SQLvanta is cross-platform and actively developed |
+| Beekeeper Studio | Beekeeper Studio Community is free but limited; SQLvanta includes ER diagram and schema explorer |
+| DBngin | DBngin is macOS-only; SQLvanta is cross-platform |
+| phpMyAdmin | phpMyAdmin is browser-based and requires a web server; SQLvanta is a native desktop app |
+
+## GitHub
+
+- Repository: https://github.com/senthilnasa/sqlvanta
+- Issues: https://github.com/senthilnasa/sqlvanta/issues
+- Releases: https://github.com/senthilnasa/sqlvanta/releases
+- Author: Senthilnasa (https://senthilnasa.me)

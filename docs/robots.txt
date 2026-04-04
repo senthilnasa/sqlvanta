@@ -4,5 +4,8 @@ Allow: /
 # Sitemap location
 Sitemap: https://sqlvanta.senthilnasa.me/sitemap.xml
 
+# LLMs.txt — machine-readable site summary for AI assistants
+# https://sqlvanta.senthilnasa.me/llms.txt
+
 # Block build artifacts if any
 Disallow: /assets/*.map
