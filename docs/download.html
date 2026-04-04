@@ -265,7 +265,9 @@
       <h3>🍎 macOS</h3>
       <pre>1. Download <span class="inst-mac">sqlvanta-macos.zip</span>
 2. Unzip and drag sqlvanta.app to /Applications
-3. First launch: right-click → Open (to bypass Gatekeeper for unsigned builds)</pre>
+3. Remove the quarantine flag (required for unsigned builds):
+   xattr -dr com.apple.quarantine /Applications/sqlvanta.app
+4. Launch normally — double-click sqlvanta.app</pre>
 
       <h3>🐧 Linux</h3>
       <pre>1. Download <span class="inst-lin">sqlvanta-linux-x64.tar.gz</span>

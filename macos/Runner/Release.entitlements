@@ -2,13 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>com.apple.security.app-sandbox</key>
-	<true/>
+	<!--
+	  App Sandbox is intentionally disabled for ad-hoc (unsigned) distribution.
+	  Sandbox + ad-hoc signing causes Gatekeeper to block the app with
+	  "The application can't be opened." Sandbox requires a proper Apple
+	  Developer certificate and notarization to work. Re-enable when signing
+	  with a paid Apple Developer account.
+	-->
 	<key>com.apple.security.network.client</key>
 	<true/>
 	<key>com.apple.security.network.server</key>
 	<true/>
-	<!-- flutter_secure_storage: keychain access inside the sandbox -->
+	<!-- flutter_secure_storage: app-specific keychain access -->
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
