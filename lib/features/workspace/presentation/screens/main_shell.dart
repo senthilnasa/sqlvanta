@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../../settings/presentation/providers/update_provider.dart';
 
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../../connections/presentation/widgets/connection_dialog.dart';
@@ -251,6 +254,7 @@ class _MainShellState extends ConsumerState<MainShell> {
                           ),
                         ),
               ),
+              const _StatusBar(),
             ],
           ),
         ),
@@ -790,6 +794,70 @@ class _DatabaseDropdown extends ConsumerWidget {
           onChanged: onChanged,
         );
       },
+    );
+  }
+}
+
+// ── Status bar (bottom of app) ────────────────────────────────────────────────
+
+class _StatusBar extends ConsumerWidget {
+  const _StatusBar();
+
+  static const _siteUrl = 'https://sqlvanta.senthilnasa.me/';
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final version = ref.watch(appVersionProvider).valueOrNull;
+
+    return Container(
+      height: 24,
+      decoration: BoxDecoration(
+        color:
+            isDark
+                ? cs.surface.withAlpha(200)
+                : cs.surfaceContainerHighest.withAlpha(120),
+        border: Border(top: BorderSide(color: cs.outlineVariant.withAlpha(80))),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          // Website link
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () => launchUrl(Uri.parse(_siteUrl)),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.language, size: 12, color: cs.primary),
+                  const SizedBox(width: 4),
+                  Text(
+                    'sqlvanta.senthilnasa.me',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: cs.primary,
+                      decoration: TextDecoration.underline,
+                      decorationColor: cs.primary.withAlpha(120),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Spacer(),
+          // Version
+          if (version != null)
+            Text(
+              'v$version',
+              style: TextStyle(
+                fontSize: 10,
+                color: cs.onSurface.withAlpha(100),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

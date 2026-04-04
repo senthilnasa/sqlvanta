@@ -62,7 +62,9 @@ class Preferences extends _$Preferences {
       saves.add(dao.setValue(_keys.windowWidth, prefs.windowWidth.toString()));
     }
     if (prefs.windowHeight != null) {
-      saves.add(dao.setValue(_keys.windowHeight, prefs.windowHeight.toString()));
+      saves.add(
+        dao.setValue(_keys.windowHeight, prefs.windowHeight.toString()),
+      );
     }
     if (prefs.windowX != null) {
       saves.add(dao.setValue(_keys.windowX, prefs.windowX.toString()));

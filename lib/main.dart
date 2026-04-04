@@ -17,12 +17,13 @@ void main() async {
   final savedBounds = await _loadWindowBounds(db);
 
   final windowOptions = WindowOptions(
-    size: savedBounds != null
-        ? Size(savedBounds.$1, savedBounds.$2)
-        : const Size(
-            AppConstants.defaultWindowWidth,
-            AppConstants.defaultWindowHeight,
-          ),
+    size:
+        savedBounds != null
+            ? Size(savedBounds.$1, savedBounds.$2)
+            : const Size(
+              AppConstants.defaultWindowWidth,
+              AppConstants.defaultWindowHeight,
+            ),
     minimumSize: const Size(
       AppConstants.minWindowWidth,
       AppConstants.minWindowHeight,
@@ -48,9 +49,7 @@ void main() async {
     ProviderScope(
       // Override appDatabaseProvider so the whole app reuses the
       // already-opened database instance (avoids opening it twice).
-      overrides: [
-        appDatabaseProvider.overrideWithValue(db),
-      ],
+      overrides: [appDatabaseProvider.overrideWithValue(db)],
       child: const SQLvantaApp(),
     ),
   );

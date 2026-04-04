@@ -115,7 +115,10 @@ class UpdateService {
 
   List<int> _parseVersion(String v) {
     final parts = v.split('.');
-    return List.generate(3, (i) => i < parts.length ? (int.tryParse(parts[i]) ?? 0) : 0);
+    return List.generate(
+      3,
+      (i) => i < parts.length ? (int.tryParse(parts[i]) ?? 0) : 0,
+    );
   }
 
   /// Picks the release asset that matches the current OS.

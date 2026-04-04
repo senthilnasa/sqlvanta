@@ -67,8 +67,9 @@ class DownloadState {
   );
 }
 
-final downloadStateProvider =
-    NotifierProvider<DownloadNotifier, DownloadState>(DownloadNotifier.new);
+final downloadStateProvider = NotifierProvider<DownloadNotifier, DownloadState>(
+  DownloadNotifier.new,
+);
 
 class DownloadNotifier extends Notifier<DownloadState> {
   @override
@@ -80,7 +81,8 @@ class DownloadNotifier extends Notifier<DownloadState> {
     state = const DownloadState(isDownloading: true, progress: 0);
 
     try {
-      final dir = await getDownloadsDirectory() ??
+      final dir =
+          await getDownloadsDirectory() ??
           await getApplicationDocumentsDirectory();
       final savePath =
           '${dir.path}${Platform.pathSeparator}${info.assetFileName}';

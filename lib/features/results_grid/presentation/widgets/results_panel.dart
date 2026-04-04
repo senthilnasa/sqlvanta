@@ -5,9 +5,11 @@ import '../../../../features/query_editor/domain/entities/query_history_entry.da
 import '../../../../features/query_editor/presentation/providers/query_editor_providers.dart';
 import '../../../../features/workspace/domain/entities/workspace_session.dart';
 import '../../../../features/workspace/presentation/providers/workspace_provider.dart';
+import '../providers/explain_provider.dart';
 import '../providers/results_provider.dart';
 import '../providers/table_data_tab_signal_provider.dart';
 import 'results_data_grid.dart';
+import 'results_explain_tab.dart';
 import 'results_info_tab.dart';
 import 'results_messages_view.dart';
 import 'results_table_data_tab.dart';
@@ -68,7 +70,7 @@ class _TabShellState extends ConsumerState<_TabShell>
   @override
   void initState() {
     super.initState();
-    _tc = TabController(length: 5, vsync: this);
+    _tc = TabController(length: 6, vsync: this);
   }
 
   @override
@@ -82,6 +84,12 @@ class _TabShellState extends ConsumerState<_TabShell>
     // Switch to Table Data tab (index 2) when the object browser signals.
     ref.listen(tableDataTabSignalProvider(widget.sessionId), (prev, next) {
       if (_tc.index != 2) _tc.animateTo(2);
+    });
+    // Switch to Explain tab (index 5) when an explain result arrives.
+    ref.listen(explainExecutionProvider(widget.tabId), (prev, next) {
+      next.whenData((result) {
+        if (result != null && _tc.index != 5) _tc.animateTo(5);
+      });
     });
 
     final theme = Theme.of(context);
@@ -121,6 +129,16 @@ class _TabShellState extends ConsumerState<_TabShell>
                 hasData: result != null,
               ),
               _SqlyogTab(n: 5, icon: Icons.history_outlined, label: 'History'),
+              _SqlyogTab(
+                n: 6,
+                icon: Icons.account_tree_outlined,
+                label: 'Explain',
+                hasData:
+                    ref
+                        .watch(explainExecutionProvider(widget.tabId))
+                        .valueOrNull !=
+                    null,
+              ),
             ],
           ),
         ),
@@ -169,6 +187,11 @@ class _TabShellState extends ConsumerState<_TabShell>
 
               // ── 5 History ─────────────────────────────────────────────────
               _HistoryTab(sessionId: widget.sessionId, tabId: widget.tabId),
+
+              // ── 6 Explain ─────────────────────────────────────────────────
+              ResultsExplainTab(
+                explainAsync: ref.watch(explainExecutionProvider(widget.tabId)),
+              ),
             ],
           ),
         ),

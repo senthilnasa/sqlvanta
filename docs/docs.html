@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQLvanta Documentation — Getting Started, Keyboard Shortcuts & Architecture</title>
+  <meta name="description" content="SQLvanta documentation: quick-start guide, keyboard shortcuts, connection setup, query editor tips, schema designer, EXPLAIN visualizer, CSV import, and developer architecture reference.">
+  <meta name="keywords" content="SQLvanta documentation, MySQL client tutorial, SQL editor shortcuts, how to connect MySQL GUI, ER diagram tutorial, schema explorer guide, query EXPLAIN guide, database GUI getting started, open source MySQL client docs, Flutter desktop app docs, SQLvanta help, SQLvanta keyboard shortcuts">
+  <meta name="author" content="Senthilnasa">
+  <link rel="canonical" href="https://sqlvanta.senthilnasa.me/docs.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://sqlvanta.senthilnasa.me/docs.html">
+  <meta property="og:title" content="SQLvanta Docs — Getting Started & Reference">
+  <meta property="og:description" content="Learn SQLvanta: connect to MySQL, run queries, use the schema designer, and explore keyboard shortcuts.">
+  <meta property="og:image" content="https://sqlvanta.senthilnasa.me/icon/android-chrome-512x512.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SQLvanta Documentation">
+  <meta name="twitter:description" content="Getting started guide, keyboard shortcuts, and architecture reference for SQLvanta MySQL client.">
+  <meta name="twitter:image" content="https://sqlvanta.senthilnasa.me/icon/android-chrome-512x512.png">
+
+  <!-- FAQ structured data for Google rich results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is SQLvanta free?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. SQLvanta is 100% free and open-source under the MIT license. No subscriptions, no paid tiers." }
+      },
+      {
+        "@type": "Question",
+        "name": "Which MySQL versions does SQLvanta support?",
+        "acceptedAnswer": { "@type": "Answer", "text": "SQLvanta supports MySQL 5.7, 8.0, and 8.4, as well as MariaDB 10.4+. It uses the pure-Dart mysql_client package which supports the caching_sha2_password authentication plugin." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I run a query in SQLvanta?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Type your SQL in the editor and press F5, F9, or Ctrl+Enter to execute. Results appear in the Result tab below the editor." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I visualise the database schema?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Press Ctrl+Alt+D or click the ER Diagram button in the tab bar. An interactive drag-and-drop canvas shows all tables, columns, and foreign key relationships." }
+      },
+      {
+        "@type": "Question",
+        "name": "How are passwords stored?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Passwords are stored exclusively in the OS keychain — DPAPI on Windows, Keychain on macOS, and libsecret on Linux. The SQLite database file never contains a plain-text password." }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#1565C0">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .docs-layout { display: grid; grid-template-columns: 220px 1fr; gap: 3rem; max-width: 1100px; margin: 0 auto; padding: 6rem 1.5rem 4rem; }
+    @media(max-width:760px){ .docs-layout { grid-template-columns: 1fr; } .docs-sidebar { display: none; } }
+    .docs-sidebar { position: sticky; top: 5rem; align-self: start; }
+    .docs-sidebar nav a {
+      display: block; padding: 0.4rem 0.75rem; border-radius: 7px;
+      text-decoration: none; font-size: 0.85rem; color: var(--text-secondary);
+      transition: color .15s, background .15s;
+    }
+    .docs-sidebar nav a:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+    .docs-sidebar nav a.active { color: var(--brand-primary); background: rgba(59,130,246,0.1); }
+    .docs-sidebar .toc-section { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); padding: 0.75rem 0.75rem 0.25rem; margin-top: 0.5rem; }
+    .docs-content h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .docs-content .lead { color: var(--text-secondary); font-size: 1rem; margin-bottom: 2.5rem; }
+    .docs-content h2 { font-size: 1.4rem; margin: 2.5rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .docs-content h3 { font-size: 1.05rem; margin: 1.5rem 0 0.4rem; color: var(--text-primary); }
+    .docs-content p { font-size: 0.92rem; color: var(--text-secondary); line-height: 1.75; margin-bottom: 0.75rem; }
+    .docs-content ul, .docs-content ol { font-size: 0.92rem; color: var(--text-secondary); margin: 0.5rem 0 1rem 1.25rem; line-height: 1.8; }
+    .docs-content code {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      background: rgba(255,255,255,0.07); border-radius: 4px; padding: 0.1rem 0.35rem;
+      color: #93c5fd;
+    }
+    .docs-content pre {
+      background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; padding: 1rem 1.25rem; overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.83rem; color: #e2e8f0;
+      margin: 1rem 0 1.5rem;
+    }
+    .shortcut-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 1rem 0; }
+    .shortcut-table th { background: rgba(255,255,255,0.05); padding: 0.6rem 1rem; text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); }
+    .shortcut-table td { padding: 0.55rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-secondary); }
+    .shortcut-table td:first-child { color: var(--text-primary); }
+    kbd { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-bottom-width: 2px; border-radius: 5px; padding: 0.15rem 0.45rem; color: #22d3ee; white-space: nowrap; }
+    .faq details { border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden; }
+    .faq summary { padding: 0.9rem 1rem; cursor: pointer; font-weight: 600; font-size: 0.95rem; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    .faq summary::after { content: '+'; font-size: 1.2rem; color: var(--brand-primary); }
+    .faq details[open] summary::after { content: '−'; }
+    .faq details p { padding: 0 1rem 1rem; margin: 0; }
+    .callout { background: rgba(59,130,246,0.08); border-left: 3px solid var(--brand-primary); border-radius: 0 8px 8px 0; padding: 0.75rem 1rem; margin: 1rem 0; font-size: 0.88rem; color: var(--text-secondary); }
+    .callout strong { color: var(--text-primary); }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="grid-bg"></div>
+
+  <!-- Nav -->
+  <header class="glass-header">
+    <div class="container nav-container">
+      <a href="index.html" class="logo-link">
+        <img src="assets/logo.png" alt="SQLvanta" class="nav-logo">
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="features.html">Features</a></li>
+          <li><a href="download.html">Download</a></li>
+          <li><a href="docs.html" class="active">Docs</a></li>
+          <li><a href="contribute.html">Contribute</a></li>
+          <li><a href="https://github.com/senthilnasa/sqlvanta" class="btn btn-outline" target="_blank" rel="noopener">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="docs-layout">
+
+    <!-- Sidebar -->
+    <aside class="docs-sidebar">
+      <nav>
+        <div class="toc-section">Getting Started</div>
+        <a href="#install">Installation</a>
+        <a href="#connect">First Connection</a>
+        <a href="#workspace">Workspace</a>
+
+        <div class="toc-section">Features</div>
+        <a href="#editor">Query Editor</a>
+        <a href="#results">Results Grid</a>
+        <a href="#table-data">Table Data</a>
+        <a href="#schema-designer">ER Diagram</a>
+        <a href="#schema-explorer">Schema Explorer</a>
+        <a href="#explain">EXPLAIN</a>
+        <a href="#alter">ALTER TABLE</a>
+
+        <div class="toc-section">Reference</div>
+        <a href="#shortcuts">Shortcuts</a>
+        <a href="#faq">FAQ</a>
+        <a href="#architecture">Architecture</a>
+      </nav>
+    </aside>
+
+    <!-- Content -->
+    <main class="docs-content">
+      <h1>SQLvanta Documentation</h1>
+      <p class="lead">Everything you need to get productive with SQLvanta — from first connection to advanced schema tools.</p>
+
+      <!-- Install -->
+      <section id="install">
+        <h2>Installation</h2>
+        <p>SQLvanta is distributed as a portable app — no installer required. Download the archive for your platform from the <a href="download.html" style="color:var(--brand-primary)">Download page</a>, extract it, and run the binary.</p>
+        <h3>Windows</h3>
+        <pre>Extract sqlvanta-windows-x64-x.x.x.zip → run sqlvanta.exe</pre>
+        <h3>macOS</h3>
+        <pre>Unzip → drag sqlvanta.app to /Applications
+Right-click → Open on first launch (unsigned build)</pre>
+        <h3>Linux</h3>
+        <pre>tar -xzf sqlvanta-linux-x64-x.x.x.tar.gz -C ~/apps/sqlvanta/
+~/apps/sqlvanta/sqlvanta</pre>
+      </section>
+
+      <!-- Connect -->
+      <section id="connect">
+        <h2>First Connection</h2>
+        <ol>
+          <li>Launch SQLvanta. The <strong>Connection Manager</strong> opens automatically.</li>
+          <li>Click <strong>+</strong> to create a new connection.</li>
+          <li>Fill in Host, Port (default <code>3306</code>), Username, and Password.</li>
+          <li>Click <strong>Test Connection</strong> to verify. Latency is shown on success.</li>
+          <li>Click <strong>Save</strong>, then <strong>Open</strong> to enter the workspace.</li>
+        </ol>
+        <div class="callout"><strong>Security:</strong> Passwords are stored in the OS keychain (DPAPI / Keychain / libsecret). The local SQLite file never contains plain-text credentials.</div>
+      </section>
+
+      <!-- Workspace -->
+      <section id="workspace">
+        <h2>Workspace Layout</h2>
+        <p>The workspace is a three-column IDE layout:</p>
+        <ul>
+          <li><strong>Left sidebar</strong> — Object Browser: databases, tables, views, routines, triggers, events.</li>
+          <li><strong>Centre top</strong> — Query Editor with toolbar.</li>
+          <li><strong>Centre bottom</strong> — Results Panel (6 tabs: Result, Messages, Table Data, Info, History, Explain).</li>
+        </ul>
+        <p>Open multiple <strong>query tabs</strong> with <kbd>Ctrl+T</kbd>. Each tab has isolated editor state and results. Switch tab types via the tab-bar dropdown:</p>
+        <ul>
+          <li><kbd>Ctrl+Alt+D</kbd> — ER Diagram designer</li>
+          <li><kbd>Ctrl+E</kbd> — Schema Explorer</li>
+          <li><kbd>Ctrl+K</kbd> — Visual Query Builder</li>
+        </ul>
+      </section>
+
+      <!-- Editor -->
+      <section id="editor">
+        <h2>Query Editor</h2>
+        <p>The SQL editor supports keyword autocomplete, formatting, case conversion, and comment toggling.</p>
+        <h3>Running queries</h3>
+        <p>Press <kbd>F5</kbd>, <kbd>F9</kbd>, or <kbd>Ctrl+Enter</kbd>. Results appear immediately in the <em>Result</em> tab. The active database can be changed from the toolbar dropdown.</p>
+        <h3>Autocomplete</h3>
+        <p>Type 2+ letters to see a live-filtered keyword popup. Use <kbd>↑</kbd>/<kbd>↓</kbd> to navigate, <kbd>Tab</kbd> or <kbd>Enter</kbd> to insert, <kbd>Esc</kbd> to dismiss.</p>
+        <h3>Formatting</h3>
+        <p>Press <kbd>F12</kbd> to uppercase all SQL keywords in the editor. Use <kbd>Ctrl+Shift+U</kbd> / <kbd>Ctrl+Shift+L</kbd> for full uppercase / lowercase.</p>
+      </section>
+
+      <!-- Results -->
+      <section id="results">
+        <h2>Results Grid</h2>
+        <p>SELECT results appear in a high-performance virtual grid. Up to 1 000 rows by default (configurable in Settings).</p>
+        <h3>Edit mode</h3>
+        <p>Click <strong>Edit</strong> in the toolbar. Change cell values directly. When you click <strong>Save</strong>, SQLvanta generates <code>UPDATE … WHERE pk = ? LIMIT 1</code> for each changed row.</p>
+        <h3>Export</h3>
+        <p>Click <strong>CSV</strong> to export the full result to your Downloads folder. Right-click any row for <em>Copy as INSERT</em> or <em>Copy as UPDATE</em>.</p>
+      </section>
+
+      <!-- Table Data -->
+      <section id="table-data">
+        <h2>Table Data Browser</h2>
+        <p>The <strong>Table Data</strong> tab (Result panel tab 3) lets you browse any table without writing SQL. Double-click a table in the Object Browser to auto-load it.</p>
+        <h3>Date picker</h3>
+        <p>Click any <code>DATE</code>, <code>DATETIME</code>, or <code>TIMESTAMP</code> cell to open a calendar picker.</p>
+        <h3>FK row picker</h3>
+        <p>Click a foreign-key cell to open a searchable dialog showing the referenced table. Select a row to fill the value.</p>
+        <h3>CSV import</h3>
+        <p>Click <strong>Import CSV</strong> in the toolbar. Paste CSV text, optionally mark the first row as header, preview 5 rows, then click <strong>Import</strong> to INSERT all rows.</p>
+      </section>
+
+      <!-- ER Diagram -->
+      <section id="schema-designer">
+        <h2>ER Diagram Designer</h2>
+        <p>Open with <kbd>Ctrl+Alt+D</kbd> or from the tab-bar menu. The canvas shows all tables in the selected database as draggable cards with columns and FK arrows.</p>
+        <ul>
+          <li><strong>Drag</strong> table cards to organise the layout.</li>
+          <li><strong>Scroll</strong> to zoom, <strong>middle-drag</strong> the canvas to pan.</li>
+          <li>Use the <strong>sidebar</strong> to show/hide individual tables.</li>
+          <li>Cross-database FK tables auto-load with <code>db.table</code> headers.</li>
+          <li>Click <strong>Export PNG</strong> to save a high-resolution image.</li>
+        </ul>
+      </section>
+
+      <!-- Schema Explorer -->
+      <section id="schema-explorer">
+        <h2>Schema Explorer</h2>
+        <p>Open with <kbd>Ctrl+E</kbd>. A dedicated tab with a searchable table list and five detail views per table.</p>
+        <ul>
+          <li><strong>Columns</strong> — full type, PK/FK/UQ badges, nullable indicator, FK nav links.</li>
+          <li><strong>Relationships</strong> — outgoing and incoming foreign keys as clickable cards.</li>
+          <li><strong>SQL Preview</strong> — <code>SHOW CREATE TABLE</code> output with copy button.</li>
+          <li><strong>Constraints</strong> — PK, FK, and UNIQUE constraints with column lists.</li>
+        </ul>
+      </section>
+
+      <!-- EXPLAIN -->
+      <section id="explain">
+        <h2>Query EXPLAIN Visualizer</h2>
+        <p>Press <kbd>Ctrl+Shift+E</kbd> or click the <em>Explain</em> button in the editor toolbar. SQLvanta runs <code>EXPLAIN</code> on the current query and shows the result in tab 6 with:</p>
+        <ul>
+          <li><strong>Type badge</strong> — colour-coded: ALL (red) → index → range → ref → eq_ref → const (blue).</li>
+          <li><strong>Rows bar</strong> — relative bar chart showing estimated rows scanned.</li>
+          <li><strong>Key column</strong> — highlighted in amber when an index is used.</li>
+          <li><strong>Extra</strong> — warnings in orange for <code>Using filesort</code> and <code>Using temporary</code>.</li>
+        </ul>
+      </section>
+
+      <!-- ALTER TABLE -->
+      <section id="alter">
+        <h2>ALTER TABLE UI</h2>
+        <p>Right-click any table in the Object Browser → <em>Alter Table</em>. A dialog with four tabs:</p>
+        <ul>
+          <li><strong>Columns</strong> — list with Modify, Rename, and Drop buttons per column.</li>
+          <li><strong>Add Column</strong> — name, type (with common-types picker), nullable, default, position.</li>
+          <li><strong>Modify Column</strong> — change type and nullability of an existing column.</li>
+          <li><strong>Rename Column</strong> — change a column name using <code>CHANGE COLUMN</code>.</li>
+        </ul>
+        <p>Every operation shows a live SQL preview before execution. Click <strong>Copy SQL</strong> to use it in a migration script.</p>
+      </section>
+
+      <!-- Shortcuts -->
+      <section id="shortcuts">
+        <h2>Keyboard Shortcuts</h2>
+        <table class="shortcut-table">
+          <thead><tr><th>Action</th><th>Shortcut</th></tr></thead>
+          <tbody>
+            <tr><td>Execute query</td><td><kbd>F5</kbd> / <kbd>F9</kbd> / <kbd>Ctrl+Enter</kbd></td></tr>
+            <tr><td>Explain query</td><td><kbd>Ctrl+Shift+E</kbd></td></tr>
+            <tr><td>Format SQL keywords</td><td><kbd>F12</kbd></td></tr>
+            <tr><td>Uppercase selection</td><td><kbd>Ctrl+Shift+U</kbd></td></tr>
+            <tr><td>Lowercase selection</td><td><kbd>Ctrl+Shift+L</kbd></td></tr>
+            <tr><td>Comment selection</td><td><kbd>Ctrl+Shift+C</kbd></td></tr>
+            <tr><td>Remove comment</td><td><kbd>Ctrl+Shift+R</kbd></td></tr>
+            <tr><td>New query tab</td><td><kbd>Ctrl+T</kbd></td></tr>
+            <tr><td>Close query tab</td><td><kbd>Ctrl+W</kbd></td></tr>
+            <tr><td>Open ER Diagram</td><td><kbd>Ctrl+Alt+D</kbd></td></tr>
+            <tr><td>Open Schema Explorer</td><td><kbd>Ctrl+E</kbd></td></tr>
+            <tr><td>Open Query Builder</td><td><kbd>Ctrl+K</kbd></td></tr>
+            <tr><td>Connection Manager</td><td><kbd>Ctrl+Shift+C</kbd></td></tr>
+            <tr><td>Settings</td><td><kbd>Ctrl+,</kbd></td></tr>
+            <tr><td>Autocomplete next</td><td><kbd>Tab</kbd></td></tr>
+            <tr><td>Dismiss autocomplete</td><td><kbd>Esc</kbd></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Is SQLvanta free?</summary>
+            <p>Yes. SQLvanta is 100% free and open-source under the MIT licence. No subscriptions, no paid tiers, no telemetry.</p>
+          </details>
+          <details>
+            <summary>Which MySQL versions are supported?</summary>
+            <p>MySQL 5.7, 8.0, and 8.4, plus MariaDB 10.4+. The <code>caching_sha2_password</code> plugin used by MySQL 8 is fully supported.</p>
+          </details>
+          <details>
+            <summary>How are passwords stored?</summary>
+            <p>Exclusively in the OS keychain — DPAPI on Windows, Keychain on macOS, libsecret on Linux. The SQLite file never contains credentials.</p>
+          </details>
+          <details>
+            <summary>Can I connect to a remote MySQL server?</summary>
+            <p>Yes. Enter the remote host IP/domain, port, and credentials in the Connection Manager. Ensure port 3306 is accessible from your machine.</p>
+          </details>
+          <details>
+            <summary>How do I report a bug or request a feature?</summary>
+            <p>Open an issue on <a href="https://github.com/senthilnasa/sqlvanta/issues" rel="noopener" target="_blank" style="color:var(--brand-primary)">GitHub Issues</a>. Pull requests are welcome too.</p>
+          </details>
+        </div>
+      </section>
+
+      <!-- Architecture -->
+      <section id="architecture">
+        <h2>Developer Architecture</h2>
+        <p>SQLvanta follows Clean Architecture with feature-based modules and Riverpod 2.x state management.</p>
+        <pre>lib/
+├── app/          Router, theme, root widget
+├── core/         Shared utils, widgets, constants
+├── database/     Drift SQLite (connections, history, preferences)
+├── mysql/        Pure-Dart MySQL layer (factory, executor, schema fetcher)
+└── features/
+    ├── connections/      Connection CRUD + secure storage
+    ├── workspace/        IDE shell — sessions and tabs
+    ├── object_browser/   Lazy schema tree
+    ├── query_editor/     SQL editor + execution + history
+    ├── results_grid/     PlutoGrid results + explain + import
+    ├── schema_designer/  ER diagram canvas
+    ├── schema_explorer/  Interactive schema deep-dive
+    ├── schema_alteration/ ALTER TABLE UI
+    └── settings/         Preferences + update checker</pre>
+        <p>To build from source: <a href="https://github.com/senthilnasa/sqlvanta" rel="noopener" target="_blank" style="color:var(--brand-primary)">github.com/senthilnasa/sqlvanta</a></p>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer style="text-align:center;padding:2rem;color:var(--text-secondary);font-size:0.85rem;border-top:1px solid rgba(255,255,255,0.07);">
+    <p>© 2026 SQLvanta by <a href="https://senthilnasa.me" style="color:var(--brand-primary);text-decoration:none;">Senthilnasa</a> · <a href="https://github.com/senthilnasa/sqlvanta" style="color:var(--brand-primary);text-decoration:none;">GitHub</a> · <a href="sitemap.xml" style="color:var(--text-secondary);text-decoration:none;">Sitemap</a></p>
+  </footer>
+</body>
+</html>

@@ -294,47 +294,19 @@
     <div class="blob blob-2"></div>
     <div class="grid-bg"></div>
 
-    <!-- Floating Dynamic Download Button -->
-    <div id="download-container" style="
-        position: fixed; 
-        bottom: 30px; 
-        right: 30px; 
-        z-index: 9999; 
-        display: none; /* Hidden until API load */
-      ">
-      <a id="download-btn" href="https://github.com/senthilnasa/sqlvanta/releases/latest" style="
-          background-color: var(--brand-primary, #1565C0);
-          color: white;
-          text-decoration: none;
-          padding: 14px 24px;
-          border-radius: 50px;
-          font-weight: 600;
-          font-size: 15px;
-          box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-        " onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 40px rgba(0,0,0,0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 30px rgba(0,0,0,0.4)'">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-        <span id="download-text">Download App</span>
-      </a>
-    </div>
-
     <!-- ── Navigation ──────────────────────────────────────────────── -->
     <header class="glass-header">
         <div class="container nav-container">
-            <a href="#" class="logo-link">
+            <a href="index.html" class="logo-link">
                 <img src="assets/logo.png" alt="SQLvanta" class="nav-logo">
             </a>
             <nav>
                 <ul class="nav-links">
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#shortcuts">Shortcuts</a></li>
-                    <li><a href="#architecture">Architecture</a></li>
-                    <li><a href="#roadmap">Roadmap</a></li>
-                    <li><a href="#install">Install</a></li>
-                    <li><a href="https://github.com/senthilnasa/sqlvanta" class="btn btn-outline" target="_blank">GitHub</a></li>
+                    <li><a href="features.html">Features</a></li>
+                    <li><a href="download.html">Download</a></li>
+                    <li><a href="docs.html">Docs</a></li>
+                    <li><a href="contribute.html">Contribute</a></li>
+                    <li><a href="https://github.com/senthilnasa/sqlvanta" class="btn btn-outline" target="_blank" rel="noopener">GitHub</a></li>
                 </ul>
             </nav>
         </div>
@@ -355,8 +327,8 @@
                     and a beautiful object browser — all in one native app.
                 </p>
                 <div class="hero-cta">
-                    <a href="https://github.com/senthilnasa/sqlvanta" target="_blank" class="btn btn-primary">Star on GitHub</a>
-                    <a href="#install" class="btn btn-secondary">Get Started</a>
+                    <a href="download.html" class="btn btn-primary">Download Free</a>
+                    <a href="#install" class="btn btn-secondary">Develop Locally</a>
                 </div>
             </div>
             <div class="hero-visual">
@@ -668,11 +640,11 @@
             </div>
         </section>
 
-        <!-- ── Install / Get Started ──────────────────────────────────── -->
+        <!-- ── Develop Locally ───────────────────────────────────────── -->
         <section id="install" class="section container">
             <div class="section-heading">
-                <h2>Get <span class="gradient-text">Started</span></h2>
-                <p>Build from source in under 5 minutes.</p>
+                <h2>Develop <span class="gradient-text">Locally</span></h2>
+                <p>Build from source in under 5 minutes. No special setup required.</p>
             </div>
 
             <div style="max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem;">
@@ -712,23 +684,27 @@
                     </div>
                 </div>
 
-                <div style="text-align:center;padding-top:1rem;">
-                    <a href="https://github.com/senthilnasa/sqlvanta" target="_blank" class="btn btn-primary" style="margin-right:1rem;">View on GitHub</a>
-                    <a href="https://github.com/senthilnasa/sqlvanta/issues" target="_blank" class="btn btn-secondary">Report an Issue</a>
+                <div style="text-align:center;padding-top:1rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
+                    <a href="https://github.com/senthilnasa/sqlvanta" target="_blank" class="btn btn-primary" rel="noopener">View on GitHub</a>
+                    <a href="contribute.html" class="btn btn-secondary">How to Contribute</a>
+                    <a href="https://github.com/senthilnasa/sqlvanta/issues" target="_blank" class="btn btn-outline" rel="noopener">Report an Issue</a>
                 </div>
             </div>
         </section>
 
-        <!-- ── Community Docs ─────────────────────────────────────────── -->
+        <!-- ── Contribute CTA ────────────────────────────────────────── -->
         <section class="section container text-center">
-            <h2 class="gradient-text">Open Documentation</h2>
-            <p class="doc-text">
-                Documentation is community-driven. The primary source of truth lives in the project
-                <code>README.md</code> — anyone can improve it directly via GitHub.
-            </p>
-            <a href="https://github.com/senthilnasa/sqlvanta/edit/main/README.md" target="_blank" class="btn btn-outline edit-btn">
-                📝 Edit README and Contribute
-            </a>
+            <div class="glass-card" style="max-width:640px;margin:0 auto;padding:3rem 2.5rem;">
+                <div style="font-size:2.5rem;margin-bottom:1rem;">🤝</div>
+                <h2 style="font-size:1.8rem;margin-bottom:0.75rem;">Want to Add a Feature?</h2>
+                <p style="color:var(--text-secondary);margin-bottom:2rem;line-height:1.7;">
+                    SQLvanta is fully open-source. Fork the repo, implement your feature following the clean architecture guide, then open a pull request. Every contribution is welcome.
+                </p>
+                <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
+                    <a href="contribute.html" class="btn btn-primary">How to Create a Pull Request</a>
+                    <a href="https://github.com/senthilnasa/sqlvanta/issues" target="_blank" class="btn btn-outline" rel="noopener">Browse Open Issues</a>
+                </div>
+            </div>
         </section>
 
     </main>
@@ -750,7 +726,7 @@
     </footer>
 
     <script>
-        // Smooth scroll for anchor links
+        // Smooth scroll for in-page anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 const target = document.querySelector(this.getAttribute('href'));
@@ -759,57 +735,6 @@
                 target.scrollIntoView({ behavior: 'smooth' });
             });
         });
-
-        // Highlight active nav link on scroll
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    const link = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
-                    if (link) link.classList.add('active');
-                }
-            });
-        }, { threshold: 0.4 });
-        sections.forEach(s => observer.observe(s));
-
-        // GitHub API magic to fetch latest version and OS-specific URL
-        function setupDownloadButton() {
-            const btn = document.getElementById('download-btn');
-            const text = document.getElementById('download-text');
-            const container = document.getElementById('download-container');
-            const repoPath = 'senthilnasa/sqlvanta'; 
-            
-            const userAgent = navigator.userAgent.toLowerCase();
-            let platformExt = '.zip'; 
-            let platformName = 'Desktop';
-            
-            if (userAgent.includes('win')) { platformExt = '-windows.zip'; platformName = 'Windows'; }
-            else if (userAgent.includes('mac')) { platformExt = '-macos.zip'; platformName = 'macOS'; }
-            else if (userAgent.includes('linux')) { platformExt = '-linux.tar.gz'; platformName = 'Linux'; }
-            else if (userAgent.includes('android')) { platformExt = '-android.apk'; platformName = 'Android'; }
-
-            fetch(`https://api.github.com/repos/${repoPath}/releases/latest`)
-              .then(res => res.json())
-              .then(data => {
-                if (data && data.tag_name) {
-                  const version = data.tag_name;
-                  text.innerHTML = `Download for ${platformName} <span style="opacity:0.8; font-size: 13px; margin-left:4px;">(${version})</span>`;
-                  
-                  const asset = data.assets.find(a => a.name.endsWith(platformExt));
-                  if (asset && asset.browser_download_url) {
-                    btn.href = asset.browser_download_url;
-                  }
-                  container.style.display = 'block';
-                }
-              })
-              .catch(err => {
-                console.log('GitHub API error:', err);
-                container.style.display = 'block';
-              });
-        }
-        setupDownloadButton();
     </script>
 </body>
 </html>

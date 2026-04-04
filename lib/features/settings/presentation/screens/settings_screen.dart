@@ -148,7 +148,6 @@ class SettingsScreen extends ConsumerWidget {
                 // ── Updates ───────────────────────────────────────────────
                 _SectionHeader('Updates'),
                 const _UpdateSection(),
-
               ],
             ),
       ),
@@ -198,11 +197,10 @@ class _UpdateSection extends ConsumerWidget {
                 return TextButton.icon(
                   icon: const Icon(Icons.refresh, size: 14),
                   label: const Text('Re-check', style: TextStyle(fontSize: 12)),
-                  onPressed:
-                      () {
-                        ref.read(downloadStateProvider.notifier).reset();
-                        ref.read(updateInfoProvider.notifier).check();
-                      },
+                  onPressed: () {
+                    ref.read(downloadStateProvider.notifier).reset();
+                    ref.read(updateInfoProvider.notifier).check();
+                  },
                 );
               },
               loading:
@@ -214,10 +212,7 @@ class _UpdateSection extends ConsumerWidget {
               error:
                   (e, _) => TextButton.icon(
                     icon: const Icon(Icons.refresh, size: 14),
-                    label: const Text(
-                      'Retry',
-                      style: TextStyle(fontSize: 12),
-                    ),
+                    label: const Text('Retry', style: TextStyle(fontSize: 12)),
                     onPressed:
                         () => ref.read(updateInfoProvider.notifier).check(),
                   ),
@@ -269,7 +264,11 @@ class _UpdateResultCard extends ConsumerWidget {
         padding: const EdgeInsets.only(top: 10),
         child: Row(
           children: [
-            Icon(Icons.check_circle_outline, size: 15, color: Colors.green.shade500),
+            Icon(
+              Icons.check_circle_outline,
+              size: 15,
+              color: Colors.green.shade500,
+            ),
             const SizedBox(width: 6),
             Text(
               'You are on the latest version (v${info.currentVersion})',
@@ -427,11 +426,10 @@ class _UpdateResultCard extends ConsumerWidget {
                     'View Release',
                     style: TextStyle(fontSize: 11),
                   ),
-                  onPressed:
-                      () {
-                        // Opens in default browser via Process.run
-                        _openUrl(info.releaseUrl);
-                      },
+                  onPressed: () {
+                    // Opens in default browser via Process.run
+                    _openUrl(info.releaseUrl);
+                  },
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,

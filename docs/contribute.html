@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contribute to SQLvanta — How to Open a Pull Request</title>
+  <meta name="description" content="Step-by-step guide to contributing to SQLvanta. Fork the repo, build locally, implement your feature following clean architecture, and open a pull request.">
+  <meta name="keywords" content="SQLvanta contribute, open source MySQL client contribution, Flutter pull request guide, SQLvanta GitHub, how to contribute open source Flutter app">
+  <meta name="author" content="Senthilnasa">
+  <link rel="canonical" href="https://sqlvanta.senthilnasa.me/contribute.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sqlvanta.senthilnasa.me/contribute.html">
+  <meta property="og:title" content="Contribute to SQLvanta — Pull Request Guide">
+  <meta property="og:description" content="Fork, build, code, and contribute. A complete guide to adding features to SQLvanta via GitHub pull requests.">
+  <meta property="og:image" content="https://sqlvanta.senthilnasa.me/icon/android-chrome-512x512.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Contribute to SQLvanta">
+  <meta name="twitter:description" content="Step-by-step guide to forking SQLvanta, building locally, and opening a pull request.">
+  <meta name="twitter:image" content="https://sqlvanta.senthilnasa.me/icon/android-chrome-512x512.png">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Contribute to SQLvanta via Pull Request",
+    "description": "Step-by-step guide to adding features or fixes to SQLvanta, an open-source Flutter MySQL desktop client.",
+    "step": [
+      { "@type": "HowToStep", "name": "Fork the repository", "text": "Click Fork on the SQLvanta GitHub page to create your own copy." },
+      { "@type": "HowToStep", "name": "Clone and set up", "text": "Clone your fork, run flutter pub get, and run dart run build_runner build." },
+      { "@type": "HowToStep", "name": "Create a feature branch", "text": "Branch off main with a descriptive name like feature/csv-export." },
+      { "@type": "HowToStep", "name": "Implement using clean architecture", "text": "Follow the domain → data → presentation layer structure." },
+      { "@type": "HowToStep", "name": "Test your changes", "text": "Run flutter test and verify the app builds on at least one platform." },
+      { "@type": "HowToStep", "name": "Open a pull request", "text": "Push your branch and open a PR against main with a clear description." }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#1565C0">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .contrib-page { max-width: 860px; margin: 0 auto; padding: 7rem 1.5rem 5rem; }
+    .page-hero { text-align: center; margin-bottom: 4rem; }
+    .page-hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 1rem; }
+    .page-hero p { font-size: 1.05rem; color: var(--text-secondary); max-width: 580px; margin: 0 auto; }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 2rem; }
+    .step {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .step-body h3 { font-size: 1.2rem; margin-bottom: 0.4rem; }
+    .step-body p  { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem; }
+
+    /* Code blocks */
+    pre.code-block {
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 1.1rem 1.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.83rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      line-height: 1.8;
+      margin-bottom: 0.75rem;
+    }
+    pre.code-block .cmd     { color: #4ec9b0; }
+    pre.code-block .flag    { color: #ce9178; }
+    pre.code-block .comment { color: #6a9955; }
+    pre.code-block .branch  { color: #c084fc; }
+    pre.code-block .string  { color: #ce9178; }
+
+    /* Info callouts */
+    .callout {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+    .callout-info  { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25); color: #93c5fd; }
+    .callout-tip   { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.25);  color: #86efac; }
+    .callout-warn  { background: rgba(234,179,8,0.08);  border: 1px solid rgba(234,179,8,0.25);  color: #fde047; }
+    .callout-icon  { font-size: 1.1rem; flex-shrink: 0; }
+
+    /* Arch mini-diagram */
+    .arch-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .arch-chip {
+      padding: 0.3rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .chip-domain  { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); color: #60a5fa; }
+    .chip-data    { background: rgba(34,197,94,0.15);  border: 1px solid rgba(34,197,94,0.3);  color: #4ade80; }
+    .chip-pres    { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); color: #c084fc; }
+
+    /* PR checklist */
+    .checklist { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+    .checklist li {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    .checklist li::before { content: '☐'; font-size: 1rem; color: #3b82f6; flex-shrink: 0; }
+
+    /* Divider */
+    .divider { height: 1px; background: rgba(255,255,255,0.07); margin: 3rem 0; }
+
+    @media (max-width: 560px) {
+      .step { grid-template-columns: 1fr; }
+      .step-num { width: 44px; height: 44px; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="grid-bg"></div>
+
+  <!-- Nav -->
+  <header class="glass-header">
+    <div class="container nav-container">
+      <a href="index.html" class="logo-link">
+        <img src="assets/logo.png" alt="SQLvanta" class="nav-logo">
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="features.html">Features</a></li>
+          <li><a href="download.html">Download</a></li>
+          <li><a href="docs.html">Docs</a></li>
+          <li><a href="contribute.html" class="active">Contribute</a></li>
+          <li><a href="https://github.com/senthilnasa/sqlvanta" class="btn btn-outline" target="_blank" rel="noopener">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contrib-page">
+
+    <section class="page-hero">
+      <h1>How to <span style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Contribute</span></h1>
+      <p>SQLvanta is fully open-source. Fork, build, implement your idea following the clean architecture guide, and open a pull request. Every contribution — big or small — is welcome.</p>
+    </section>
+
+    <div class="steps">
+
+      <!-- Step 1 -->
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Fork the Repository</h3>
+          <p>Go to the SQLvanta GitHub page and click <strong>Fork</strong> to create a copy under your own account. This gives you full write access to experiment without touching the main repo.</p>
+          <div class="callout callout-info">
+            <span class="callout-icon">ℹ️</span>
+            <span>Keep your fork's <code>main</code> branch in sync with upstream before starting work. This avoids merge conflicts later.</span>
+          </div>
+          <pre class="code-block"><span class="comment"># After forking, clone your fork</span>
+<span class="cmd">git</span> clone https://github.com/<span class="string">YOUR_USERNAME</span>/sqlvanta.git
+<span class="cmd">cd</span> sqlvanta
+
+<span class="comment"># Add the original repo as "upstream" so you can pull future changes</span>
+<span class="cmd">git</span> remote add upstream https://github.com/senthilnasa/sqlvanta.git</pre>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Set Up Your Development Environment</h3>
+          <p>SQLvanta requires Flutter 3.x (stable channel) with desktop support enabled. Run the commands below to get everything ready.</p>
+          <pre class="code-block"><span class="comment"># Verify Flutter is on stable channel with desktop enabled</span>
+<span class="cmd">flutter</span> channel stable
+<span class="cmd">flutter</span> upgrade
+<span class="cmd">flutter</span> config <span class="flag">--enable-windows-desktop</span>  <span class="comment"># or --enable-macos-desktop / --enable-linux-desktop</span>
+<span class="cmd">flutter</span> doctor
+
+<span class="comment"># Install dependencies</span>
+<span class="cmd">flutter</span> pub get
+
+<span class="comment"># Generate Drift DB, Riverpod providers, and Freezed models</span>
+<span class="cmd">dart</span> run build_runner build <span class="flag">--delete-conflicting-outputs</span>
+
+<span class="comment"># Run on your platform</span>
+<span class="cmd">flutter</span> run <span class="flag">-d windows</span>   <span class="comment"># or -d macos / -d linux</span></pre>
+          <div class="callout callout-tip">
+            <span class="callout-icon">✅</span>
+            <span>Generated <code>*.g.dart</code> files are committed to source control — you only need to re-run <code>build_runner</code> after editing Drift tables, Riverpod providers, or Freezed models.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Create a Feature Branch</h3>
+          <p>Always branch off <code>main</code>. Use a descriptive name that summarises what you're adding or fixing.</p>
+          <pre class="code-block"><span class="comment"># Pull the latest upstream changes first</span>
+<span class="cmd">git</span> fetch upstream
+<span class="cmd">git</span> checkout main
+<span class="cmd">git</span> merge upstream/main
+
+<span class="comment"># Create your feature branch</span>
+<span class="cmd">git</span> checkout <span class="flag">-b</span> <span class="branch">feature/csv-export</span>
+<span class="comment"># Examples: feature/ssh-tunneling  fix/connection-timeout  docs/contributing-guide</span></pre>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Follow the Clean Architecture Structure</h3>
+          <p>SQLvanta uses a strict three-layer architecture per feature module. Every new feature lives under <code>lib/features/&lt;name&gt;/</code> with the following structure:</p>
+
+          <div class="arch-chips">
+            <span class="arch-chip chip-domain">domain/entities/</span>
+            <span class="arch-chip chip-domain">domain/repositories/</span>
+            <span class="arch-chip chip-domain">domain/usecases/</span>
+            <span class="arch-chip chip-data">data/datasources/</span>
+            <span class="arch-chip chip-data">data/repositories/</span>
+            <span class="arch-chip chip-pres">presentation/providers/</span>
+            <span class="arch-chip chip-pres">presentation/screens/</span>
+            <span class="arch-chip chip-pres">presentation/widgets/</span>
+          </div>
+
+          <div class="callout callout-warn" style="margin-top:1rem;">
+            <span class="callout-icon">⚠️</span>
+            <span><strong>Domain must stay pure Dart.</strong> Never import Flutter or any framework package inside <code>domain/</code>. Only entities, repository interfaces, and use cases belong here.</span>
+          </div>
+
+          <p>Naming rules to follow:</p>
+          <pre class="code-block"><span class="comment"># Files       → snake_case</span>
+connection_entity.dart
+
+<span class="comment"># Classes     → PascalCase</span>
+<span class="string">ConnectionEntity</span>, <span class="string">SaveConnection</span>, <span class="string">ConnectionModel</span>
+
+<span class="comment"># Providers   → camelCase + Provider suffix</span>
+connectionListProvider
+
+<span class="comment"># Use cases   → VerbNoun</span>
+GetAllConnections, SaveConnection, DeleteConnection
+
+<span class="comment"># Riverpod notifier class (codegen)</span>
+<span class="string">class ConnectionList extends _$ConnectionList { ... }</span></pre>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h3>Add a Route (if adding a new screen)</h3>
+          <p>New screens must be registered in <code>lib/app/router.dart</code>. Follow the existing <code>GoRoute</code> pattern.</p>
+          <pre class="code-block"><span class="comment"># lib/app/router.dart — add inside the routes list</span>
+GoRoute(
+  path: <span class="string">'/my-feature'</span>,
+  builder: (context, state) => <span class="string">const MyFeatureScreen()</span>,
+),</pre>
+        </div>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h3>Test Your Changes</h3>
+          <p>Run unit and widget tests, then manually verify your feature builds and works on at least one desktop platform.</p>
+          <pre class="code-block"><span class="cmd">flutter</span> test                      <span class="comment"># unit + widget tests</span>
+<span class="cmd">flutter</span> test integration_test/     <span class="comment"># integration tests (optional)</span>
+<span class="cmd">flutter</span> analyze                    <span class="comment"># static analysis — must pass with zero errors</span></pre>
+          <div class="callout callout-tip">
+            <span class="callout-icon">✅</span>
+            <span><code>flutter analyze</code> must report <strong>no errors</strong> before you open a PR. Warnings are acceptable but should be minimised.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7 -->
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-body">
+          <h3>Commit and Push</h3>
+          <p>Write clear, focused commit messages. Squash work-in-progress commits before pushing if you prefer a clean history.</p>
+          <pre class="code-block"><span class="cmd">git</span> add lib/features/my_feature/
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="string">"feat: add CSV export to results grid"</span>
+<span class="cmd">git</span> push origin <span class="branch">feature/csv-export</span></pre>
+        </div>
+      </div>
+
+      <!-- Step 8 -->
+      <div class="step">
+        <div class="step-num">8</div>
+        <div class="step-body">
+          <h3>Open a Pull Request</h3>
+          <p>Go to your fork on GitHub. You'll see a prompt to <strong>Compare &amp; pull request</strong>. Target the <code>main</code> branch of <code>senthilnasa/sqlvanta</code>.</p>
+
+          <div class="callout callout-info">
+            <span class="callout-icon">📝</span>
+            <span>A good PR description includes: <strong>what</strong> you changed, <strong>why</strong> it's needed, <strong>how</strong> to test it, and a screenshot or screen recording if it touches the UI.</span>
+          </div>
+
+          <p>PR title format suggestions:</p>
+          <pre class="code-block"><span class="string">feat: add SSH tunnel support to connection manager</span>
+<span class="string">fix: resolve timeout when querying large result sets</span>
+<span class="string">docs: improve keyboard shortcuts section in README</span>
+<span class="string">refactor: split workspace_provider into smaller notifiers</span></pre>
+
+          <p style="margin-top:0.75rem;">Before submitting, run through this checklist:</p>
+          <ul class="checklist">
+            <li>Feature builds and runs on Windows, macOS, or Linux</li>
+            <li><code>flutter analyze</code> reports zero errors</li>
+            <li><code>flutter test</code> passes with no failures</li>
+            <li>New code follows the clean architecture layer rules</li>
+            <li>No passwords, API keys, or secrets committed</li>
+            <li>If Drift/Riverpod/Freezed files changed, <code>build_runner</code> was re-run and <code>*.g.dart</code> files are included in the commit</li>
+            <li>PR targets the <code>main</code> branch of the upstream repo</li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /steps -->
+
+    <div class="divider"></div>
+
+    <!-- Good first issues -->
+    <section style="margin-bottom:3rem;">
+      <h2 style="font-size:1.5rem;margin-bottom:0.75rem;">Looking for Something to Work On?</h2>
+      <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Browse open issues on GitHub — anything labelled <strong style="color:#60a5fa;">good first issue</strong> is a great starting point. Phase 2 features are also up for grabs:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+        <div class="glass-card" style="padding:1.25rem;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">🔌</div>
+          <h3 style="font-size:1rem;margin-bottom:0.3rem;">SSH Tunnel Support</h3>
+          <p style="font-size:0.85rem;color:var(--text-secondary);">Connect to remote MySQL servers through an SSH jump host.</p>
+        </div>
+        <div class="glass-card" style="padding:1.25rem;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">📤</div>
+          <h3 style="font-size:1rem;margin-bottom:0.3rem;">Export to CSV / JSON</h3>
+          <p style="font-size:0.85rem;color:var(--text-secondary);">Export query results or full tables to CSV or JSON format.</p>
+        </div>
+        <div class="glass-card" style="padding:1.25rem;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">🔍</div>
+          <h3 style="font-size:1rem;margin-bottom:0.3rem;">Query EXPLAIN Visualizer</h3>
+          <p style="font-size:0.85rem;color:var(--text-secondary);">Visual tree rendering of MySQL EXPLAIN output with cost annotations.</p>
+        </div>
+        <div class="glass-card" style="padding:1.25rem;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">🌐</div>
+          <h3 style="font-size:1rem;margin-bottom:0.3rem;">PostgreSQL Driver</h3>
+          <p style="font-size:0.85rem;color:var(--text-secondary);">Add a PostgreSQL backend while reusing all existing UI layers.</p>
+        </div>
+      </div>
+    </section>
+
+    <div style="text-align:center;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;padding-bottom:2rem;">
+      <a href="https://github.com/senthilnasa/sqlvanta/issues" target="_blank" class="btn btn-primary" rel="noopener">Browse Open Issues</a>
+      <a href="https://github.com/senthilnasa/sqlvanta/fork" target="_blank" class="btn btn-secondary" rel="noopener">Fork on GitHub</a>
+      <a href="docs.html" class="btn btn-outline">Read the Docs</a>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer style="text-align:center;padding:2rem;color:var(--text-secondary);font-size:0.85rem;border-top:1px solid rgba(255,255,255,0.07);margin-top:2rem;">
+    <p>© 2026 SQLvanta by <a href="https://senthilnasa.me" style="color:var(--brand-primary);text-decoration:none;">Senthilnasa</a> · <a href="https://github.com/senthilnasa/sqlvanta" style="color:var(--brand-primary);text-decoration:none;">GitHub</a> · <a href="sitemap.xml" style="color:var(--text-secondary);text-decoration:none;">Sitemap</a></p>
+  </footer>
+</body>
+</html>

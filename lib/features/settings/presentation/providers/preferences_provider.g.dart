@@ -24,7 +24,7 @@ final preferencesDaoProvider = AutoDisposeProvider<PreferencesDao>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PreferencesDaoRef = AutoDisposeProviderRef<PreferencesDao>;
-String _$preferencesHash() => r'f903cee226e8dc6321fb25fa8e92cd200d8b9e58';
+String _$preferencesHash() => r'4bd0c93902d0e31426793b92fbae18346994567a';
 
 /// See also [Preferences].
 @ProviderFor(Preferences)

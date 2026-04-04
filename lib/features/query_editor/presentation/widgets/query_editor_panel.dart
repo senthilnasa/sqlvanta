@@ -6,6 +6,7 @@ import '../../../workspace/domain/entities/workspace_session.dart';
 import '../../../workspace/presentation/providers/workspace_provider.dart';
 import '../../domain/entities/query_tab.dart';
 import '../providers/query_editor_providers.dart';
+import '../../../results_grid/presentation/providers/explain_provider.dart';
 import 'code_editor_widget.dart';
 import 'editor_toolbar.dart';
 import 'query_history_drawer.dart';
@@ -68,6 +69,15 @@ class QueryEditorPanel extends ConsumerWidget {
               shift: true,
             ):
             () => _toggleComment(ref, tab.id, add: false),
+
+        // ── Explain ───────────────────────────────────────────────────────
+        // Ctrl+Shift+E  Explain query
+        const SingleActivator(
+              LogicalKeyboardKey.keyE,
+              control: true,
+              shift: true,
+            ):
+            () => _explainQuery(ref, tab),
       },
       child: Focus(
         autofocus: true,
@@ -89,6 +99,7 @@ class QueryEditorPanel extends ConsumerWidget {
                       onRun: () => _runQuery(ref, tab),
                       onStop: () {},
                       onFormat: () => _formatSql(ref, tab.id),
+                      onExplain: () => _explainQuery(ref, tab),
                       onHistory: () => Scaffold.of(ctx).openEndDrawer(),
                       onDatabaseChanged:
                           (db) => ref
@@ -116,6 +127,18 @@ class QueryEditorPanel extends ConsumerWidget {
     if (sql.trim().isEmpty) return;
     ref
         .read(queryExecutionProvider(tab.id).notifier)
+        .execute(
+          sql: sql,
+          sessionId: session.sessionId,
+          database: tab.activeDatabase,
+        );
+  }
+
+  void _explainQuery(WidgetRef ref, QueryTab tab) {
+    final sql = ref.read(editorContentProvider(tab.id));
+    if (sql.trim().isEmpty) return;
+    ref
+        .read(explainExecutionProvider(tab.id).notifier)
         .execute(
           sql: sql,
           sessionId: session.sessionId,

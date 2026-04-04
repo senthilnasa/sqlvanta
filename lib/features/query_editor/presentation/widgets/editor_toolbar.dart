@@ -5,6 +5,7 @@ class EditorToolbar extends StatelessWidget {
   final VoidCallback? onStop;
   final VoidCallback? onFormat;
   final VoidCallback? onHistory;
+  final VoidCallback? onExplain;
   final bool isExecuting;
   final String? activeDatabase;
   final List<String> databases;
@@ -16,6 +17,7 @@ class EditorToolbar extends StatelessWidget {
     this.onStop,
     this.onFormat,
     this.onHistory,
+    this.onExplain,
     this.isExecuting = false,
     this.activeDatabase,
     this.databases = const [],
@@ -52,6 +54,11 @@ class EditorToolbar extends StatelessWidget {
             icon: Icons.auto_fix_high_outlined,
             tooltip: 'Format SQL',
             onPressed: onFormat,
+          ),
+          _ToolbarButton(
+            icon: Icons.account_tree_outlined,
+            tooltip: 'Explain query (Ctrl+Shift+E)',
+            onPressed: onExplain,
           ),
           _ToolbarButton(
             icon: Icons.history_outlined,

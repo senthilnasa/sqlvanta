@@ -43,12 +43,14 @@ class _SQLvantaAppState extends ConsumerState<SQLvantaApp> with WindowListener {
     try {
       final size = await windowManager.getSize();
       final pos = await windowManager.getPosition();
-      await ref.read(preferencesProvider.notifier).saveWindowBounds(
-        width: size.width,
-        height: size.height,
-        x: pos.dx,
-        y: pos.dy,
-      );
+      await ref
+          .read(preferencesProvider.notifier)
+          .saveWindowBounds(
+            width: size.width,
+            height: size.height,
+            x: pos.dx,
+            y: pos.dy,
+          );
     } catch (_) {}
   }
 

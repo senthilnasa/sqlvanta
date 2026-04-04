@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQLvanta Features — MySQL GUI with ER Diagram, Query Builder & Schema Explorer</title>
+  <meta name="description" content="Explore every SQLvanta feature: SQL editor with autocomplete, visual ER diagram designer, interactive schema explorer, query EXPLAIN visualizer, CSV import/export, ALTER TABLE UI, and inline row editing — all free and open-source.">
+  <meta name="keywords" content="MySQL GUI features, SQL autocomplete editor, ER diagram tool, schema explorer, query EXPLAIN visualizer, database GUI Windows Mac Linux, free MySQL client features, open source database tool, SQLyog alternative features, HeidiSQL alternative, DBeaver alternative, TablePlus alternative, PlantUML ERD, Flutter desktop MySQL">
+  <meta name="author" content="Senthilnasa">
+  <link rel="canonical" href="https://sqlvanta.senthilnasa.me/features.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sqlvanta.senthilnasa.me/features.html">
+  <meta property="og:title" content="SQLvanta Features — Complete MySQL Desktop Client">
+  <meta property="og:description" content="SQL editor, ER diagram, schema explorer, query EXPLAIN, CSV import, ALTER TABLE — all in one free app.">
+  <meta property="og:image" content="https://sqlvanta.senthilnasa.me/icon/android-chrome-512x512.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SQLvanta Features">
+  <meta name="twitter:description" content="Full-featured open-source MySQL client. ER diagrams, schema explorer, query EXPLAIN, CSV import/export and more.">
+  <meta name="twitter:image" content="https://sqlvanta.senthilnasa.me/icon/android-chrome-512x512.png">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SQLvanta",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Windows, macOS, Linux",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "url": "https://sqlvanta.senthilnasa.me/",
+    "description": "Free, open-source MySQL desktop client with SQL editor, ER diagram designer, schema explorer, and more.",
+    "featureList": [
+      "SQL editor with keyword autocomplete",
+      "Visual ER diagram designer",
+      "Interactive schema explorer",
+      "Query EXPLAIN visualizer",
+      "Inline table data editing",
+      "CSV import and export",
+      "ALTER TABLE UI",
+      "Multi-tab query editor",
+      "Query history",
+      "Secure password storage"
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#1565C0">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .features-page { max-width: 1100px; margin: 0 auto; padding: 6rem 1.5rem 4rem; }
+    .page-hero { text-align: center; margin-bottom: 4rem; }
+    .page-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin-bottom: 1rem; }
+    .page-hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 620px; margin: 0 auto; }
+    .feature-section { margin-bottom: 4rem; }
+    .feature-section h2 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+    .feature-section .lead { color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem; }
+    .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
+    .feat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      padding: 1.4rem;
+      transition: border-color .2s;
+    }
+    .feat-card:hover { border-color: rgba(59,130,246,0.4); }
+    .feat-card .icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .feat-card h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .feat-card p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; }
+    .feat-card ul { margin: 0.5rem 0 0 1rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8; }
+    .badge-new {
+      display: inline-block; font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.45rem;
+      border-radius: 10px; background: rgba(59,130,246,0.15); color: #60a5fa;
+      border: 1px solid rgba(59,130,246,0.3); margin-left: 0.4rem; vertical-align: middle;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .compare-table th, .compare-table td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.07); text-align: left; }
+    .compare-table th { background: rgba(255,255,255,0.05); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); }
+    .compare-table td:first-child { color: var(--text-primary); font-weight: 500; }
+    .yes { color: #22c55e; font-weight: 700; }
+    .no  { color: #ef4444; }
+    .partial { color: #eab308; }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="grid-bg"></div>
+
+  <!-- Nav -->
+  <header class="glass-header">
+    <div class="container nav-container">
+      <a href="index.html" class="logo-link">
+        <img src="assets/logo.png" alt="SQLvanta" class="nav-logo">
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="features.html" class="active">Features</a></li>
+          <li><a href="download.html">Download</a></li>
+          <li><a href="docs.html">Docs</a></li>
+          <li><a href="contribute.html">Contribute</a></li>
+          <li><a href="https://github.com/senthilnasa/sqlvanta" class="btn btn-outline" target="_blank" rel="noopener">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="features-page">
+
+    <!-- Hero -->
+    <section class="page-hero">
+      <h1>Everything You Need to<br><span style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Manage MySQL Databases</span></h1>
+      <p>SQLvanta packs the tools professional DBAs and developers rely on daily — all in one free, open-source desktop app.</p>
+    </section>
+
+    <!-- Editor -->
+    <section class="feature-section" id="editor">
+      <h2>🖊️ SQL Query Editor</h2>
+      <p class="lead">Write, run, and format SQL with a professional-grade editor designed for speed.</p>
+      <div class="feat-grid">
+        <article class="feat-card">
+          <div class="icon">⌨️</div>
+          <h3>Keyword Autocomplete</h3>
+          <p>Live-filtered SQL keyword popup appears after 2+ characters. Navigate with arrow keys, confirm with Tab or Enter — no mouse required.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">📑</div>
+          <h3>Multi-Tab Editor</h3>
+          <p>Open multiple query tabs per connection. Each tab has its own editor state, result grid, and history — just like a real IDE.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">⚡</div>
+          <h3>Keyboard-First Execution</h3>
+          <p>F5, F9, or Ctrl+Enter to run. Ctrl+Shift+E to EXPLAIN. F12 to format. Ctrl+Shift+U/L for case conversion. Full keyboard workflow.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">🕒</div>
+          <h3>Query History</h3>
+          <p>Every executed query is auto-saved with timestamp, duration, and error status. Tap any entry to reload it into the editor.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="feature-section" id="results">
+      <h2>📊 Results Grid</h2>
+      <p class="lead">View and edit query results with a high-performance virtual grid supporting thousands of rows.</p>
+      <div class="feat-grid">
+        <article class="feat-card">
+          <div class="icon">✏️</div>
+          <h3>Inline Row Editing <span class="badge-new">New</span></h3>
+          <p>Toggle edit mode on any SELECT result. Change cell values and save — SQLvanta auto-generates UPDATE statements using the first column as PK.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">📤</div>
+          <h3>CSV Export</h3>
+          <p>Export any result set to a CSV file in the Downloads folder with one click. Proper quoting handles commas, quotes, and newlines.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">📋</div>
+          <h3>Copy as SQL</h3>
+          <p>Right-click any row to copy it as an INSERT or UPDATE statement — useful for reproducing issues or seeding test data.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">🔍</div>
+          <h3>Column Filter</h3>
+          <p>Toggle per-column filter inputs to search within large result sets without re-running the query.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Table Data -->
+    <section class="feature-section" id="tabledata">
+      <h2>🗃️ Table Data Browser</h2>
+      <p class="lead">Browse any table without writing SQL — with smart pickers for dates and foreign keys.</p>
+      <div class="feat-grid">
+        <article class="feat-card">
+          <div class="icon">📅</div>
+          <h3>Date Picker</h3>
+          <p>Date, datetime, and timestamp columns show a calendar picker when editing — no need to remember ISO format strings.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">🔗</div>
+          <h3>FK Row Picker</h3>
+          <p>Foreign key columns open a searchable popup showing the referenced table's rows. Pick the right value without looking up IDs manually.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">📥</div>
+          <h3>CSV Import <span class="badge-new">New</span></h3>
+          <p>Paste CSV text, preview the first 5 rows, then import all rows as INSERT statements — with header detection and NULL handling.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">🔢</div>
+          <h3>Pagination Control</h3>
+          <p>Set the starting offset and row limit. Load exactly the window of data you need for large tables.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Schema -->
+    <section class="feature-section" id="schema">
+      <h2>🗺️ Schema Tools</h2>
+      <p class="lead">Visualise, explore, and alter your database schema without memorising ALTER TABLE syntax.</p>
+      <div class="feat-grid">
+        <article class="feat-card">
+          <div class="icon">🧩</div>
+          <h3>ER Diagram Designer</h3>
+          <p>Drag-and-drop canvas. Zoom, pan, show/hide tables via sidebar. Cross-database FK tables auto-loaded with <code>db.table</code> headers. Export as PNG.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">🔬</div>
+          <h3>Schema Explorer</h3>
+          <p>Columns tab with PK/FK/UQ badges, full type display, and clickable FK navigation. Relationships tab shows incoming and outgoing FKs. DDL preview with copy.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">🔧</div>
+          <h3>ALTER TABLE UI <span class="badge-new">New</span></h3>
+          <p>Add, modify type, rename, and drop columns through a guided form. SQL preview shown before execution — no typos in production.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">🔎</div>
+          <h3>Query EXPLAIN Visualizer <span class="badge-new">New</span></h3>
+          <p>Run EXPLAIN on any SELECT with Ctrl+Shift+E. Color-coded access types (ALL=red, const=blue), rows-scanned bars, and key/extra highlighting.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Object Browser -->
+    <section class="feature-section" id="browser">
+      <h2>🌲 Object Browser</h2>
+      <p class="lead">Navigate your entire database structure from an intelligent sidebar.</p>
+      <div class="feat-grid">
+        <article class="feat-card">
+          <div class="icon">🗄️</div>
+          <h3>Lazy-Loaded Tree</h3>
+          <p>Databases and tables load on demand. Expand a database to see tables, views, stored procedures, triggers, and events — each in their own group.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">🏷️</div>
+          <h3>PK / FK / UQ Badges</h3>
+          <p>Each column in the tree shows colour-coded badges for Primary Key, Foreign Key, and Unique constraints at a glance.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">⚡</div>
+          <h3>Double-Click to Load</h3>
+          <p>Double-click any table to instantly switch to the Table Data tab and load the first 1 000 rows — no SQL needed.</p>
+        </article>
+        <article class="feat-card">
+          <div class="icon">🔍</div>
+          <h3>Real-Time Search</h3>
+          <p>Filter tables and columns across all databases as you type. Find any object in large schemas instantly.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="feature-section" id="compare">
+      <h2>📊 How SQLvanta Compares</h2>
+      <p class="lead">SQLvanta vs popular MySQL GUI tools — all features, zero cost.</p>
+      <div style="overflow-x:auto;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>SQLvanta</th>
+              <th>MySQL Workbench</th>
+              <th>HeidiSQL</th>
+              <th>DBeaver CE</th>
+              <th>TablePlus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Free &amp; Open Source</td><td class="yes">✓ Free</td><td class="yes">✓ Free</td><td class="yes">✓ Free</td><td class="yes">✓ CE Free</td><td class="partial">Freemium</td></tr>
+            <tr><td>Windows / macOS / Linux</td><td class="yes">✓ All 3</td><td class="yes">✓ All 3</td><td class="partial">Windows only</td><td class="yes">✓ All 3</td><td class="yes">✓ All 3</td></tr>
+            <tr><td>Visual ER Diagram</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td></tr>
+            <tr><td>SQL Autocomplete</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">Basic</td><td class="yes">✓</td><td class="partial">Basic</td></tr>
+            <tr><td>Query EXPLAIN Visualizer</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td></tr>
+            <tr><td>Inline Table Editing</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td>FK Row Picker</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td>CSV Import via UI</td><td class="yes">✓</td><td class="partial">Wizard</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td>ALTER TABLE UI</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">Partial</td></tr>
+            <tr><td>Built with Flutter (native perf)</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td>In-app Update Checker</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer style="text-align:center;padding:2rem;color:var(--text-secondary);font-size:0.85rem;border-top:1px solid rgba(255,255,255,0.07);">
+    <p>© 2026 SQLvanta by <a href="https://senthilnasa.me" style="color:var(--brand-primary);text-decoration:none;">Senthilnasa</a> · <a href="https://github.com/senthilnasa/sqlvanta" style="color:var(--brand-primary);text-decoration:none;">GitHub</a> · <a href="sitemap.xml" style="color:var(--text-secondary);text-decoration:none;">Sitemap</a></p>
+  </footer>
+</body>
+</html>

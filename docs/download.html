@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download SQLvanta — Free MySQL Client for Windows, macOS & Linux</title>
+  <meta name="description" content="Download SQLvanta for free. Available for Windows 10/11 (x64), macOS (Universal), and Linux (x64). No registration required. Open-source MySQL desktop client.">
+  <meta name="keywords" content="download SQLvanta, free MySQL client download, MySQL GUI download Windows, MySQL client Mac download, MySQL GUI Linux download, free database manager download, open source MySQL desktop download, SQLvanta installer, SQLvanta release, database tool free download">
+  <meta name="author" content="Senthilnasa">
+  <link rel="canonical" href="https://sqlvanta.senthilnasa.me/download.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sqlvanta.senthilnasa.me/download.html">
+  <meta property="og:title" content="Download SQLvanta Free — Windows, macOS, Linux">
+  <meta property="og:description" content="Free open-source MySQL desktop client. Download for Windows, macOS or Linux. No account required.">
+  <meta property="og:image" content="https://sqlvanta.senthilnasa.me/icon/android-chrome-512x512.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Download SQLvanta Free">
+  <meta name="twitter:description" content="Free MySQL GUI for Windows, macOS & Linux. Download the latest release now.">
+  <meta name="twitter:image" content="https://sqlvanta.senthilnasa.me/icon/android-chrome-512x512.png">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SQLvanta",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Windows 10, Windows 11, macOS 12+, Ubuntu 20.04+",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "downloadUrl": "https://github.com/senthilnasa/sqlvanta/releases/latest",
+    "url": "https://sqlvanta.senthilnasa.me/"
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#1565C0">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .dl-page { max-width: 900px; margin: 0 auto; padding: 6rem 1.5rem 4rem; }
+    .page-hero { text-align: center; margin-bottom: 3.5rem; }
+    .page-hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 1rem; }
+    .page-hero p { font-size: 1.05rem; color: var(--text-secondary); }
+    .dl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+    .dl-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: border-color .2s, transform .2s;
+    }
+    .dl-card:hover { border-color: rgba(59,130,246,0.5); transform: translateY(-3px); }
+    .dl-card .os-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+    .dl-card h2 { font-size: 1.3rem; margin-bottom: 0.3rem; }
+    .dl-card .req { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.25rem; }
+    .dl-card .btn { display: inline-block; padding: 0.7rem 1.6rem; border-radius: 50px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: opacity .2s; }
+    .btn-win { background: linear-gradient(135deg, #0078d4, #005a9e); color: #fff; }
+    .btn-mac { background: linear-gradient(135deg, #555, #222); color: #fff; }
+    .btn-lin { background: linear-gradient(135deg, #e95420, #c24113); color: #fff; }
+    .btn-src { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--text-primary); }
+    .dl-card .btn:hover { opacity: 0.85; }
+    .dl-note { text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 3rem; }
+    .dl-note a { color: var(--brand-primary); text-decoration: none; }
+    .install-section h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+    .install-section h3 { font-size: 1rem; margin: 1.5rem 0 0.5rem; color: var(--text-secondary); }
+    .install-section pre {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      color: #e2e8f0;
+    }
+    .dl-card .asset-name { display: none; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; word-break: break-all; }
+    .req-list { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+    .req-chip {
+      padding: 0.4rem 0.9rem;
+      border-radius: 50px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="grid-bg"></div>
+
+  <!-- Nav -->
+  <header class="glass-header">
+    <div class="container nav-container">
+      <a href="index.html" class="logo-link">
+        <img src="assets/logo.png" alt="SQLvanta" class="nav-logo">
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="features.html">Features</a></li>
+          <li><a href="download.html" class="active">Download</a></li>
+          <li><a href="docs.html">Docs</a></li>
+          <li><a href="contribute.html">Contribute</a></li>
+          <li><a href="https://github.com/senthilnasa/sqlvanta" class="btn btn-outline" target="_blank" rel="noopener">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dl-page">
+
+    <section class="page-hero">
+      <h1>Download <span style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SQLvanta</span></h1>
+      <p>Free forever. No account, no telemetry, no ads. Just a great MySQL client.</p>
+    </section>
+
+    <!-- Version badge -->
+    <p id="version-badge" style="text-align:center;margin-bottom:2rem;font-size:0.88rem;color:var(--text-secondary);">
+      <span id="ver-text">Fetching latest version…</span>
+    </p>
+
+    <!-- Download cards -->
+    <div class="dl-grid">
+      <div class="dl-card" id="card-win">
+        <span class="os-icon">🪟</span>
+        <h2>Windows</h2>
+        <p class="req">Windows 10 / 11 — x64</p>
+        <a class="btn btn-win" id="btn-win" href="https://github.com/senthilnasa/sqlvanta/releases/latest" rel="noopener" target="_blank">
+          ⬇ Download .zip
+        </a>
+        <p class="asset-name" id="name-win"></p>
+      </div>
+      <div class="dl-card" id="card-mac">
+        <span class="os-icon">🍎</span>
+        <h2>macOS</h2>
+        <p class="req">macOS 12+ — Apple Silicon &amp; Intel</p>
+        <a class="btn btn-mac" id="btn-mac" href="https://github.com/senthilnasa/sqlvanta/releases/latest" rel="noopener" target="_blank">
+          ⬇ Download .zip
+        </a>
+        <p class="asset-name" id="name-mac"></p>
+      </div>
+      <div class="dl-card" id="card-lin">
+        <span class="os-icon">🐧</span>
+        <h2>Linux</h2>
+        <p class="req">Ubuntu 20.04+ / Debian — x64</p>
+        <a class="btn btn-lin" id="btn-lin" href="https://github.com/senthilnasa/sqlvanta/releases/latest" rel="noopener" target="_blank">
+          ⬇ Download .tar.gz
+        </a>
+        <p class="asset-name" id="name-lin"></p>
+      </div>
+      <div class="dl-card">
+        <span class="os-icon">📦</span>
+        <h2>Source Code</h2>
+        <p class="req">Build from source — Flutter 3.x</p>
+        <a class="btn btn-src" href="https://github.com/senthilnasa/sqlvanta" rel="noopener" target="_blank">
+          View on GitHub
+        </a>
+      </div>
+    </div>
+
+    <p class="dl-note">
+      All releases are published on <a href="https://github.com/senthilnasa/sqlvanta/releases" rel="noopener" target="_blank">GitHub Releases</a>.
+      The app auto-checks for updates on startup — you can always update from within Settings.
+    </p>
+
+    <script>
+    (function () {
+      var REPO = 'senthilnasa/sqlvanta';
+
+      // OS targets: filename pattern → button, badge, card, install spans
+      var targets = [
+        { re: /windows/i,   btn: 'btn-win', name: 'name-win', card: 'card-win', inst: '.inst-win' },
+        { re: /macos|mac/i, btn: 'btn-mac', name: 'name-mac', card: 'card-mac', inst: '.inst-mac' },
+        { re: /linux/i,     btn: 'btn-lin', name: 'name-lin', card: 'card-lin', inst: '.inst-lin' },
+      ];
+
+      function applyAsset(t, url, filename) {
+        // Download button
+        var btn = document.getElementById(t.btn);
+        if (btn) btn.href = url;
+        // Filename badge under card button
+        var nm = document.getElementById(t.name);
+        if (nm) { nm.textContent = filename; nm.style.display = 'block'; }
+        // Install instruction spans
+        document.querySelectorAll(t.inst).forEach(function (el) {
+          el.textContent = filename;
+        });
+      }
+
+      function highlightCurrentOs() {
+        var ua = navigator.userAgent.toLowerCase();
+        var osCard = /win/.test(ua) ? 'card-win' : /mac/.test(ua) ? 'card-mac' : /linux/.test(ua) ? 'card-lin' : null;
+        if (osCard) {
+          var el = document.getElementById(osCard);
+          if (el) el.style.borderColor = 'rgba(59,130,246,0.7)';
+        }
+      }
+
+      fetch('https://api.github.com/repos/' + REPO + '/releases/latest')
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          // Show version tag
+          var tag = data.tag_name || '';
+          var verEl = document.getElementById('ver-text');
+          if (verEl && tag) {
+            verEl.innerHTML = 'Latest release: <strong style="color:var(--text-primary)">' + tag + '</strong>';
+          }
+
+          // Inject softwareVersion into JSON-LD without a hardcoded value
+          var sd = document.querySelector('script[type="application/ld+json"]');
+          if (sd && tag) {
+            try {
+              var obj = JSON.parse(sd.textContent);
+              obj.softwareVersion = tag.replace(/^v/, '');
+              sd.textContent = JSON.stringify(obj);
+            } catch (e) {}
+          }
+
+          // Wire each release asset to the right OS card
+          var assets = data.assets || [];
+          assets.forEach(function (asset) {
+            var url  = asset.browser_download_url;
+            var name = asset.name;
+            for (var i = 0; i < targets.length; i++) {
+              if (targets[i].re.test(name)) {
+                applyAsset(targets[i], url, name);
+                break;
+              }
+            }
+          });
+
+          highlightCurrentOs();
+        })
+        .catch(function () {
+          // GitHub API unavailable — all buttons already fall back to releases/latest
+          var verEl = document.getElementById('ver-text');
+          if (verEl) verEl.textContent = 'See GitHub Releases for the latest version.';
+          highlightCurrentOs();
+        });
+    })();
+    </script>
+
+    <!-- Install instructions -->
+    <section class="install-section" id="install">
+      <h2>📋 Installation</h2>
+
+      <h3>🪟 Windows</h3>
+      <pre>1. Download <span class="inst-win">sqlvanta-windows-x64.zip</span>
+2. Extract the ZIP anywhere (e.g. C:\Apps\sqlvanta\)
+3. Run sqlvanta.exe — no installer required</pre>
+
+      <h3>🍎 macOS</h3>
+      <pre>1. Download <span class="inst-mac">sqlvanta-macos.zip</span>
+2. Unzip and drag sqlvanta.app to /Applications
+3. First launch: right-click → Open (to bypass Gatekeeper for unsigned builds)</pre>
+
+      <h3>🐧 Linux</h3>
+      <pre>1. Download <span class="inst-lin">sqlvanta-linux-x64.tar.gz</span>
+2. Extract: tar -xzf <span class="inst-lin">sqlvanta-linux-x64.tar.gz</span> -C ~/apps/sqlvanta/
+3. Run: ~/apps/sqlvanta/sqlvanta
+# Optional: create a .desktop entry for your launcher</pre>
+
+      <h3>🔨 Build from Source</h3>
+      <pre>git clone https://github.com/senthilnasa/sqlvanta.git
+cd sqlvanta
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter run -d windows   # or macos / linux</pre>
+    </section>
+
+    <!-- System requirements -->
+    <section style="margin-top:3rem;" id="requirements">
+      <h2 style="font-size:1.5rem;margin-bottom:0.5rem;">⚙️ System Requirements</h2>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1rem;">SQLvanta is lightweight. Typical memory usage under 80 MB.</p>
+      <div class="req-list">
+        <span class="req-chip">Windows 10 / 11 (x64)</span>
+        <span class="req-chip">macOS 12 Monterey+</span>
+        <span class="req-chip">Ubuntu 20.04 / Debian 11+</span>
+        <span class="req-chip">MySQL 5.7 / 8.0 / 8.4</span>
+        <span class="req-chip">MariaDB 10.4+</span>
+        <span class="req-chip">~80 MB RAM</span>
+        <span class="req-chip">150 MB disk space</span>
+        <span class="req-chip">No .NET / Java required</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer style="text-align:center;padding:2rem;color:var(--text-secondary);font-size:0.85rem;border-top:1px solid rgba(255,255,255,0.07);margin-top:3rem;">
+    <p>© 2026 SQLvanta by <a href="https://senthilnasa.me" style="color:var(--brand-primary);text-decoration:none;">Senthilnasa</a> · <a href="https://github.com/senthilnasa/sqlvanta" style="color:var(--brand-primary);text-decoration:none;">GitHub</a> · <a href="sitemap.xml" style="color:var(--text-secondary);text-decoration:none;">Sitemap</a></p>
+  </footer>
+</body>
+</html>
